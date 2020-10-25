@@ -1,0 +1,38 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          check_latest: true
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm-deps-
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install npm packages
+        run: yarn install
+
+      - name: Precompile TS
+        run: yarn vscode:prepublish
+
+      - name: Run ESLint
+        run: yarn lint
+
+      - name: Run tests
+        run: yarn test
