@@ -1,4 +1,4 @@
-# VS Code – Elixir Credo
+# VS Code – Elixir Linter (Credo)
 
 ![CI](https://github.com/pantajoe/vscode-elixir-credo/workflows/CI/badge.svg)
 
