@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None
 
+## [0.0.3] - 2020-10-24
+
+### Added
+
+- Include the execute path given in the extension's config into the env variable `PATH` of the `mix credo` command
+  - It solves issues with specifying a path to the asdf-vm shims
+
 ## [0.0.2] - 2020-10-25
 
 ### Changed
