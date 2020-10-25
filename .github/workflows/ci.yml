@@ -28,11 +28,5 @@ jobs:
       - name: Install npm packages
         run: yarn install
 
-      - name: Precompile TS
-        run: yarn vscode:prepublish
-
-      - name: Run ESLint
-        run: yarn lint
-
-      - name: Run tests
+      - name: Run TS Compilation, ESLint, and Tests
         run: yarn test
