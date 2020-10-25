@@ -58,3 +58,17 @@ export function getCommandArguments(): string[] {
 
   return commandArguments;
 }
+
+export function getCommandEnvironment(): NodeJS.ProcessEnv {
+  const conf = vscode.workspace.getConfiguration('elixir.credo');
+  const executePath = conf.get('executePath');
+
+  if (executePath) {
+    return {
+      ...process.env,
+      PATH: `${process.env.PATH}${path.delimiter}${executePath}`,
+    };
+  }
+
+  return { ...process.env };
+}

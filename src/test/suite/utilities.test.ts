@@ -4,7 +4,8 @@ import {
   assert, createSandbox, SinonSandbox, SinonSpy,
 } from 'sinon';
 import * as fs from 'fs';
-import { makeZeroBasedIndex, getCommandArguments } from '../../utilities';
+import * as path from 'path';
+import { makeZeroBasedIndex, getCommandArguments, getCommandEnvironment } from '../../utilities';
 import * as configurationModule from '../../configuration';
 
 describe('Utilities', () => {
@@ -112,6 +113,39 @@ describe('Utilities', () => {
 
       it('includes `--strict-mode`', () => {
         expect(getCommandArguments()).to.include('--strict');
+      });
+    });
+  });
+
+  context('#getCommandEnvironment', () => {
+    context('without any given executePath in the extension\'s configuration', () => {
+      it('returns a shallow copy of the PATH variable without any changes', () => {
+        expect(getCommandEnvironment().PATH).to.equal(process.env.PATH);
+      });
+    });
+
+    context('with a given executePath in the extension\'s configuration', () => {
+      let sandbox: SinonSandbox;
+      const executePath = '/usr/.asdf/shims';
+
+      beforeEach(() => {
+        sandbox = createSandbox();
+        sandbox.stub(vscode.workspace, 'getConfiguration').withArgs('elixir.credo').callsFake(() => ({
+          get(prop: string) {
+            if (prop === 'executePath') {
+              return executePath;
+            }
+            return null;
+          },
+        } as any));
+      });
+
+      afterEach(() => {
+        sandbox.restore();
+      });
+
+      it('returns a shallow copy of the PATH variable without any changes', () => {
+        expect(getCommandEnvironment().PATH).to.include(`${path.delimiter}${executePath}`);
       });
     });
   });

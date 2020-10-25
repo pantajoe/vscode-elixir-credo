@@ -5,7 +5,12 @@ import CredoConfiguration from './CredoConfiguration';
 import { getConfig } from './configuration';
 import { CredoOutput } from './CredoOutput';
 import CredoParser from './CredoParser';
-import { isFileUri, getCurrentPath, getCommandArguments } from './utilities';
+import {
+  isFileUri,
+  getCurrentPath,
+  getCommandArguments,
+  getCommandEnvironment,
+} from './utilities';
 
 export default class CredoProvider {
   public config: CredoConfiguration;
@@ -49,7 +54,15 @@ export default class CredoProvider {
 
     const task = new Task(uri, (token) => {
       // eslint-disable-next-line max-len
-      const process = this.executeCredo(getCommandArguments(), document.getText(), { cwd: currentPath }, createLintDocumentCallback(token));
+      const process = this.executeCredo(
+        getCommandArguments(),
+        document.getText(),
+        {
+          cwd: currentPath,
+          env: getCommandEnvironment(),
+        },
+        createLintDocumentCallback(token),
+      );
 
       return () => process.kill();
     });
