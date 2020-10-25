@@ -1,65 +1,43 @@
-# elixir-credo README
+# VS Code – Elixir Credo
 
-This is the README for your extension "elixir-credo". After writing up a brief description, we recommend including the following sections.
+This VS Code extension provides display of the output of the static code analysis tool [Credo](https://github.com/rrrene/credo)
+for the programming language [Elixir](https://elixir-lang.org).
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+* Lint all opened documents and display diagnostics
+* Specify whether the linting happens on save of a document
+* Specify a custom configuration file for Credo
+* Specify a custom configuration for Credo
+* Specify a custom execute path for the `mix` binary
 
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+![Demo](images/demo.gif)
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+Add the Elixir linter [Credo](https://github.com/rrrene/credo) to your dependencies in your project's `mix.exs` file
+and install it by running `mix deps.get`.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+* `elixir.credo.onSave`: Whether the extension should lint when a document is saved.
+* `elixir.credo.configurationFile`: location of the configuration file Credo should use. Can be an absolute path, a relative path or simply a file.
+* `elixir.credo.credoConfiguration`: name of the configuration Credo should use. Uses the default configuration per default (`default`).
+* `elixir.credo.strictMode`: whether to utilize Credo's strict mode when linting.
+* `elixir.credo.executePath`: execute path of the `mix` executable
 
-## Known Issues
+## Changelog
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+See [Changelog](/CHANGELOG.md)
 
-## Release Notes
+## Contribution
 
-Users appreciate release notes as you update your extension.
+When contributing, please refer to [the Contribution Guide](/CONTRIBUTING.md)
 
-### 1.0.0
+## License
 
-Initial release of ...
+This software is released under the [MIT License](/LICENSE).
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+&copy; 2020 Joe Pantazidis
