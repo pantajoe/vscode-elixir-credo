@@ -1,5 +1,7 @@
 # VS Code – Elixir Credo
 
+![CI](https://github.com/pantajoe/vscode-elixir-credo/workflows/CI/badge.svg)
+
 This VS Code extension provides display of the output of the static code analysis tool [Credo](https://github.com/rrrene/credo)
 for the programming language [Elixir](https://elixir-lang.org).
 
