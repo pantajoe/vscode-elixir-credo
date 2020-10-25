@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None
 
-## [0.0.1] - 2020-09-02
+## [0.0.2] - 2020-10-25
+
+### Changed
+
+- Changed display name to 'Elixir Linter (Credo)'
+
+## [0.0.1] - 2020-10-25
 
 ### Added
 
