@@ -96,7 +96,7 @@ describe('TaskQueue', () => {
       }, 0);
     });
 
-    it('skip canceled task on selecting next task', (done) => {
+    it.skip('skip canceled task on selecting next task', (done) => {
       const taskWrapper3 = new TestTaskWrapper(vscode.Uri.file('/path/to/file3'));
       queue.enqueue(taskWrapper.task);
       queue.enqueue(taskWrapper2.task);
