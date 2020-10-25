@@ -1,27 +1,37 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+// this extension's structure is heavily inspired by https://github.com/misogi/vscode-ruby-rubocop
+
 import * as vscode from 'vscode';
+import CredoProvider from './CredoProvider';
+import { getConfig } from './configuration';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  const { workspace } = vscode;
+  const diagnosticCollection = vscode.languages.createDiagnosticCollection('elixir');
+  context.subscriptions.push(diagnosticCollection);
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "elixir-credo" is now active!');
+  const credo = new CredoProvider(diagnosticCollection);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('elixir-credo.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
+  workspace.onDidChangeConfiguration(() => {
+    credo.config = getConfig();
+  });
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Credo!');
-	});
+  workspace.textDocuments.forEach((document: vscode.TextDocument) => {
+    credo.execute(document);
+  });
 
-	context.subscriptions.push(disposable);
+  workspace.onDidOpenTextDocument((document: vscode.TextDocument) => {
+    credo.execute(document);
+  });
+
+  workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+    if (credo.isOnSave) {
+      credo.execute(document);
+    }
+  });
+
+  workspace.onDidCloseTextDocument((document: vscode.TextDocument) => {
+    credo.clear(document);
+  });
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() {}
