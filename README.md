@@ -13,7 +13,7 @@ for the programming language [Elixir](https://elixir-lang.org).
 * Specify a custom configuration for Credo
 * Specify a custom execute path for the `mix` binary
 
-![Demo](images/demo.gif)
+![Demo](./images/demo.gif)
 
 ## Requirements
 
