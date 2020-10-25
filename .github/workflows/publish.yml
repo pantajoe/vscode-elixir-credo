@@ -33,6 +33,6 @@ jobs:
       - name: Publish Extension with VSCE
         run:
           yarn global add vsce
-          vsce publish -p $VSCE_TOKEN"
+          vsce publish -p $VSCE_TOKEN
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
