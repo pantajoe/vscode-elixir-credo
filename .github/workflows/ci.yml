@@ -13,7 +13,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14
-          check_latest: true
 
       - name: Cache node modules
         uses: actions/cache@v2
