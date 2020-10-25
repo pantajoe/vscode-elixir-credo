@@ -30,9 +30,10 @@ jobs:
       - name: Install npm packages
         run: yarn install
 
+      - name: Install VCSE
+        run: yarn global add vsce
+
       - name: Publish Extension with VSCE
-        run:
-          yarn global add vsce
-          vsce publish -p $VSCE_TOKEN
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+        run: vsce publish -p $VSCE_TOKEN
