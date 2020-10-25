@@ -1,45 +1,103 @@
 {
-	"name": "elixir-credo",
-	"displayName": "Credo",
-	"description": "VSCode support for Elixir Linter 'Credo'.",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.47.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-        "onCommand:elixir-credo.helloWorld"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "elixir-credo.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "yarn run compile",
-		"compile": "tsc -p ./",
-		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile && yarn run lint",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.47.0",
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^7.0.2",
-		"@types/node": "^13.11.0",
-		"eslint": "^6.8.0",
-		"@typescript-eslint/parser": "^2.30.0",
-		"@typescript-eslint/eslint-plugin": "^2.30.0",
-		"glob": "^7.1.6",
-		"mocha": "^7.1.2",
-		"typescript": "^3.8.3",
-		"vscode-test": "^1.3.0"
-	}
+  "name": "elixir-credo",
+  "publisher": "pantajoe",
+  "author": {
+    "name": "Joe Pantazidis"
+  },
+  "displayName": "Elixir Credo",
+  "description": "VSC Support for Elixir linter 'Credo'.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.47.0"
+  },
+  "icon": "images/elixir.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pantajoe/vscode-elixir-credo.git"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "activationEvents": [
+    "onLanguage:elixir"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "elixir",
+        "extensions": [
+          ".ex",
+          ".exs"
+        ]
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Elixir-Credo Configuration",
+        "properties": {
+          "elixir.credo.onSave": {
+            "title": "Execute Credo on Save",
+            "description": "Configures whether to run the linter when a document is saved",
+            "type": "boolean",
+            "default": true
+          },
+          "elixir.credo.configurationFile": {
+            "title": "Configuration File",
+            "description": "Configures which configuration file Credo should use. Default is `.credo.exs`.",
+            "type": "string",
+            "default": ".credo.exs"
+          },
+          "elixir.credo.credoConfiguration": {
+            "title": "Credo Configuration Name",
+            "description": "Configures the name of the used configuration (Credo supports having multiple configurations).",
+            "type": "string",
+            "default": "default"
+          },
+          "elixir.credo.executePath": {
+            "title": "Execute Path",
+            "description": "Specifies the execute path where mix can be run from, e.g., `/usr/bin/.asdf/shims`",
+            "type": "string",
+            "default": ""
+          },
+          "elixir.credo.strictMode": {
+            "title": "Strict Mode",
+            "description": "Specifies whether to activate Credo's strict mode",
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.12",
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^13.11.0",
+    "@types/sinon": "^9.0.5",
+    "@types/vscode": "^1.47.0",
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0",
+    "chai": "^4.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^9.0.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.20.6",
+    "glob": "^7.1.6",
+    "mocha": "^7.1.2",
+    "sinon": "^9.0.3",
+    "typescript": "^3.8.3",
+    "vscode-test": "^1.4.0"
+  }
 }
