@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None
 
-## [0.0.3] - 2020-10-24
+## [0.0.4] - 2020-10-26
+
+### Added
+
+- Added keywords `elixir`, `credo`, `linter` to the extension's `package.json` to make easier to find
+
+## [0.0.3] - 2020-10-25
 
 ### Added
 

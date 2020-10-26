@@ -2,11 +2,12 @@
   "name": "vscode-elixir-credo",
   "publisher": "pantajoe",
   "author": {
-    "name": "Joe Pantazidis"
+    "name": "pantajoe",
+    "url": "https://www.github.com/pantajoe"
   },
   "displayName": "Elixir Linter (Credo)",
   "description": "VSC Support for Elixir linter 'Credo'.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.47.0"
   },
