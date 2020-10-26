@@ -19,6 +19,11 @@
     "Programming Languages",
     "Linters"
   ],
+  "keywords": [
+    "elixir",
+    "credo",
+    "linter"
+  ],
   "activationEvents": [
     "onLanguage:elixir"
   ],
