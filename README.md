@@ -30,6 +30,13 @@ This extension contributes the following settings:
 * `elixir.credo.strictMode`: whether to utilize Credo's strict mode when linting.
 * `elixir.credo.executePath`: execute path of the `mix` executable
 
+### Known Issues
+
+> "The `mix` binary is not executable."
+
+If this warning pops up, the vscode extension's credo child process does not have the path of the mix binary in its `PATH`.
+Thus, try to set the correct path of the `mix` binary in the configuration's settings under `"elixir.credo.executePath"` (Elixir > Credo > **Execute Path**).
+
 ## Changelog
 
 See [Changelog](/CHANGELOG.md)

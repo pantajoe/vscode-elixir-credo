@@ -129,7 +129,9 @@ export default class CredoProvider {
   // checking whether running credo command results in an error
   private hasError(error: cp.ExecException | null, stderr: string): boolean {
     if (error && (error as any).code === 'ENOENT') {
-      vscode.window.showWarningMessage(`\`${this.config.command}\` is not executable`);
+      vscode.window.showWarningMessage(`\`${this.config.command}\` is not executable.
+        Try setting the option in this extension's configuration "elixir.credo.executePath"
+        to the path of the mix binary.`);
       return true;
     }
 
