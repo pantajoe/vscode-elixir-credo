@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None
 
+## [0.0.5] - 2020-10-27
+
+### Changed
+
+- Improved the warning message when the `mix` command does not work.
+
 ## [0.0.4] - 2020-10-26
 
 ### Added
