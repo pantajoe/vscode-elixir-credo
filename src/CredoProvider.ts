@@ -45,7 +45,7 @@ export default class CredoProvider {
       const output = this.parse(stdout.toString());
       if (output === undefined || output === null) return;
 
-      this.diagnosticCollection.set(uri, CredoParser.parseCredoOutput(output));
+      this.diagnosticCollection.set(uri, CredoParser.parseCredoOutput(output, document));
 
       token.finished();
 
