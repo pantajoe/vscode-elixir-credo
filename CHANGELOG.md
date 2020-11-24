@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None
 
+## [0.1.1] - 2020-11-24
+
+### Fixed
+
+- If the issue was found with the issue's `trigger`, include its last character.
+
 ## [0.1.0] - 2020-11-24
 
 ### Added
