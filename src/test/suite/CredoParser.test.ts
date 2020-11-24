@@ -54,7 +54,7 @@ describe('CredoParser', () => {
         expect(parsedDiagnostic.range.start.line).to.equal(1);
         expect(parsedDiagnostic.range.start.character).to.equal(2);
         expect(parsedDiagnostic.range.end.line).to.equal(1);
-        expect(parsedDiagnostic.range.end.character).to.equal(12);
+        expect(parsedDiagnostic.range.end.character).to.equal(13);
       });
 
       it('marks the entire line otherwise', () => {
@@ -74,7 +74,7 @@ describe('CredoParser', () => {
         expect(parsedDiagnostic.range.start.line).to.equal(1);
         expect(parsedDiagnostic.range.start.character).to.equal(0);
         expect(parsedDiagnostic.range.end.line).to.equal(1);
-        expect(parsedDiagnostic.range.end.character).to.equal(12);
+        expect(parsedDiagnostic.range.end.character).to.equal(13);
       });
     });
   });
