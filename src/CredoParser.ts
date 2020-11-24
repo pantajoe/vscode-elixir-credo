@@ -25,7 +25,7 @@ export default class CredoParser {
       case 'consistency': return vscode.DiagnosticSeverity.Warning;
       case 'design': return vscode.DiagnosticSeverity.Information;
       case 'readability': return vscode.DiagnosticSeverity.Information;
-      case 'refactor': return vscode.DiagnosticSeverity.Hint;
+      case 'refactor': return vscode.DiagnosticSeverity.Information;
       case 'warning': return vscode.DiagnosticSeverity.Warning;
       default: return vscode.DiagnosticSeverity.Error;
     }
