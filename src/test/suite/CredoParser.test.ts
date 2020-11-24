@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { expect } from 'chai';
 import CredoParser from '../../CredoParser';
+import { CredoIssue } from '../../CredoOutput';
 
 describe('CredoParser', () => {
   context('#parseCredoIssue', () => {
@@ -15,7 +16,7 @@ describe('CredoParser', () => {
         message: 'Modules should have a @moduledoc tag.',
         priority: 1,
         trigger: 'SampleWeb.Telemetry',
-      });
+      }, '');
 
       expect(parsedDiagnostic.message).to.equal(
         'Modules should have a @moduledoc tag. (readability:Credo.Check.Readability.ModuleDoc)',
@@ -25,6 +26,56 @@ describe('CredoParser', () => {
       expect(parsedDiagnostic.range.start.character).to.equal(10);
       expect(parsedDiagnostic.range.end.line).to.equal(0);
       expect(parsedDiagnostic.range.end.character).to.equal(31);
+    });
+
+    context('when `column` and `column_end` are null', () => {
+      const credoIssue: CredoIssue = {
+        category: 'design',
+        check: 'Credo.Check.Design.TagTODO',
+        column: null,
+        column_end: null,
+        filename: 'lib/sample_web/telemetry.ex',
+        line_no: 2,
+        message: 'Found a TODO tag in a comment: # TODO: any.',
+        priority: 2,
+        trigger: '# TODO: any',
+      };
+
+      it('marks the substring of the line when a trigger is given', () => {
+        const parsedDiagnostic = CredoParser.parseCredoIssue(
+          credoIssue,
+          'defmodule TestModule do\n  # TODO: any\nend\n',
+        );
+
+        expect(parsedDiagnostic.message).to.equal(
+          'Found a TODO tag in a comment: # TODO: any. (design:Credo.Check.Design.TagTODO)',
+        );
+        expect(parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information);
+        expect(parsedDiagnostic.range.start.line).to.equal(1);
+        expect(parsedDiagnostic.range.start.character).to.equal(2);
+        expect(parsedDiagnostic.range.end.line).to.equal(1);
+        expect(parsedDiagnostic.range.end.character).to.equal(12);
+      });
+
+      it('marks the entire line otherwise', () => {
+        const otherCredoIssue = {
+          ...credoIssue,
+          trigger: null,
+        };
+        const parsedDiagnostic = CredoParser.parseCredoIssue(
+          otherCredoIssue,
+          'defmodule TestModule do\n  # TODO: any\nend\n',
+        );
+
+        expect(parsedDiagnostic.message).to.equal(
+          'Found a TODO tag in a comment: # TODO: any. (design:Credo.Check.Design.TagTODO)',
+        );
+        expect(parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information);
+        expect(parsedDiagnostic.range.start.line).to.equal(1);
+        expect(parsedDiagnostic.range.start.character).to.equal(0);
+        expect(parsedDiagnostic.range.end.line).to.equal(1);
+        expect(parsedDiagnostic.range.end.character).to.equal(12);
+      });
     });
   });
 
@@ -55,7 +106,7 @@ describe('CredoParser', () => {
             trigger: 'Ecto.Adapters.SQL.Sandbox',
           },
         ],
-      });
+      }, { getText: () => '' } as vscode.TextDocument);
 
       expect(parsedCollection.length).to.equal(2);
     });
