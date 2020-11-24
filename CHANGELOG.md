@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None
 
+## [0.1.0] - 2020-11-24
+
+### Added
+
+- Use credo issues' `trigger`s to mark the correct substring (#2)
+
+## Changed
+
+- Display `'refactor'` issues as `Information` instead of hints (#3).
+  This allows the issues to be displayed more clearly and also shown in the `Problems` panel.
+
 ## [0.0.5] - 2020-10-27
 
 ### Changed
