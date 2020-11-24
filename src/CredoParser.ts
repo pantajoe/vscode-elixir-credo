@@ -16,7 +16,7 @@ export default class CredoParser {
       const columnStart = issue.trigger && currentLine.indexOf(issue.trigger) !== 1
         ? currentLine.indexOf(issue.trigger)
         : 0;
-      const columnEnd = makeZeroBasedIndex(currentLine.length);
+      const columnEnd = currentLine.length === 0 ? 1 : currentLine.length;
 
       range = new vscode.Range(
         makeZeroBasedIndex(issue.line_no),
