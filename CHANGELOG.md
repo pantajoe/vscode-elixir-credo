@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - "Found multiple files ... will use ..."
   - "... file does not exist. Ignoring ..."
 
+### Fixed
+
+- Improve warning message if the credo output is empty
+
 ## [0.1.1] - 2020-11-24
 
 ### Fixed
