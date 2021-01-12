@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Improve warning message if the credo output is empty
+- Try to capture only the JSON-part of the credo output if it includes info messages from mix, for instance.
 
 ## [0.1.1] - 2020-11-24
 

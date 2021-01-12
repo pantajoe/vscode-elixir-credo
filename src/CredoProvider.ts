@@ -115,11 +115,13 @@ export default class CredoProvider {
     }
 
     try {
-      return JSON.parse(output);
+      const extractedJSON = output.substr(output.indexOf('{'));
+
+      return JSON.parse(extractedJSON);
     } catch (e) {
       if (e instanceof SyntaxError) {
         vscode.window.showWarningMessage(
-          `Error on parsing output (It might non-JSON output) : "${output.replace(/[\r\n \t]/g, ' ')}"`,
+          `Error on parsing output (It might be non-JSON output): "${output.replace(/[\r\n \t]/g, ' ')}"`,
         );
       }
 
