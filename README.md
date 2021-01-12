@@ -29,6 +29,7 @@ This extension contributes the following settings:
 * `elixir.credo.credoConfiguration`: name of the configuration Credo should use. Uses the default configuration per default (`default`).
 * `elixir.credo.strictMode`: whether to utilize Credo's strict mode when linting.
 * `elixir.credo.executePath`: execute path of the `mix` executable
+* `elixir.credo.ignoreWarningMessages`: ignore warning messages (concerning finding the configuration file)
 
 ### Known Issues
 

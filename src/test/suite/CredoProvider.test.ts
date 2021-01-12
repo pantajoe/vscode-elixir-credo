@@ -24,6 +24,7 @@ describe('CredoProvider', () => {
           configurationFile: '.credo.exs',
           credoConfiguration: 'default',
           strictMode: false,
+          ignoreWarningMessages: false,
         }));
 
         it('returns true', () => {
@@ -41,6 +42,7 @@ describe('CredoProvider', () => {
           configurationFile: '.credo.exs',
           credoConfiguration: 'default',
           strictMode: false,
+          ignoreWarningMessages: false,
         }));
       });
 

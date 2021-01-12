@@ -40,9 +40,11 @@ export function getCommandArguments(): string[] {
   ).filter((p: string) => fs.existsSync(p));
 
   if (found.length === 0) {
-    vscode.window.showWarningMessage(`${configurationFile} file does not exist. Ignoring...`);
+    if (!extensionConfig.ignoreWarningMessages) {
+      vscode.window.showWarningMessage(`${configurationFile} file does not exist. Ignoring...`);
+    }
   } else {
-    if (found.length > 1) {
+    if (found.length > 1 && !extensionConfig.ignoreWarningMessages) {
       vscode.window.showWarningMessage(`Found multiple files (${found}) will use ${found[0]}`);
     }
     commandArguments.push(...['--config-file', found[0]]);

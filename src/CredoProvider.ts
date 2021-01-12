@@ -107,18 +107,21 @@ export default class CredoProvider {
   private parse(output: string): CredoOutput | null {
     if (output.length < 1) {
       vscode.window.showWarningMessage(
-        `command \`${this.config.command} credo\` returns empty output! please check configuration.`,
+        `command \`${this.config.command} credo\` returns empty output! please check configuration.
+        Did you add or modify your dependencies? You might need to run \`mix deps.get\` or recompile.`,
       );
 
       return null;
     }
 
     try {
-      return JSON.parse(output);
+      const extractedJSON = output.substr(output.indexOf('{'));
+
+      return JSON.parse(extractedJSON);
     } catch (e) {
       if (e instanceof SyntaxError) {
         vscode.window.showWarningMessage(
-          `Error on parsing output (It might non-JSON output) : "${output.replace(/[\r\n \t]/g, ' ')}"`,
+          `Error on parsing output (It might be non-JSON output): "${output.replace(/[\r\n \t]/g, ' ')}"`,
         );
       }
 
