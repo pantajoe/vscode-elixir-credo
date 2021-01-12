@@ -38,5 +38,6 @@ export function getConfig(): CredoConfiguration {
     configurationFile: conf.get('configurationFile', '.credo.exs'),
     credoConfiguration: conf.get('credoConfiguration', 'default'),
     strictMode: conf.get('strictMode', false),
+    ignoreWarningMessages: conf.get('ignoreWarningMessages', false),
   };
 }

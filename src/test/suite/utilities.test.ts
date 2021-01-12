@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { expect } from 'chai';
 import {
-  assert, createSandbox, SinonSandbox, SinonSpy,
+  assert, createSandbox, SinonSandbox, SinonSpy, SinonStub,
 } from 'sinon';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -29,15 +29,17 @@ describe('Utilities', () => {
 
   context('#getCommandArguments', () => {
     let sandbox: SinonSandbox;
+    let configurationModuleStub: SinonStub;
 
     beforeEach(() => {
       sandbox = createSandbox();
-      sandbox.stub(configurationModule, 'getConfig').callsFake(() => ({
+      configurationModuleStub = sandbox.stub(configurationModule, 'getConfig').callsFake(() => ({
         command: 'mix',
         onSave: true,
         configurationFile: '.credo.exs',
         credoConfiguration: 'default',
         strictMode: false,
+        ignoreWarningMessages: false,
       }));
     });
 
@@ -75,6 +77,26 @@ describe('Utilities', () => {
       it('does not include a --configuration-file argument', () => {
         expect(getCommandArguments()).to.not.include('--configuration-file');
       });
+
+      context('if warning messages are ignored in config', () => {
+        beforeEach(() => {
+          configurationModuleStub.restore();
+          sandbox.stub(configurationModule, 'getConfig').callsFake(() => ({
+            command: 'mix',
+            onSave: true,
+            configurationFile: '.credo.exs',
+            credoConfiguration: 'default',
+            strictMode: false,
+            ignoreWarningMessages: true,
+          }));
+        });
+
+        it('does not show a warning message', () => {
+          getCommandArguments();
+          expect(showWarningMessageSpy.calledOnceWith('.credo.exs file does not exist. Ignoring...'))
+            .to.false;
+        });
+      });
     });
 
     context('if more than one configuration file is found', () => {
@@ -97,6 +119,28 @@ describe('Utilities', () => {
           'Found multiple files (.credo.exs,/usr/home/.credo.exs) will use .credo.exs',
         );
       });
+
+      context('if warning messages are ignored in config', () => {
+        beforeEach(() => {
+          configurationModuleStub.restore();
+          sandbox.stub(configurationModule, 'getConfig').callsFake(() => ({
+            command: 'mix',
+            onSave: true,
+            configurationFile: '.credo.exs',
+            credoConfiguration: 'default',
+            strictMode: false,
+            ignoreWarningMessages: true,
+          }));
+        });
+
+        it('does not show a warning message', () => {
+          getCommandArguments();
+          expect(
+            showWarningMessageSpy
+              .calledOnceWith('Found multiple files (.credo.exs,/usr/home/.credo.exs) will use .credo.exs'),
+          ).to.false;
+        });
+      });
     });
 
     context('with enabled strict-mode', () => {
@@ -108,6 +152,7 @@ describe('Utilities', () => {
           configurationFile: '.credo.exs',
           credoConfiguration: 'default',
           strictMode: true,
+          ignoreWarningMessages: false,
         }));
       });
 

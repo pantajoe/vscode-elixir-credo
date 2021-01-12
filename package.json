@@ -72,6 +72,12 @@
             "description": "Specifies whether to activate Credo's strict mode",
             "type": "boolean",
             "default": false
+          },
+          "elixir.credo.ignoreWarningMessages": {
+            "title": "Ignore Warning Messages",
+            "description": "Ignore messages \"Found multiple files ...\", \"... file does not exist. Ignoring ...\"",
+            "type": "boolean",
+            "default": false
           }
         }
       }
