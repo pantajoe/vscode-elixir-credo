@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.2.0] - 2021-01-12
+
 ### Added
 
 - Added a configuration option `ignoreWarningMessages` in order to be able to ignore the following warning messages (especially if they come repeatedly, see #4):
