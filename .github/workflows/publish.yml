@@ -29,10 +29,15 @@ jobs:
       - name: Install npm packages
         run: yarn install
 
-      - name: Install VSCE
-        run: npm install -g vsce
+      - name: Install VSCE & OVSX
+        run: npm install -g vsce ovsx
 
-      - name: Publish Extension with VSCE
+      - name: Publish Extension to VS Code Marketplace
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
         run: vsce publish -p $VSCE_TOKEN
+
+      - name: Publish Extension to Open VSX Marketplace
+        env:
+          OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
+        run: ovsx publish -p $OVSX_TOKEN --yarn
