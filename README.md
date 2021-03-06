@@ -5,6 +5,10 @@
 This VS Code extension provides display of the output of the static code analysis tool [Credo](https://github.com/rrrene/credo)
 for the programming language [Elixir](https://elixir-lang.org).
 
+It is published on the [VS Code Extension Marketplace](https://marketplace.visualstudio.com/items?itemName=pantajoe.vscode-elixir-credo)
+as well as on the [Open VSX Registry](https://open-vsx.org/extension/pantajoe/vscode-elixir-credo), in case you are not using VS Code, but
+a VS Code compatible editor.
+
 ## Features
 
 * Lint all opened documents and display diagnostics
