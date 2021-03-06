@@ -1,13 +1,12 @@
 # VS Code – Elixir Linter (Credo)
 
-![CI](https://github.com/pantajoe/vscode-elixir-credo/workflows/CI/badge.svg)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pantajoe/vscode-elixir-credo/CI?style=for-the-badge)](https://github.com/pantajoe/vscode-elixir-credo/actions)
+[![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/pantajoe.vscode-elixir-credo?label=VS%20Code%20Downloads&style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=pantajoe.vscode-elixir-credo)
+[![Open VSX Downloads](https://img.shields.io/open-vsx/dt/pantajoe/vscode-elixir-credo?label=Open%20VSX%20Downloads&style=for-the-badge)](https://open-vsx.org/extension/pantajoe/vscode-elixir-credo)
+[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](http://opensource.org/licenses/MIT)
 
 This VS Code extension provides display of the output of the static code analysis tool [Credo](https://github.com/rrrene/credo)
 for the programming language [Elixir](https://elixir-lang.org).
-
-It is published on the [VS Code Extension Marketplace](https://marketplace.visualstudio.com/items?itemName=pantajoe.vscode-elixir-credo)
-as well as on the [Open VSX Registry](https://open-vsx.org/extension/pantajoe/vscode-elixir-credo), in case you are not using VS Code, but
-a VS Code compatible editor.
 
 ## Features
 
