@@ -4,8 +4,10 @@ import * as path from 'path';
 import * as os from 'os';
 import CredoConfiguration from './CredoConfiguration';
 
-const MIX_COMMAND = 'mix';
-const MIX_WINDOWS_COMMAND = 'mix.bat';
+const MIX_COMMAND = {
+  unix: 'mix',
+  win32: 'mix.bat',
+};
 
 export function autodetectExecutePath(): string {
   const conf = vscode.workspace.getConfiguration('elixir.credo');
@@ -25,8 +27,8 @@ export function autodetectExecutePath(): string {
 
   pathParts.forEach((pathPart) => {
     const binPath = os.platform() === 'win32'
-      ? path.join(pathPart, MIX_WINDOWS_COMMAND)
-      : path.join(pathPart, MIX_COMMAND);
+      ? path.join(pathPart, MIX_COMMAND.win32)
+      : path.join(pathPart, MIX_COMMAND.unix);
 
     if (fs.existsSync(binPath)) executePath = pathPart + path.sep;
   });
@@ -36,9 +38,10 @@ export function autodetectExecutePath(): string {
 
 export function getConfig(): CredoConfiguration {
   const conf = vscode.workspace.getConfiguration('elixir.credo');
+  const mixCommand = os.platform() === 'win32' ? MIX_COMMAND.win32 : MIX_COMMAND.unix;
 
   return {
-    command: `${autodetectExecutePath()}${MIX_COMMAND}`,
+    command: `${autodetectExecutePath()}${mixCommand}`,
     onSave: conf.get('onSave', true),
     configurationFile: conf.get('configurationFile', '.credo.exs'),
     credoConfiguration: conf.get('credoConfiguration', 'default'),
