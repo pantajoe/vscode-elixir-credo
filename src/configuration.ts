@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import CredoConfiguration from './CredoConfiguration';
 
 const MIX_COMMAND = 'mix';
+const MIX_WINDOWS_COMMAND = 'mix.bat';
 
 export function autodetectExecutePath(): string {
   const conf = vscode.workspace.getConfiguration('elixir.credo');
@@ -22,7 +24,10 @@ export function autodetectExecutePath(): string {
   }
 
   pathParts.forEach((pathPart) => {
-    const binPath = path.join(pathPart, MIX_COMMAND);
+    const binPath = os.platform() === 'win32'
+      ? path.join(pathPart, MIX_WINDOWS_COMMAND)
+      : path.join(pathPart, MIX_COMMAND);
+
     if (fs.existsSync(binPath)) executePath = pathPart + path.sep;
   });
 
