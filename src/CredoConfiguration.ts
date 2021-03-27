@@ -5,4 +5,5 @@ export default interface CredoConfiguration {
   credoConfiguration: string | 'default';
   strictMode: boolean;
   ignoreWarningMessages: boolean;
+  lintEverything: boolean;
 }

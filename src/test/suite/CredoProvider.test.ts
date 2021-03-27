@@ -25,6 +25,7 @@ describe('CredoProvider', () => {
           credoConfiguration: 'default',
           strictMode: false,
           ignoreWarningMessages: false,
+          lintEverything: false,
         }));
 
         it('returns true', () => {
@@ -43,6 +44,7 @@ describe('CredoProvider', () => {
           credoConfiguration: 'default',
           strictMode: false,
           ignoreWarningMessages: false,
+          lintEverything: false,
         }));
       });
 

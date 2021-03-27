@@ -40,6 +40,7 @@ describe('Utilities', () => {
         credoConfiguration: 'default',
         strictMode: false,
         ignoreWarningMessages: false,
+        lintEverything: false,
       }));
     });
 
@@ -88,6 +89,7 @@ describe('Utilities', () => {
             credoConfiguration: 'default',
             strictMode: false,
             ignoreWarningMessages: true,
+            lintEverything: false,
           }));
         });
 
@@ -130,6 +132,7 @@ describe('Utilities', () => {
             credoConfiguration: 'default',
             strictMode: false,
             ignoreWarningMessages: true,
+            lintEverything: false,
           }));
         });
 
@@ -153,6 +156,7 @@ describe('Utilities', () => {
           credoConfiguration: 'default',
           strictMode: true,
           ignoreWarningMessages: false,
+          lintEverything: false,
         }));
       });
 

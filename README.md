@@ -33,6 +33,7 @@ This extension contributes the following settings:
 * `elixir.credo.strictMode`: whether to utilize Credo's strict mode when linting.
 * `elixir.credo.executePath`: execute path of the `mix` executable
 * `elixir.credo.ignoreWarningMessages`: ignore warning messages (concerning finding the configuration file)
+* `elixir.credo.lintEverything`: lint any elixir file (even if excluded in the Credo configuration file)
 
 ### Known Issues
 

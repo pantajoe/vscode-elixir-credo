@@ -78,6 +78,12 @@
             "description": "Ignore messages \"Found multiple files ...\", \"... file does not exist. Ignoring ...\"",
             "type": "boolean",
             "default": false
+          },
+          "elixir.credo.lintEverything": {
+            "title": "Lint Everything",
+            "description": "Lint every Elixir file, regardless of your .credo.exs config",
+            "type": "boolean",
+            "default": false
           }
         }
       }
