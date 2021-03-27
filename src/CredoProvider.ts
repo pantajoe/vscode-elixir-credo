@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
+import * as path from 'path';
 import { TaskQueue, Task, TaskToken } from './taskQueue';
 import CredoConfiguration from './CredoConfiguration';
 import { getConfig } from './configuration';
-import { CredoOutput } from './CredoOutput';
+import { CredoInformation, CredoOutput } from './CredoOutput';
 import CredoParser from './CredoParser';
 import {
   isFileUri,
@@ -12,14 +13,25 @@ import {
   getCommandEnvironment,
 } from './utilities';
 
-export default class CredoProvider {
+interface CredoExecutionArguments {
+  cmdArgs: string[],
+  document: vscode.TextDocument,
+  options: cp.ExecFileOptions,
+  onFinishedExecution: (error: cp.ExecException | null, stdout: string | Buffer, stderr: string | Buffer) => void,
+}
+
+export interface CredoProviderOptions {
+  diagnosticCollection: vscode.DiagnosticCollection,
+}
+
+export class CredoProvider {
   public config: CredoConfiguration;
 
   private diagnosticCollection: vscode.DiagnosticCollection;
 
   private taskQueue = new TaskQueue();
 
-  constructor(diagnosticCollection: vscode.DiagnosticCollection) {
+  constructor({ diagnosticCollection } : CredoProviderOptions) {
     this.diagnosticCollection = diagnosticCollection;
     this.config = getConfig();
   }
@@ -53,18 +65,17 @@ export default class CredoProvider {
     };
 
     const task = new Task(uri, (token) => {
-      // eslint-disable-next-line max-len
-      const process = this.executeCredo(
-        getCommandArguments(),
-        document.getText(),
-        {
+      const processes = this.executeCredo({
+        cmdArgs: getCommandArguments(),
+        document,
+        options: {
           cwd: currentPath,
           env: getCommandEnvironment(),
         },
-        createLintDocumentCallback(token),
-      );
+        onFinishedExecution: createLintDocumentCallback(token),
+      });
 
-      return () => process.kill();
+      return () => processes.forEach((process) => { process.kill(); });
     });
 
     this.taskQueue.enqueue(task);
@@ -88,23 +99,59 @@ export default class CredoProvider {
     });
   }
 
-  private executeCredo(
-    args: string[],
-    fileContents: string,
-    options: cp.ExecFileOptions,
-    callback: (error: cp.ExecException | null, stdout: string | Buffer, stderr: string | Buffer) => void,
-  ): cp.ChildProcess {
-    const child = cp.execFile(this.config.command, args, options, callback);
-    if (child.stdin) {
-      child.stdin.write(fileContents);
-      child.stdin.end();
+  // eslint-disable-next-line max-len
+  private executeCredo({ cmdArgs, document, options, onFinishedExecution } : CredoExecutionArguments): cp.ChildProcess[] {
+    if (this.config.lintEverything) {
+      const credoProcess = this.executeCredoProcess({ cmdArgs, document, options, onFinishedExecution });
+
+      return [credoProcess];
     }
 
-    return child;
+    const processes = [];
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
+    const relativeDocumentPath = workspaceFolder
+      ? document.fileName.replace(`${workspaceFolder.uri.path}${path.sep}`, '')
+      : document.fileName;
+
+    // eslint-disable-next-line max-len
+    const infoProcess = cp.execFile(this.config.command, ['credo', 'info', '--format', 'json', '--verbose'], options, (error, stdout, stderr) => {
+      if (this.hasError(error, stderr.toString())) return;
+
+      const credoInformation = this.parseCredoInformation(stdout);
+      if (!credoInformation?.config?.files?.includes(relativeDocumentPath)) {
+        onFinishedExecution(null, '{ "issues": [] }', '');
+        return;
+      }
+
+      const credoProcess = this.executeCredoProcess({ cmdArgs, document, options, onFinishedExecution });
+      processes.push(credoProcess);
+    });
+    processes.push(infoProcess);
+
+    return processes;
+  }
+
+  // eslint-disable-next-line max-len
+  private executeCredoProcess({ cmdArgs, document, options, onFinishedExecution } : CredoExecutionArguments) : cp.ChildProcess {
+    const credoProcess = cp.execFile(this.config.command, cmdArgs, options, onFinishedExecution);
+    if (credoProcess.stdin) {
+      credoProcess.stdin.write(document.getText());
+      credoProcess.stdin.end();
+    }
+
+    return credoProcess;
   }
 
   // parse credo (JSON) output
   private parse(output: string): CredoOutput | null {
+    return this.parseOutput(output);
+  }
+
+  private parseCredoInformation(output: string): CredoInformation | null {
+    return this.parseOutput(output);
+  }
+
+  private parseOutput(output: string): any | null {
     if (output.length < 1) {
       vscode.window.showWarningMessage(
         `command \`${this.config.command} credo\` returns empty output! please check configuration.
@@ -131,14 +178,14 @@ export default class CredoProvider {
 
   // checking whether running credo command results in an error
   private hasError(error: cp.ExecException | null, stderr: string): boolean {
-    if (error && (error as any).code === 'ENOENT') {
+    if ((error as any)?.code === 'ENOENT') {
       vscode.window.showWarningMessage(`\`${this.config.command}\` is not executable.
         Try setting the option in this extension's configuration "elixir.credo.executePath"
         to the path of the mix binary.`);
       return true;
     }
 
-    if (error && (error as any).code === 127) {
+    if (stderr) {
       vscode.window.showWarningMessage(stderr);
       return true;
     }

@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Support this extension also on Windows platforms by using the mix executable `mix.bat`
+- Respect Credo's settings for including/excluding files when linting an Elixir file.
+  - Added a config named `lintEverything` that enables one to bypass the config's file inclusion/exclusion mechanism if set to `true`,
+    and, thus, lint any Elixir file.
 
 ## [0.2.0] - 2021-01-12
 
