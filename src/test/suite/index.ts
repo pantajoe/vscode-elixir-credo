@@ -8,7 +8,7 @@ export function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
     reporter: 'spec',
-    ui: 'bdd',
+    ui: 'bdd-lazy-var/global' as any,
     color: true,
   });
 

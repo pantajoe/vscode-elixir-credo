@@ -47,5 +47,6 @@ export function getConfig(): CredoConfiguration {
     credoConfiguration: conf.get('credoConfiguration', 'default'),
     strictMode: conf.get('strictMode', false),
     ignoreWarningMessages: conf.get('ignoreWarningMessages', false),
+    lintEverything: conf.get('lintEverything', false),
   };
 }

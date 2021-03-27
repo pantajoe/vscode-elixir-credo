@@ -40,6 +40,7 @@ describe('Utilities', () => {
         credoConfiguration: 'default',
         strictMode: false,
         ignoreWarningMessages: false,
+        lintEverything: false,
       }));
     });
 
@@ -74,8 +75,8 @@ describe('Utilities', () => {
           .to.true;
       });
 
-      it('does not include a --configuration-file argument', () => {
-        expect(getCommandArguments()).to.not.include('--configuration-file');
+      it('does not include a --config-file argument', () => {
+        expect(getCommandArguments()).to.not.include('--config-file');
       });
 
       context('if warning messages are ignored in config', () => {
@@ -88,6 +89,7 @@ describe('Utilities', () => {
             credoConfiguration: 'default',
             strictMode: false,
             ignoreWarningMessages: true,
+            lintEverything: false,
           }));
         });
 
@@ -130,6 +132,7 @@ describe('Utilities', () => {
             credoConfiguration: 'default',
             strictMode: false,
             ignoreWarningMessages: true,
+            lintEverything: false,
           }));
         });
 
@@ -153,6 +156,7 @@ describe('Utilities', () => {
           credoConfiguration: 'default',
           strictMode: true,
           ignoreWarningMessages: false,
+          lintEverything: false,
         }));
       });
 

@@ -15,3 +15,15 @@ export interface CredoIssue {
 export interface CredoOutput {
   issues: CredoIssue[];
 }
+
+export interface CredoInformation {
+  config: {
+    checks: string[],
+    files: string[],
+  };
+  system: {
+    credo: string,
+    elixir: string,
+    erlang: string,
+  };
+}

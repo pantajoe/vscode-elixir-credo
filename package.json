@@ -78,6 +78,12 @@
             "description": "Ignore messages \"Found multiple files ...\", \"... file does not exist. Ignoring ...\"",
             "type": "boolean",
             "default": false
+          },
+          "elixir.credo.lintEverything": {
+            "title": "Lint Everything",
+            "description": "Lint every Elixir file, regardless of your .credo.exs config",
+            "type": "boolean",
+            "default": false
           }
         }
       }
@@ -100,6 +106,7 @@
     "@types/vscode": "^1.47.0",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",
+    "bdd-lazy-var": "^2.6.1",
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-typescript": "^9.0.0",
