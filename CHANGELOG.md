@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Respect Credo's settings for including/excluding files when linting an Elixir file. (#6)
   - Added a config named `lintEverything` that enables one to bypass the config's file inclusion/exclusion mechanism if set to `true`,
     and, thus, lint any Elixir file.
+- Only mark the `trigger` in the line, even if credo adds method arity to the trigger
 
 ### Changed
 

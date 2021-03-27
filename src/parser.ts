@@ -13,28 +13,39 @@ function parseSeverity(credoSeverity: CredoSeverity): vscode.DiagnosticSeverity 
   }
 }
 
+function triggerRange({ line, trigger } : { line: string, trigger: string | null }): { start: number, end: number } | null {
+  if (!trigger) return null;
+
+  // remove arity, e.g., 'Application.get_env/2' -> 'Application.get_env'
+  const triggerWithoutArity = trigger.replace(/\/\d+$/, '');
+  const index = line.indexOf(triggerWithoutArity);
+  if (index !== -1) return { start: index, end: index + triggerWithoutArity.length };
+
+  return null;
+}
+
 // eslint-disable-next-line max-len
 export function parseCredoIssue({ issue, documentContent } : { issue: CredoIssue, documentContent: string }): vscode.Diagnostic {
-  const currentLine = documentContent.split('\n')[makeZeroBasedIndex(issue.line_no)];
+  const lineNumber = makeZeroBasedIndex(issue.line_no);
+  const currentLine = documentContent.split('\n')[lineNumber];
   let range;
 
   if (issue.column === null && issue.column_end === null && currentLine) {
-    const columnStart = issue.trigger && currentLine.indexOf(issue.trigger) !== -1
-      ? currentLine.indexOf(issue.trigger)
-      : 0;
-    const columnEnd = currentLine.length === 0 ? 1 : currentLine.length;
+    const triggerIndices = triggerRange({ line: currentLine, trigger: issue.trigger });
+    const columnStart = triggerIndices?.start || 0;
+    const columnEnd = currentLine.length === 0 ? 1 : (triggerIndices?.end || currentLine.length);
 
     range = new vscode.Range(
-      makeZeroBasedIndex(issue.line_no),
+      lineNumber,
       columnStart,
-      makeZeroBasedIndex(issue.line_no),
+      lineNumber,
       columnEnd,
     );
   } else {
     range = new vscode.Range(
-      makeZeroBasedIndex(issue.line_no),
+      lineNumber,
       makeZeroBasedIndex(issue.column),
-      makeZeroBasedIndex(issue.line_no),
+      lineNumber,
       makeZeroBasedIndex(issue.column_end),
     );
   }
