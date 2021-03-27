@@ -75,8 +75,8 @@ describe('Utilities', () => {
           .to.true;
       });
 
-      it('does not include a --configuration-file argument', () => {
-        expect(getCommandArguments()).to.not.include('--configuration-file');
+      it('does not include a --config-file argument', () => {
+        expect(getCommandArguments()).to.not.include('--config-file');
       });
 
       context('if warning messages are ignored in config', () => {
