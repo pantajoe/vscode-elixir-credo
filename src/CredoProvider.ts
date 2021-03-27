@@ -5,7 +5,7 @@ import { TaskQueue, Task, TaskToken } from './taskQueue';
 import CredoConfiguration from './CredoConfiguration';
 import { getConfig } from './configuration';
 import { CredoInformation, CredoOutput } from './CredoOutput';
-import CredoParser from './CredoParser';
+import { parseCredoOutput } from './parser';
 import {
   isFileUri,
   getCurrentPath,
@@ -57,7 +57,7 @@ export class CredoProvider {
       const output = this.parse(stdout.toString());
       if (output === undefined || output === null) return;
 
-      this.diagnosticCollection.set(uri, CredoParser.parseCredoOutput(output, document));
+      this.diagnosticCollection.set(uri, parseCredoOutput({ credoOutput: output, document }));
 
       token.finished();
 
