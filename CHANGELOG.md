@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Respect Credo's settings for including/excluding files when linting an Elixir file. (#6)
   - Added a config named `lintEverything` that enables one to bypass the config's file inclusion/exclusion mechanism if set to `true`,
     and, thus, lint any Elixir file.
+- Only mark the `trigger` in the line, even if credo adds method arity to the trigger
 
 ### Changed
 
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed a bug where no credo command was issued after a command was cancelled (when a document was closed/deleted, for instance)
+- Fixed bug where credo issues with the field `trigger` present, but without the trigger occurring unchanged in the line of the issue would not be created. (#9)
 
 ## [0.2.0] - 2021-01-12
 
