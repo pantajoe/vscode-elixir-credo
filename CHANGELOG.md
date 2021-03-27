@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.3.0] - 2021-03-27
+
 ### Added
 
 - Support this extension also on Windows platforms by using the mix executable `mix.bat` (#10)
