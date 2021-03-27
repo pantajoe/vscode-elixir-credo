@@ -13,6 +13,7 @@ function parseSeverity(credoSeverity: CredoSeverity): vscode.DiagnosticSeverity 
   }
 }
 
+// eslint-disable-next-line max-len
 function triggerRange({ line, trigger } : { line: string, trigger: string | null }): { start: number, end: number } | null {
   if (!trigger) return null;
 
