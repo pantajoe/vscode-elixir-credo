@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added a config named `lintEverything` that enables one to bypass the config's file inclusion/exclusion mechanism if set to `true`,
     and, thus, lint any Elixir file.
 
+### Fixed
+
+- Fixed a bug where no credo command was issued after a command was cancelled (when a document was closed/deleted, for instance)
+
 ## [0.2.0] - 2021-01-12
 
 ### Added

@@ -32,7 +32,7 @@ export default class Task {
 
   public run(): Promise<void> {
     if (this.isCanceled) {
-      return new Promise<void>(() => {});
+      return new Promise<void>((resolve) => { resolve(); });
     }
     const task = this;
     return new Promise<void>((resolve, _reject) => {
