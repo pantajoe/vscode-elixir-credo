@@ -158,6 +158,10 @@ describe('Extension Tests', () => {
         );
       };
 
+      afterEach(() => {
+        vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+      });
+
       def('textDocument', () => ({
         uri: vscode.Uri.file($exampleFilePath),
       }));
