@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support multiple workspaces (#8)
 - Add an output channel to track the extension's processes
+  - Added a configuration option `enableDebug` that enables extensive logging to the output channel, such as
+    - configuration changes
+    - spawned processes
+    - credo CLI args
+    - etc.
 
 ### Changed
 

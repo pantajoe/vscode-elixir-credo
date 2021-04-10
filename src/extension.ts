@@ -13,10 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
   const credo = new CredoProvider({ diagnosticCollection });
 
   workspace.onDidChangeConfiguration(() => {
-    log({
-      message: 'Extension configuration has changed. Refreshing configuration ...',
-      level: LogLevel.Info,
-    });
+    log({ message: 'Extension configuration has changed. Refreshing configuration ...', level: LogLevel.Debug });
     ConfigurationProvider.instance.reloadConfig();
   });
 
@@ -35,6 +32,8 @@ export function activate(context: vscode.ExtensionContext) {
   workspace.onDidCloseTextDocument((document: vscode.TextDocument) => {
     credo.clear({ document });
   });
+
+  log({ message: 'Elixir Linter (Credo) initiated successfully.', level: LogLevel.Info });
 }
 
 export function deactivate() {}

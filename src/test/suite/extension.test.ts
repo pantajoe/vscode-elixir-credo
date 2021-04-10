@@ -32,6 +32,20 @@ describe('Extension Tests', () => {
 
     def('extensionContext', () => ({ subscriptions: [] }));
 
+    it('logs that the extension was activated successfully', () => {
+      const logSpy = sandbox.spy(loggerModule, 'log');
+
+      activateExtension();
+
+      sandbox.assert.calledWith(
+        logSpy,
+        {
+          message: 'Elixir Linter (Credo) initiated successfully.',
+          level: LogLevel.Info,
+        },
+      );
+    });
+
     context('when listening for configuration changes', () => {
       let eventListenerSpy: SinonSpy<any[], vscode.Disposable>;
       let configurationSpy: SinonSpy<[], void>;
@@ -71,7 +85,7 @@ describe('Extension Tests', () => {
 
         sandbox.assert.calledWith(logSpy, {
           message: 'Extension configuration has changed. Refreshing configuration ...',
-          level: LogLevel.Info,
+          level: LogLevel.Debug,
         });
       });
     });

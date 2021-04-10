@@ -8,6 +8,7 @@ declare let $message: string;
 declare let $logLevel: LogLevel;
 declare let $config: CredoConfiguration;
 declare let $ignoreWarningMessages: boolean;
+declare let $enableDebug: boolean;
 
 describe('Loggging', () => {
   let sandbox: SinonSandbox;
@@ -17,6 +18,7 @@ describe('Loggging', () => {
 
   def('message', () => 'Sample message');
   def('ignoreWarningMessages', () => false);
+  def('enableDebug', () => false);
   def('config', () => ({
     command: 'mix',
     configurationFile: '.credo.exs',
@@ -24,6 +26,7 @@ describe('Loggging', () => {
     strictMode: false,
     ignoreWarningMessages: $ignoreWarningMessages,
     lintEverything: false,
+    enableDebug: $enableDebug,
   }));
 
   beforeEach(() => {
@@ -37,6 +40,26 @@ describe('Loggging', () => {
 
   afterEach(() => {
     sandbox.restore();
+  });
+
+  context('with a debug message', () => {
+    def('logLevel', () => LogLevel.Debug);
+
+    it('does not log the message to the output channel', () => {
+      logMessage();
+
+      sandbox.assert.notCalled(outputChannelSpy);
+    });
+
+    context('when enabling debug mode', () => {
+      def('enableDebug', () => true);
+
+      it('logs the message to the output channel', () => {
+        logMessage();
+
+        sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n');
+      });
+    });
   });
 
   context('with an info message', () => {

@@ -26,6 +26,7 @@ describe('ConfigurationProvider', () => {
         strictMode: false,
         ignoreWarningMessages: false,
         lintEverything: false,
+        enableDebug: false,
       });
     });
 
@@ -65,6 +66,7 @@ describe('ConfigurationProvider', () => {
         strictMode: false,
         ignoreWarningMessages: false,
         lintEverything: false,
+        enableDebug: false,
       });
       const { config } = ConfigurationProvider.instance;
       configStub.restore();

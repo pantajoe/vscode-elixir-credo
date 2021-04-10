@@ -34,6 +34,7 @@ This extension contributes the following settings:
 * `elixir.credo.executePath`: execute path of the `mix` executable
 * `elixir.credo.ignoreWarningMessages`: ignore warning messages (concerning finding the configuration file)
 * `elixir.credo.lintEverything`: lint any elixir file (even if excluded in the Credo configuration file)
+* `elixir.credo.enableDebug`: toggle extensive logging to extension's output channel
 
 ### Known Issues
 

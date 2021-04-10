@@ -97,7 +97,7 @@ export function createLintDocumentCallback(
     const output = parseOutput<CredoOutput>(stdout);
     if (!output) return;
 
-    log({ message: `Setting linter issues for document '${uri.path}'.`, level: LogLevel.Info });
+    log({ message: `Setting linter issues for document '${uri.path}'.`, level: LogLevel.Debug });
     diagnosticCollection.set(uri, parseCredoOutput({ credoOutput: output, document }));
 
     token.finished();
@@ -112,7 +112,7 @@ function executeCredoProcess(
   log({
     message: trunc`Executing credo command \`${[ConfigurationProvider.instance.config.command, ...cmdArgs].join(' ')}\`
     for '${document.uri.path}'`,
-    level: LogLevel.Info,
+    level: LogLevel.Debug,
   });
 
   const credoProcess = cp.execFile(
@@ -148,7 +148,7 @@ export function executeCredo(
   log({
     message: trunc`Retreiving credo information: Executing credo command
     \`${[ConfigurationProvider.instance.config.command, ...CREDO_INFO_ARGS].join(' ')}\` for '${document.uri.path}'`,
-    level: LogLevel.Info,
+    level: LogLevel.Debug,
   });
   // eslint-disable-next-line max-len
   const infoProcess = cp.execFile(ConfigurationProvider.instance.config.command, CREDO_INFO_ARGS, options, (error, stdout, stderr) => {

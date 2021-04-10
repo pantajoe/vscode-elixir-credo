@@ -72,7 +72,7 @@ export class CredoProvider {
     if (isFileUri(uri)) {
       log({
         message: `Removing linter messages and cancel running linting processes for '${uri.path}'.`,
-        level: LogLevel.Info,
+        level: LogLevel.Debug,
       });
       this.taskQueue.cancel(uri);
       this.diagnosticCollection.delete(uri);
