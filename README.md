@@ -54,4 +54,4 @@ When contributing, please refer to [the Contribution Guide](/CONTRIBUTING.md)
 
 This software is released under the [MIT License](/LICENSE).
 
-&copy; 2020 Joe Pantazidis
+&copy; 2020-2021 Joe Pantazidis
