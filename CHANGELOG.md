@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support multiple workspaces (#8)
+
 ### Changed
 
 - Remove configuration option `onSave` as this is the default and probably not toggled by anyone

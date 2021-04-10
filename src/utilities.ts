@@ -24,8 +24,10 @@ export function isFileUri(uri: vscode.Uri): boolean {
   return uri.scheme === 'file';
 }
 
-export function getCurrentPath(fileName: string): string {
-  return vscode.workspace.rootPath || path.dirname(fileName);
+export function getCurrentPath(documentUri: vscode.Uri): string {
+  const { fsPath: documentPath } = documentUri;
+
+  return vscode.workspace.getWorkspaceFolder(documentUri)?.uri?.fsPath || path.dirname(documentPath);
 }
 
 export function getCommandArguments(): string[] {
