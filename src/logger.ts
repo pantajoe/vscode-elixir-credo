@@ -16,7 +16,7 @@ export const outputChannel = vscode.window.createOutputChannel('Elixir Linter (C
 
 export function log({ message, level = LogLevel.Error } : LogArguments) {
   const { ignoreWarningMessages } = ConfigurationProvider.instance.config;
-  outputChannel.appendLine(message);
+  outputChannel.appendLine(`> ${message}\n`);
 
   switch (level) {
     case LogLevel.Info:

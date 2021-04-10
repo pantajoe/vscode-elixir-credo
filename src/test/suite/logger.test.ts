@@ -49,7 +49,7 @@ describe('Loggging', () => {
     it('logs the message to the output channel', () => {
       logMessage();
 
-      sandbox.assert.calledOnceWithExactly(outputChannelSpy, 'Sample message');
+      sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n');
     });
 
     it('shows no information popup', () => {
@@ -64,7 +64,7 @@ describe('Loggging', () => {
       it('logs the message to the output channel', () => {
         logMessage();
 
-        sandbox.assert.calledOnceWithExactly(outputChannelSpy, 'Sample message');
+        sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n');
       });
 
       it('does not shows an information popup', () => {
@@ -85,7 +85,7 @@ describe('Loggging', () => {
     it('logs the message to the output channel', () => {
       logMessage();
 
-      sandbox.assert.calledOnceWithExactly(outputChannelSpy, 'Sample message');
+      sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n');
     });
 
     it('shows a warning popup', () => {
@@ -100,7 +100,7 @@ describe('Loggging', () => {
       it('logs the message to the output channel', () => {
         logMessage();
 
-        sandbox.assert.calledOnceWithExactly(outputChannelSpy, 'Sample message');
+        sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n');
       });
 
       it('does not shows a warning popup', () => {
@@ -121,7 +121,7 @@ describe('Loggging', () => {
     it('logs the message to the output channel', () => {
       logMessage();
 
-      sandbox.assert.calledOnceWithExactly(outputChannelSpy, 'Sample message');
+      sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n');
     });
 
     it('shows an error popup', () => {
@@ -136,7 +136,7 @@ describe('Loggging', () => {
       it('logs the message to the output channel', () => {
         logMessage();
 
-        sandbox.assert.calledOnceWithExactly(outputChannelSpy, 'Sample message');
+        sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n');
       });
 
       it('still shows an error popup', () => {
