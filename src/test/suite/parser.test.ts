@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { expect } from 'chai';
 import { parseCredoIssue, parseCredoOutput } from '../../parser';
-import { CredoIssue } from '../../CredoOutput';
+import { CredoIssue } from '../../output';
 
 declare let $credoIssue: CredoIssue;
 declare let $documentContent: string;
