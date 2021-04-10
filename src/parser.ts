@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { CredoSeverity, CredoIssue, CredoOutput } from './CredoOutput';
+import { CredoSeverity, CredoIssue, CredoOutput } from './output';
 import { makeZeroBasedIndex } from './utilities';
 
 function parseSeverity(credoSeverity: CredoSeverity): vscode.DiagnosticSeverity {
