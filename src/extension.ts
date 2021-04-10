@@ -1,6 +1,7 @@
 // this extension's structure is heavily inspired by https://github.com/misogi/vscode-ruby-rubocop
 
 import * as vscode from 'vscode';
+import { CredoProvider } from './provider';
 import ConfigurationProvider from './ConfigurationProvider';
 import { log, LogLevel } from './logger';
 
@@ -20,21 +21,19 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   workspace.textDocuments.forEach((document: vscode.TextDocument) => {
-    credo.execute(document);
+    credo.execute({ document });
   });
 
   workspace.onDidOpenTextDocument((document: vscode.TextDocument) => {
-    credo.execute(document);
+    credo.execute({ document });
   });
 
   workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-    if (credo.isOnSave) {
-      credo.execute(document);
-    }
+    credo.execute({ document });
   });
 
   workspace.onDidCloseTextDocument((document: vscode.TextDocument) => {
-    credo.clear(document);
+    credo.clear({ document });
   });
 }
 
