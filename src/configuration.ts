@@ -15,6 +15,7 @@ export interface CredoConfiguration {
   strictMode: boolean;
   ignoreWarningMessages: boolean;
   lintEverything: boolean;
+  enableDebug: boolean;
 }
 
 export function autodetectExecutePath(): string {
@@ -53,5 +54,6 @@ export function getConfig(): CredoConfiguration {
     strictMode: conf.get('strictMode', false),
     ignoreWarningMessages: conf.get('ignoreWarningMessages', false),
     lintEverything: conf.get('lintEverything', false),
+    enableDebug: conf.get('enableDebug', false),
   };
 }
