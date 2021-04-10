@@ -71,7 +71,7 @@ describe('Extension Tests', () => {
 
         sandbox.assert.calledWith(logSpy, {
           message: 'Extension configuration has changed. Refreshing configuration ...',
-          level: LogLevel.Info,
+          level: LogLevel.Debug,
         });
       });
     });

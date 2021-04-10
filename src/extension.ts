@@ -13,10 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
   const credo = new CredoProvider({ diagnosticCollection });
 
   workspace.onDidChangeConfiguration(() => {
-    log({
-      message: 'Extension configuration has changed. Refreshing configuration ...',
-      level: LogLevel.Info,
-    });
+    log({ message: 'Extension configuration has changed. Refreshing configuration ...', level: LogLevel.Debug });
     ConfigurationProvider.instance.reloadConfig();
   });
 
