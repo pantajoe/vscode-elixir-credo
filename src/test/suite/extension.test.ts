@@ -185,7 +185,7 @@ describe('Extension Tests', () => {
           sandbox.assert.calledWith(credoExecutionSpy, match.hasNested('document.uri.fsPath', match($exampleFilePath)));
           done();
         });
-      });
+      }).timeout(10000);
     });
 
     context('when closing an elixir document', () => {
