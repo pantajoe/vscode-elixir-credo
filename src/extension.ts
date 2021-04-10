@@ -1,8 +1,7 @@
 // this extension's structure is heavily inspired by https://github.com/misogi/vscode-ruby-rubocop
 
 import * as vscode from 'vscode';
-import { CredoProvider } from './CredoProvider';
-import { getConfig } from './configuration';
+import ConfigurationProvider from './ConfigurationProvider';
 
 export function activate(context: vscode.ExtensionContext) {
   const { workspace } = vscode;
@@ -12,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
   const credo = new CredoProvider({ diagnosticCollection });
 
   workspace.onDidChangeConfiguration(() => {
-    credo.config = getConfig();
+    ConfigurationProvider.instance.reloadConfig();
   });
 
   workspace.textDocuments.forEach((document: vscode.TextDocument) => {
