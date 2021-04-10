@@ -151,9 +151,11 @@ describe('Extension Tests', () => {
     context('when saving an elixir document', () => {
       let eventListenerSpy: SinonSpy<any[], vscode.Disposable>;
       let credoExecutionSpy: SinonSpy<CredoExecutionArgs[], void>;
-      const saveDocument = async (document: vscode.TextDocument) => {
-        await vscode.window.showTextDocument(document.uri, { preview: false, preserveFocus: false });
-        return vscode.window.activeTextEditor?.document.save();
+      // eslint-disable-next-line arrow-body-style
+      const saveDocument = (document: vscode.TextDocument) => {
+        return vscode.window.showTextDocument(document.uri, { preview: false, preserveFocus: false }).then(
+          () => vscode.window.activeTextEditor?.document.save(),
+        );
       };
 
       def('textDocument', () => ({
