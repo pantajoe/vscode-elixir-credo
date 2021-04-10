@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None.
+### Added
+
+- Support multiple workspaces (#8)
+- Add an output channel to track the extension's processes
+
+### Changed
+
+- Remove configuration option `onSave` as this is the default and probably not toggled by anyone
+- Rework of the codebase (no further changes in functionality)
+- Increase test coverage
 
 ## [0.3.0] - 2021-03-27
 

@@ -1,8 +1,9 @@
 // this extension's structure is heavily inspired by https://github.com/misogi/vscode-ruby-rubocop
 
 import * as vscode from 'vscode';
-import { CredoProvider } from './CredoProvider';
-import { getConfig } from './configuration';
+import { CredoProvider } from './provider';
+import ConfigurationProvider from './ConfigurationProvider';
+import { log, LogLevel } from './logger';
 
 export function activate(context: vscode.ExtensionContext) {
   const { workspace } = vscode;
@@ -12,25 +13,27 @@ export function activate(context: vscode.ExtensionContext) {
   const credo = new CredoProvider({ diagnosticCollection });
 
   workspace.onDidChangeConfiguration(() => {
-    credo.config = getConfig();
+    log({
+      message: 'Extension configuration has changed. Refreshing configuration ...',
+      level: LogLevel.Info,
+    });
+    ConfigurationProvider.instance.reloadConfig();
   });
 
   workspace.textDocuments.forEach((document: vscode.TextDocument) => {
-    credo.execute(document);
+    credo.execute({ document });
   });
 
   workspace.onDidOpenTextDocument((document: vscode.TextDocument) => {
-    credo.execute(document);
+    credo.execute({ document });
   });
 
   workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-    if (credo.isOnSave) {
-      credo.execute(document);
-    }
+    credo.execute({ document });
   });
 
   workspace.onDidCloseTextDocument((document: vscode.TextDocument) => {
-    credo.clear(document);
+    credo.clear({ document });
   });
 }
 

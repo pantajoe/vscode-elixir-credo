@@ -5,7 +5,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { autodetectExecutePath } from '../../configuration';
 
-describe('Configuration Functions', () => {
+describe('Configuration', () => {
   let sandbox: SinonSandbox;
   const OLD_ENV = { ...process.env };
 

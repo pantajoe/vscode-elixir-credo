@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { CredoSeverity, CredoIssue, CredoOutput } from './CredoOutput';
+import { CredoSeverity, CredoIssue, CredoOutput } from './output';
 import { makeZeroBasedIndex } from './utilities';
 
 function parseSeverity(credoSeverity: CredoSeverity): vscode.DiagnosticSeverity {
@@ -13,8 +13,9 @@ function parseSeverity(credoSeverity: CredoSeverity): vscode.DiagnosticSeverity 
   }
 }
 
-// eslint-disable-next-line max-len
-function triggerRange({ line, trigger } : { line: string, trigger: string | null }): { start: number, end: number } | null {
+function triggerRange(
+  { line, trigger }: { line: string, trigger: string | null },
+): { start: number, end: number } | null {
   if (!trigger) return null;
 
   // remove arity, e.g., 'Application.get_env/2' -> 'Application.get_env'
@@ -25,8 +26,9 @@ function triggerRange({ line, trigger } : { line: string, trigger: string | null
   return null;
 }
 
-// eslint-disable-next-line max-len
-export function parseCredoIssue({ issue, documentContent } : { issue: CredoIssue, documentContent: string }): vscode.Diagnostic {
+export function parseCredoIssue(
+  { issue, documentContent }: { issue: CredoIssue, documentContent: string },
+): vscode.Diagnostic {
   const lineNumber = makeZeroBasedIndex(issue.line_no);
   const currentLine = documentContent.split('\n')[lineNumber];
   let range;
@@ -57,8 +59,9 @@ export function parseCredoIssue({ issue, documentContent } : { issue: CredoIssue
   return new vscode.Diagnostic(range, message, severity);
 }
 
-// eslint-disable-next-line max-len
-export function parseCredoOutput({ credoOutput, document } : { credoOutput: CredoOutput, document: vscode.TextDocument }): vscode.Diagnostic[] {
+export function parseCredoOutput(
+  { credoOutput, document }: { credoOutput: CredoOutput, document: vscode.TextDocument },
+): vscode.Diagnostic[] {
   const documentContent = document.getText();
   return credoOutput.issues.map((issue: CredoIssue) => parseCredoIssue({ issue, documentContent }));
 }

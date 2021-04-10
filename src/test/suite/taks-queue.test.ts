@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { expect } from 'chai';
-import { TaskQueue, Task, TaskToken } from '../../taskQueue';
+import { TaskQueue, Task, TaskToken } from '../../task-queue';
 
 class TestTaskWrapper {
   public readonly url: vscode.Uri;

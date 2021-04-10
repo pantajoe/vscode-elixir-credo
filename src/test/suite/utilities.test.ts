@@ -1,14 +1,31 @@
 import * as vscode from 'vscode';
 import { expect } from 'chai';
 import {
-  assert, createSandbox, SinonSandbox, SinonSpy, SinonStub,
+  assert, createSandbox, SinonSandbox, SinonSpy,
 } from 'sinon';
 import * as fs from 'fs';
 import * as path from 'path';
-import { makeZeroBasedIndex, getCommandArguments, getCommandEnvironment } from '../../utilities';
-import * as configurationModule from '../../configuration';
+import { trunc, makeZeroBasedIndex, getCommandArguments, getCommandEnvironment, getCurrentPath } from '../../utilities';
+import { CredoConfiguration } from '../../configuration';
+import ConfigurationProvider from '../../ConfigurationProvider';
+import * as loggingModule from '../../logger';
+
+const { LogLevel } = loggingModule;
+
+declare let $config: CredoConfiguration;
+declare let $documentUri: vscode.Uri;
 
 describe('Utilities', () => {
+  let sandbox: SinonSandbox;
+
+  beforeEach(() => {
+    sandbox = createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   context('#makeZeroBasedIndex', () => {
     it('An index of 1 is transformed into 0', () => {
       expect(makeZeroBasedIndex(1)).to.equal(0);
@@ -27,25 +44,67 @@ describe('Utilities', () => {
     });
   });
 
-  context('#getCommandArguments', () => {
-    let sandbox: SinonSandbox;
-    let configurationModuleStub: SinonStub;
+  context('#trunc', () => {
+    it('removes any trailing new line with spaces', () => {
+      const result = trunc`This
+        is so
+        nice times
+        ${2 + 1}`;
+
+      expect(result).to.equal('This is so nice times 3');
+    });
+  });
+
+  context('#getCurrentPath', () => {
+    const fetchCurrentPath = () => getCurrentPath($documentUri);
 
     beforeEach(() => {
-      sandbox = createSandbox();
-      configurationModuleStub = sandbox.stub(configurationModule, 'getConfig').callsFake(() => ({
-        command: 'mix',
-        onSave: true,
-        configurationFile: '.credo.exs',
-        credoConfiguration: 'default',
-        strictMode: false,
-        ignoreWarningMessages: false,
-        lintEverything: false,
-      }));
+      sandbox.replaceGetter(vscode.workspace, 'workspaceFolders', () => [
+        {
+          index: 0,
+          name: 'Another workspace',
+          uri: vscode.Uri.file(path.resolve(__dirname)),
+        },
+        {
+          index: 1,
+          name: 'Main Workspace',
+          uri: vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures')),
+        },
+      ]);
     });
 
-    afterEach(() => {
-      sandbox.restore();
+    context('with a file in an opened workspace', () => {
+      def('documentUri', () => vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures/sample.ex')));
+
+      it('returns the main workspace\'s directory', () => {
+        expect(fetchCurrentPath()).to.equal(path.resolve(__dirname, '../../../src/test/fixtures'));
+      });
+    });
+
+    context('with a file without a workspace', () => {
+      def('documentUri', () => vscode.Uri.file(path.resolve(__filename)));
+
+      it('returns the directory of the file', () => {
+        expect(fetchCurrentPath()).to.equal(path.resolve(__dirname));
+      });
+    });
+  });
+
+  context('#getCommandArguments', () => {
+    def('config', () => ({
+      command: 'mix',
+      configurationFile: '.credo.exs',
+      credoConfiguration: 'default',
+      strictMode: false,
+      ignoreWarningMessages: false,
+      lintEverything: false,
+    }));
+
+    beforeEach(() => {
+      sandbox.replaceGetter(ConfigurationProvider, 'instance', () => ({
+        config: $config,
+        reloadConfig: () => {},
+      }));
     });
 
     context('if only one configuration file is found', () => {
@@ -62,50 +121,34 @@ describe('Utilities', () => {
     });
 
     context('if no configuration file is found', () => {
-      let showWarningMessageSpy: SinonSpy;
+      let logSpy: SinonSpy<loggingModule.LogArguments[], void>;
 
       beforeEach(() => {
-        showWarningMessageSpy = sandbox.spy(vscode.window, 'showWarningMessage');
+        logSpy = sandbox.spy(loggingModule, 'log');
         sandbox.stub(fs, 'existsSync').returns(false);
       });
 
       it('shows a warning message', () => {
         getCommandArguments();
-        expect(showWarningMessageSpy.calledOnceWith('.credo.exs file does not exist. Ignoring...'))
-          .to.true;
+        sandbox.assert.calledOnceWithExactly(
+          logSpy,
+          {
+            message: '.credo.exs file does not exist. Ignoring...',
+            level: LogLevel.Warning,
+          },
+        );
       });
 
       it('does not include a --config-file argument', () => {
         expect(getCommandArguments()).to.not.include('--config-file');
       });
-
-      context('if warning messages are ignored in config', () => {
-        beforeEach(() => {
-          configurationModuleStub.restore();
-          sandbox.stub(configurationModule, 'getConfig').callsFake(() => ({
-            command: 'mix',
-            onSave: true,
-            configurationFile: '.credo.exs',
-            credoConfiguration: 'default',
-            strictMode: false,
-            ignoreWarningMessages: true,
-            lintEverything: false,
-          }));
-        });
-
-        it('does not show a warning message', () => {
-          getCommandArguments();
-          expect(showWarningMessageSpy.calledOnceWith('.credo.exs file does not exist. Ignoring...'))
-            .to.false;
-        });
-      });
     });
 
     context('if more than one configuration file is found', () => {
-      let showWarningMessageSpy: SinonSpy;
+      let logSpy: SinonSpy<loggingModule.LogArguments[], void>;
 
       beforeEach(() => {
-        showWarningMessageSpy = sandbox.spy(vscode.window, 'showWarningMessage');
+        logSpy = sandbox.spy(loggingModule, 'log');
         sandbox.stub(fs, 'existsSync').returns(true);
         sandbox.stub(vscode.workspace, 'workspaceFolders').value([{
           index: 0,
@@ -117,48 +160,24 @@ describe('Utilities', () => {
       it('shows a warning message', () => {
         getCommandArguments();
         assert.calledOnceWithExactly(
-          showWarningMessageSpy,
-          'Found multiple files (.credo.exs,/usr/home/.credo.exs) will use .credo.exs',
+          logSpy,
+          {
+            message: 'Found multiple files (.credo.exs,/usr/home/.credo.exs) will use .credo.exs',
+            level: LogLevel.Warning,
+          },
         );
-      });
-
-      context('if warning messages are ignored in config', () => {
-        beforeEach(() => {
-          configurationModuleStub.restore();
-          sandbox.stub(configurationModule, 'getConfig').callsFake(() => ({
-            command: 'mix',
-            onSave: true,
-            configurationFile: '.credo.exs',
-            credoConfiguration: 'default',
-            strictMode: false,
-            ignoreWarningMessages: true,
-            lintEverything: false,
-          }));
-        });
-
-        it('does not show a warning message', () => {
-          getCommandArguments();
-          expect(
-            showWarningMessageSpy
-              .calledOnceWith('Found multiple files (.credo.exs,/usr/home/.credo.exs) will use .credo.exs'),
-          ).to.false;
-        });
       });
     });
 
     context('with enabled strict-mode', () => {
-      beforeEach(() => {
-        sandbox.restore();
-        sandbox.stub(configurationModule, 'getConfig').callsFake(() => ({
-          command: 'mix',
-          onSave: true,
-          configurationFile: '.credo.exs',
-          credoConfiguration: 'default',
-          strictMode: true,
-          ignoreWarningMessages: false,
-          lintEverything: false,
-        }));
-      });
+      def('config', () => ({
+        command: 'mix',
+        configurationFile: '.credo.exs',
+        credoConfiguration: 'default',
+        strictMode: true,
+        ignoreWarningMessages: false,
+        lintEverything: false,
+      }));
 
       it('includes `--strict-mode`', () => {
         expect(getCommandArguments()).to.include('--strict');
@@ -174,11 +193,9 @@ describe('Utilities', () => {
     });
 
     context('with a given executePath in the extension\'s configuration', () => {
-      let sandbox: SinonSandbox;
       const executePath = '/usr/.asdf/shims';
 
       beforeEach(() => {
-        sandbox = createSandbox();
         sandbox.stub(vscode.workspace, 'getConfiguration').withArgs('elixir.credo').callsFake(() => ({
           get(prop: string) {
             if (prop === 'executePath') {
@@ -187,10 +204,6 @@ describe('Utilities', () => {
             return null;
           },
         } as any));
-      });
-
-      afterEach(() => {
-        sandbox.restore();
       });
 
       it('returns a shallow copy of the PATH variable without any changes', () => {

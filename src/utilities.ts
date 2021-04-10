@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { getConfig } from './configuration';
+import ConfigurationProvider from './ConfigurationProvider';
+import { log, LogLevel } from './logger';
 
 const DEFAULT_CONFIG_FILE = '.credo.exs';
 const DEFAULT_COMMAND_ARGUMENTS = ['credo', '--format', 'json', '--read-from-stdin'];
@@ -20,17 +21,23 @@ export function makeZeroBasedIndex(index: number | undefined | null): number {
   return 0;
 }
 
+export function trunc(strings: TemplateStringsArray, ...placeholders: any[]): string {
+  return strings.reduce((result, string, i) => (result + placeholders[i - 1] + string)).replace(/$\n^\s*/gm, ' ');
+}
+
 export function isFileUri(uri: vscode.Uri): boolean {
   return uri.scheme === 'file';
 }
 
-export function getCurrentPath(fileName: string): string {
-  return vscode.workspace.rootPath || path.dirname(fileName);
+export function getCurrentPath(documentUri: vscode.Uri): string {
+  const { fsPath: documentPath } = documentUri;
+
+  return vscode.workspace.getWorkspaceFolder(documentUri)?.uri?.fsPath || path.dirname(documentPath);
 }
 
 export function getCommandArguments(): string[] {
   const commandArguments = [...DEFAULT_COMMAND_ARGUMENTS];
-  const extensionConfig = getConfig();
+  const extensionConfig = ConfigurationProvider.instance.config;
   const configurationFile = extensionConfig.configurationFile || DEFAULT_CONFIG_FILE;
 
   const found = [configurationFile].concat(
@@ -40,18 +47,16 @@ export function getCommandArguments(): string[] {
   ).filter((p: string) => fs.existsSync(p));
 
   if (found.length === 0) {
-    if (!extensionConfig.ignoreWarningMessages) {
-      vscode.window.showWarningMessage(`${configurationFile} file does not exist. Ignoring...`);
-    }
+    log({ message: `${configurationFile} file does not exist. Ignoring...`, level: LogLevel.Warning });
   } else {
-    if (found.length > 1 && !extensionConfig.ignoreWarningMessages) {
-      vscode.window.showWarningMessage(`Found multiple files (${found}) will use ${found[0]}`);
+    if (found.length > 1) {
+      log({ message: `Found multiple files (${found}) will use ${found[0]}`, level: LogLevel.Warning });
     }
-    commandArguments.push(...['--config-file', found[0]]);
+    commandArguments.push('--config-file', found[0]);
   }
 
   if (extensionConfig.credoConfiguration) {
-    commandArguments.push(...['--config-name', extensionConfig.credoConfiguration]);
+    commandArguments.push('--config-name', extensionConfig.credoConfiguration);
   }
 
   if (extensionConfig.strictMode) {
