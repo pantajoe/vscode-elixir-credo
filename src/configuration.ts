@@ -2,21 +2,27 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import CredoConfiguration from './CredoConfiguration';
 
 const MIX_COMMAND = {
   unix: 'mix',
   win32: 'mix.bat',
 };
 
+export interface CredoConfiguration {
+  command: string;
+  configurationFile: string;
+  credoConfiguration: string | 'default';
+  strictMode: boolean;
+  ignoreWarningMessages: boolean;
+  lintEverything: boolean;
+}
+
 export function autodetectExecutePath(): string {
   const conf = vscode.workspace.getConfiguration('elixir.credo');
   const key = 'PATH';
   const paths = process.env[key];
 
-  if (!paths) {
-    return '';
-  }
+  if (!paths) return '';
 
   let executePath = '';
   const pathParts = paths.split(path.delimiter);
@@ -42,7 +48,6 @@ export function getConfig(): CredoConfiguration {
 
   return {
     command: `${autodetectExecutePath()}${mixCommand}`,
-    onSave: conf.get('onSave', true),
     configurationFile: conf.get('configurationFile', '.credo.exs'),
     credoConfiguration: conf.get('credoConfiguration', 'default'),
     strictMode: conf.get('strictMode', false),

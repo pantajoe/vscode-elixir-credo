@@ -11,7 +11,8 @@ for the programming language [Elixir](https://elixir-lang.org).
 ## Features
 
 * Lint all opened documents and display diagnostics
-* Specify whether the linting happens on save of a document
+* Re-lint a document after saving it
+* Either lint all elixir files or only those specified by the linting configuration
 * Specify a custom configuration file for Credo
 * Specify a custom configuration for Credo
 * Specify a custom execute path for the `mix` binary
@@ -27,7 +28,6 @@ and install it by running `mix deps.get`.
 
 This extension contributes the following settings:
 
-* `elixir.credo.onSave`: Whether the extension should lint when a document is saved.
 * `elixir.credo.configurationFile`: location of the configuration file Credo should use. Can be an absolute path, a relative path or simply a file.
 * `elixir.credo.credoConfiguration`: name of the configuration Credo should use. Uses the default configuration per default (`default`).
 * `elixir.credo.strictMode`: whether to utilize Credo's strict mode when linting.

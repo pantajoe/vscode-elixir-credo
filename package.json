@@ -43,12 +43,6 @@
       {
         "title": "Elixir-Credo Configuration",
         "properties": {
-          "elixir.credo.onSave": {
-            "title": "Execute Credo on Save",
-            "description": "Configures whether to run the linter when a document is saved",
-            "type": "boolean",
-            "default": true
-          },
           "elixir.credo.configurationFile": {
             "title": "Configuration File",
             "description": "Configures which configuration file Credo should use. Default is `.credo.exs`.",
