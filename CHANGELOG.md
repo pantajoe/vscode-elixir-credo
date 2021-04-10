@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Support multiple workspaces (#8)
+- Add an output channel to track the extension's processes
 
 ### Changed
 

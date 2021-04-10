@@ -2,6 +2,7 @@
 
 import * as vscode from 'vscode';
 import ConfigurationProvider from './ConfigurationProvider';
+import { log, LogLevel } from './logger';
 
 export function activate(context: vscode.ExtensionContext) {
   const { workspace } = vscode;
@@ -11,6 +12,10 @@ export function activate(context: vscode.ExtensionContext) {
   const credo = new CredoProvider({ diagnosticCollection });
 
   workspace.onDidChangeConfiguration(() => {
+    log({
+      message: 'Extension configuration has changed. Refreshing configuration ...',
+      level: LogLevel.Info,
+    });
     ConfigurationProvider.instance.reloadConfig();
   });
 
