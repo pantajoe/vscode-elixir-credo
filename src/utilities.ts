@@ -47,11 +47,11 @@ export function getCommandArguments(): string[] {
     if (found.length > 1 && !extensionConfig.ignoreWarningMessages) {
       vscode.window.showWarningMessage(`Found multiple files (${found}) will use ${found[0]}`);
     }
-    commandArguments.push(...['--config-file', found[0]]);
+    commandArguments.push('--config-file', found[0]);
   }
 
   if (extensionConfig.credoConfiguration) {
-    commandArguments.push(...['--config-name', extensionConfig.credoConfiguration]);
+    commandArguments.push('--config-name', extensionConfig.credoConfiguration);
   }
 
   if (extensionConfig.strictMode) {
