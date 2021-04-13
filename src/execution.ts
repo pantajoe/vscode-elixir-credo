@@ -97,7 +97,7 @@ export function createLintDocumentCallback(
     const output = parseOutput<CredoOutput>(stdout);
     if (!output) return;
 
-    log({ message: `Setting linter issues for document '${uri.path}'.`, level: LogLevel.Debug });
+    log({ message: `Setting linter issues for document '${uri.fsPath}'.`, level: LogLevel.Debug });
     diagnosticCollection.set(uri, parseCredoOutput({ credoOutput: output, document }));
 
     token.finished();
@@ -111,7 +111,7 @@ function executeCredoProcess(
 ): cp.ChildProcess {
   log({
     message: trunc`Executing credo command \`${[ConfigurationProvider.instance.config.command, ...cmdArgs].join(' ')}\`
-    for '${document.uri.path}'`,
+    for '${document.uri.fsPath}'`,
     level: LogLevel.Debug,
   });
 
@@ -142,12 +142,12 @@ export function executeCredo(
   const processes = [];
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
   const relativeDocumentPath = workspaceFolder
-    ? document.fileName.replace(`${workspaceFolder.uri.path}${path.sep}`, '')
+    ? document.fileName.replace(`${workspaceFolder.uri.fsPath}${path.sep}`, '')
     : document.fileName;
 
   log({
     message: trunc`Retreiving credo information: Executing credo command
-    \`${[ConfigurationProvider.instance.config.command, ...CREDO_INFO_ARGS].join(' ')}\` for '${document.uri.path}'`,
+    \`${[ConfigurationProvider.instance.config.command, ...CREDO_INFO_ARGS].join(' ')}\` for '${document.uri.fsPath}'`,
     level: LogLevel.Debug,
   });
   // eslint-disable-next-line max-len

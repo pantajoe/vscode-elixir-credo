@@ -42,7 +42,7 @@ export function getCommandArguments(): string[] {
 
   const found = [configurationFile].concat(
     (vscode.workspace.workspaceFolders || []).map(
-      (ws: vscode.WorkspaceFolder) => path.join(ws.uri.path, configurationFile),
+      (ws: vscode.WorkspaceFolder) => path.join(ws.uri.fsPath, configurationFile),
     ),
   ).filter((p: string) => fs.existsSync(p));
 
