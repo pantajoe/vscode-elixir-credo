@@ -155,7 +155,12 @@ export function executeCredo(
     if (reportError({ error, stderr })) return;
 
     const credoInformation = parseOutput<CredoInformation>(stdout);
-    if (!credoInformation?.config?.files?.includes(relativeDocumentPath)) {
+    if (!credoInformation) return;
+
+    // file paths of credo are shown in UNIX style with a '/' path separator
+    credoInformation.config.files = credoInformation.config.files.map((filePath) => filePath.replace(/\//g, path.sep));
+
+    if (!credoInformation.config.files.includes(relativeDocumentPath)) {
       onFinishedExecution(null, '{ "issues": [] }', '');
       return;
     }
