@@ -74,9 +74,9 @@ export function reportError({ error, stderr }: ReportErrorArguments): boolean {
     return true;
   }
 
-  if (errorOutput || error) {
+  if (errorOutput || error?.code === 127 || error?.code === 126) {
     log({
-      message: `An error occurred:\n  - Output: '${errorOutput}'\n  - Error Object: ${JSON.stringify(error, null, 2)}`,
+      message: `An error occurred: '${errorOutput}' - Error Object: ${JSON.stringify(error)}`,
       level: LogLevel.Error,
     });
 
