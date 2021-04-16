@@ -32,7 +32,7 @@ export function parseOutput<OutputType extends CredoCommandOutput>(stdout: strin
   if (output.length < 1) {
     log({
       message: trunc`Command \`${ConfigurationProvider.instance.config.command} credo\`
-        returns empty output! please check configuration.
+        returns empty output! Please check your configuration.
         Did you add or modify your dependencies? You might need to run \`mix deps.get\` or recompile.`,
       level: LogLevel.Error,
     });
