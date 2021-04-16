@@ -111,7 +111,7 @@ function executeCredoProcess(
 ): cp.ChildProcess {
   log({
     message: trunc`Executing credo command \`${[ConfigurationProvider.instance.config.command, ...cmdArgs].join(' ')}\`
-    for '${document.uri.fsPath}'`,
+    for '${document.uri.fsPath}' in directory '${options.cwd}'`,
     level: LogLevel.Debug,
   });
 
@@ -147,7 +147,8 @@ export function executeCredo(
 
   log({
     message: trunc`Retreiving credo information: Executing credo command
-    \`${[ConfigurationProvider.instance.config.command, ...CREDO_INFO_ARGS].join(' ')}\` for '${document.uri.fsPath}'`,
+    \`${[ConfigurationProvider.instance.config.command, ...CREDO_INFO_ARGS].join(' ')}\` for '${document.uri.fsPath}'
+    in directory '${options.cwd}'`,
     level: LogLevel.Debug,
   });
   // eslint-disable-next-line max-len
