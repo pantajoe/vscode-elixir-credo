@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as path from 'path';
-import { CredoInformation, CredoOutput } from './output';
+import { CredoInformation, CredoOutput, CredoCommandOutput } from './output';
 import { TaskToken } from './task-queue';
 import { parseCredoOutput } from './parser';
 import { log, LogLevel } from './logger';
@@ -26,7 +26,7 @@ export interface CredoExecutionArguments {
   onFinishedExecution: LintDocumentCallback,
 }
 
-export function parseOutput<OutputType>(stdout: string | Buffer): OutputType | null {
+export function parseOutput<OutputType extends CredoCommandOutput>(stdout: string | Buffer): OutputType | null {
   const output = stdout.toString();
 
   if (output.length < 1) {
