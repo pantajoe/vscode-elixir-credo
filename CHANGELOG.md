@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.4.3] - 2021-04-16
+
 ### Fixed
 
 - Only interrupt due to errors when credo's exit status is ENOENT, 126, or 127, or when credo logs something to stderr
