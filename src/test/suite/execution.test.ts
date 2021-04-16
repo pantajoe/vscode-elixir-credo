@@ -237,7 +237,7 @@ describe('Credo Execution Functions', () => {
           logSpy,
           {
             level: loggerModule.LogLevel.Error,
-            message: 'Any error',
+            message: "An error occurred:\n  - Output: 'Any error'\n  - Error Object: {\n  \"code\": 127\n}",
           },
         );
       });
