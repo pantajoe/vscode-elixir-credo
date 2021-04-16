@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as path from 'path';
-import { CredoInformation, CredoOutput } from './output';
+import { CredoInformation, CredoOutput, CredoCommandOutput } from './output';
 import { TaskToken } from './task-queue';
 import { parseCredoOutput } from './parser';
 import { log, LogLevel } from './logger';
@@ -26,13 +26,13 @@ export interface CredoExecutionArguments {
   onFinishedExecution: LintDocumentCallback,
 }
 
-export function parseOutput<OutputType>(stdout: string | Buffer): OutputType | null {
+export function parseOutput<OutputType extends CredoCommandOutput>(stdout: string | Buffer): OutputType | null {
   const output = stdout.toString();
 
   if (output.length < 1) {
     log({
       message: trunc`Command \`${ConfigurationProvider.instance.config.command} credo\`
-        returns empty output! please check configuration.
+        returns empty output! Please check your configuration.
         Did you add or modify your dependencies? You might need to run \`mix deps.get\` or recompile.`,
       level: LogLevel.Error,
     });
@@ -74,8 +74,11 @@ export function reportError({ error, stderr }: ReportErrorArguments): boolean {
     return true;
   }
 
-  if (errorOutput) {
-    log({ message: errorOutput, level: LogLevel.Error });
+  if (errorOutput || error) {
+    log({
+      message: `An error occurred:\n  - Output: '${errorOutput}'\n  - Error Object: ${JSON.stringify(error, null, 2)}`,
+      level: LogLevel.Error,
+    });
 
     return true;
   }
@@ -111,7 +114,7 @@ function executeCredoProcess(
 ): cp.ChildProcess {
   log({
     message: trunc`Executing credo command \`${[ConfigurationProvider.instance.config.command, ...cmdArgs].join(' ')}\`
-    for '${document.uri.fsPath}'`,
+    for '${document.uri.fsPath}' in directory '${options.cwd}'`,
     level: LogLevel.Debug,
   });
 
@@ -147,7 +150,8 @@ export function executeCredo(
 
   log({
     message: trunc`Retreiving credo information: Executing credo command
-    \`${[ConfigurationProvider.instance.config.command, ...CREDO_INFO_ARGS].join(' ')}\` for '${document.uri.fsPath}'`,
+    \`${[ConfigurationProvider.instance.config.command, ...CREDO_INFO_ARGS].join(' ')}\` for '${document.uri.fsPath}'
+    in directory '${options.cwd}'`,
     level: LogLevel.Debug,
   });
   // eslint-disable-next-line max-len

@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None.
+### Changed
+
+- Improve error reporting
+  - Show proper error codes when executing commands and more information
+  - Show working directory of a process executing credo
+  - Fix a typo in an error message
 
 ## [0.4.1] - 2021-04-13
 

@@ -42,7 +42,7 @@ describe('Credo Execution Functions', () => {
             {
               level: loggerModule.LogLevel.Error,
               // eslint-disable-next-line max-len
-              message: 'Command `mix credo` returns empty output! please check configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
+              message: 'Command `mix credo` returns empty output! Please check your configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
             },
           );
         });
@@ -127,7 +127,7 @@ describe('Credo Execution Functions', () => {
             {
               level: loggerModule.LogLevel.Error,
               // eslint-disable-next-line max-len
-              message: 'Command `mix credo` returns empty output! please check configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
+              message: 'Command `mix credo` returns empty output! Please check your configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
             },
           );
         });
@@ -237,7 +237,7 @@ describe('Credo Execution Functions', () => {
           logSpy,
           {
             level: loggerModule.LogLevel.Error,
-            message: 'Any error',
+            message: "An error occurred:\n  - Output: 'Any error'\n  - Error Object: {\n  \"code\": 127\n}",
           },
         );
       });

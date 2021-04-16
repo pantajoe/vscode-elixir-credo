@@ -223,7 +223,7 @@ describe('CredoProvider', () => {
             logSpy,
             {
               // eslint-disable-next-line max-len
-              message: "Executing credo command `mix credo --format json --read-from-stdin --config-name default` for '/Users/bot/sample/lib/sample_web/telemetry.ex'",
+              message: "Executing credo command `mix credo --format json --read-from-stdin --config-name default` for '/Users/bot/sample/lib/sample_web/telemetry.ex' in directory '/Users/bot/sample'",
               level: loggerModule.LogLevel.Debug,
             },
           );
@@ -249,7 +249,7 @@ describe('CredoProvider', () => {
             logSpy.calledWith(
               {
                 // eslint-disable-next-line max-len
-                message: "Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for '/Users/bot/sample/lib/sample_web/telemetry.ex'",
+                message: "Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for '/Users/bot/sample/lib/sample_web/telemetry.ex' in directory '/Users/bot/sample'",
                 level: loggerModule.LogLevel.Debug,
               },
             ),
@@ -357,7 +357,7 @@ describe('CredoProvider', () => {
               logSpy,
               {
                 // eslint-disable-next-line max-len
-                message: "Executing credo command `mix credo --format json --read-from-stdin --config-name default` for '/Users/bot/sample/lib/sample_web/telemetry.ex'",
+                message: "Executing credo command `mix credo --format json --read-from-stdin --config-name default` for '/Users/bot/sample/lib/sample_web/telemetry.ex' in directory '/Users/bot/sample'",
                 level: loggerModule.LogLevel.Debug,
               },
             );
@@ -382,7 +382,7 @@ describe('CredoProvider', () => {
               logSpy,
               {
                 // eslint-disable-next-line max-len
-                message: "Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for '/Users/bot/sample/lib/sample_web/telemetry.ex'",
+                message: "Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for '/Users/bot/sample/lib/sample_web/telemetry.ex' in directory '/Users/bot/sample'",
                 level: loggerModule.LogLevel.Debug,
               },
             );
@@ -434,7 +434,7 @@ describe('CredoProvider', () => {
             expect(
               logSpy.calledWith({
                 // eslint-disable-next-line max-len
-                message: "Executing credo command `mix credo --format json --read-from-stdin --config-name default` for '/Users/bot/sample/lib/sample_web/telemetry_test.ex'",
+                message: "Executing credo command `mix credo --format json --read-from-stdin --config-name default` for '/Users/bot/sample/lib/sample_web/telemetry_test.ex' in directory '/Users/bot/sample'",
                 level: loggerModule.LogLevel.Debug,
               }),
             ).to.be.false;
@@ -459,7 +459,7 @@ describe('CredoProvider', () => {
               logSpy,
               {
                 // eslint-disable-next-line max-len
-                message: "Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for '/Users/bot/sample/lib/sample_web/telemetry_test.ex'",
+                message: "Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for '/Users/bot/sample/lib/sample_web/telemetry_test.ex' in directory '/Users/bot/sample'",
                 level: loggerModule.LogLevel.Debug,
               },
             );
