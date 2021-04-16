@@ -237,7 +237,28 @@ describe('Credo Execution Functions', () => {
           logSpy,
           {
             level: loggerModule.LogLevel.Error,
-            message: "An error occurred: 'Any error' - Error Object: {\"code\":127}",
+            message: 'An error occurred: "Any error" - Error Object: {"code":127}',
+          },
+        );
+      });
+    });
+
+    context('only with stderr', () => {
+      def('error', () => null);
+      def('stderr', () => 'A warning message');
+
+      it('returns false', () => {
+        expect(report()).to.be.false;
+      });
+
+      it('logs a warning', () => {
+        report();
+
+        sandbox.assert.calledWith(
+          logSpy,
+          {
+            level: loggerModule.LogLevel.Warning,
+            message: 'Warning: "A warning message"',
           },
         );
       });

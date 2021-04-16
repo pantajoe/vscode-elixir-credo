@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None.
+### Fixed
+
+- Only interrupt if an exit status code like ENOENT, 126 or 127 is present instead of using the stderr as well
 
 ## [0.4.3] - 2021-04-16
 

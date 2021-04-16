@@ -29,7 +29,7 @@ export interface CredoExecutionArguments {
 export function parseOutput<OutputType extends CredoCommandOutput>(stdout: string | Buffer): OutputType | null {
   const output = stdout.toString();
 
-  if (output.length < 1) {
+  if (!output.length) {
     log({
       message: trunc`Command \`${ConfigurationProvider.instance.config.command} credo\`
         returns empty output! Please check your configuration.
@@ -74,13 +74,20 @@ export function reportError({ error, stderr }: ReportErrorArguments): boolean {
     return true;
   }
 
-  if (errorOutput || error?.code === 127 || error?.code === 126) {
+  if (error?.code === 127 || error?.code === 126) {
     log({
-      message: `An error occurred: '${errorOutput}' - Error Object: ${JSON.stringify(error)}`,
+      message: `An error occurred: "${errorOutput}" - Error Object: ${JSON.stringify(error)}`,
       level: LogLevel.Error,
     });
 
     return true;
+  }
+
+  if (errorOutput) {
+    log({
+      message: `Warning: "${errorOutput}"`,
+      level: LogLevel.Warning,
+    });
   }
 
   return false;
