@@ -40,11 +40,14 @@ export function getCommandArguments(): string[] {
   const extensionConfig = ConfigurationProvider.instance.config;
   const configurationFile = extensionConfig.configurationFile || DEFAULT_CONFIG_FILE;
 
-  const found = [configurationFile].concat(
-    (vscode.workspace.workspaceFolders || []).map(
-      (ws: vscode.WorkspaceFolder) => path.join(ws.uri.fsPath, configurationFile),
-    ),
-  ).filter((p: string) => fs.existsSync(p));
+  const found = (vscode.workspace.workspaceFolders || []).map(
+    (ws: vscode.WorkspaceFolder) => path.join(ws.uri.fsPath, configurationFile),
+  ).filter((fullPath: string) => fs.existsSync(fullPath));
+
+  // add unchanged value of `configurationFile` in case it is an absolute path
+  if (path.isAbsolute(configurationFile) && !found.includes(configurationFile) && fs.existsSync(configurationFile)) {
+    found.push(configurationFile);
+  }
 
   if (found.length === 0) {
     log({ message: `${configurationFile} file does not exist. Ignoring...`, level: LogLevel.Warning });

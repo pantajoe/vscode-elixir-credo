@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None.
+### Fixed
+
+- Only add the configuration file configured in the extension's configuration to all found configuration file
+  if it's an absolute path, the file exists, and it is not already found (#4)
 
 ## [0.4.4] - 2021-04-16
 
