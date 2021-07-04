@@ -47,7 +47,7 @@ export class CredoProvider {
 
     const task = new Task(uri, (token) => {
       const processes = executeCredo({
-        cmdArgs: getCommandArguments(),
+        cmdArgs: getCommandArguments(document),
         document,
         options: {
           cwd: currentPath,

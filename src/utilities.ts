@@ -35,12 +35,15 @@ export function getCurrentPath(documentUri: vscode.Uri): string {
   return vscode.workspace.getWorkspaceFolder(documentUri)?.uri?.fsPath || path.dirname(documentPath);
 }
 
-export function getCommandArguments(): string[] {
+export function getCommandArguments(document?: vscode.TextDocument): string[] {
   const commandArguments = [...DEFAULT_COMMAND_ARGUMENTS];
   const extensionConfig = ConfigurationProvider.instance.config;
   const configurationFile = extensionConfig.configurationFile || DEFAULT_CONFIG_FILE;
 
-  const found = (vscode.workspace.workspaceFolders || []).map(
+  const currentWorkspaceFolder = document?.uri ? vscode.workspace.getWorkspaceFolder(document.uri) : undefined;
+  const currentWorkspaces = currentWorkspaceFolder ? [currentWorkspaceFolder] : vscode.workspace.workspaceFolders ?? [];
+
+  const found = currentWorkspaces.map(
     (ws: vscode.WorkspaceFolder) => path.join(ws.uri.fsPath, configurationFile),
   ).filter((fullPath: string) => fs.existsSync(fullPath));
 
@@ -53,7 +56,7 @@ export function getCommandArguments(): string[] {
     log({ message: `${configurationFile} file does not exist. Ignoring...`, level: LogLevel.Warning });
   } else {
     if (found.length > 1) {
-      log({ message: `Found multiple files (${found}) will use ${found[0]}`, level: LogLevel.Warning });
+      log({ message: `Found multiple files (${found.join(', ')}). I will use ${found[0]}`, level: LogLevel.Warning });
     }
     commandArguments.push('--config-file', found[0]);
   }

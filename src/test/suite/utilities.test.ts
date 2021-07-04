@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { expect } from 'chai';
 import {
-  assert, createSandbox, SinonSandbox, SinonSpy,
+  assert, createSandbox, SinonSandbox, SinonSpy, SinonStub,
 } from 'sinon';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -14,6 +14,9 @@ const { LogLevel } = loggingModule;
 
 declare let $config: CredoConfiguration;
 declare let $documentUri: vscode.Uri;
+declare let $mainWorkspacePath: string;
+declare let $otherWorkspacePath: string;
+declare let $configurationFile: string;
 
 describe('Utilities', () => {
   let sandbox: SinonSandbox;
@@ -91,31 +94,53 @@ describe('Utilities', () => {
   });
 
   context('#getCommandArguments', () => {
+    def('configurationFile', () => '.credo.exs');
+    def('mainWorkspacePath', () => path.resolve(__dirname));
+    def('otherWorkspacePath', () => path.resolve(__dirname, '..', 'fixtures'));
     def('config', () => ({
       command: 'mix',
-      configurationFile: '.credo.exs',
+      configurationFile: $configurationFile,
       credoConfiguration: 'default',
       strictMode: false,
       ignoreWarningMessages: false,
       lintEverything: false,
     }));
 
+    let workspaceFolderStub: SinonStub<any[], vscode.WorkspaceFolder[]>;
+
     beforeEach(() => {
       sandbox.replaceGetter(ConfigurationProvider, 'instance', () => ({
         config: $config,
         reloadConfig: () => {},
       }));
+      workspaceFolderStub = sandbox.stub(vscode.workspace, 'workspaceFolders');
+      workspaceFolderStub.value([
+        {
+          index: 0,
+          name: 'test',
+          uri: vscode.Uri.file($mainWorkspacePath),
+        },
+        {
+          index: 1,
+          name: 'other',
+          uri: vscode.Uri.file($otherWorkspacePath),
+        },
+      ]);
     });
 
     context('if only one configuration file is found', () => {
       beforeEach(() => {
-        sandbox.stub(fs, 'existsSync').callsFake((file) => file === '.credo.exs');
+        sandbox.stub(fs, 'existsSync').callsFake((file) => file === `${$mainWorkspacePath}${path.sep}.credo.exs`);
       });
 
       it('successfully adds the config file to the CLI arguments', () => {
         assert.match(
           getCommandArguments(),
-          ['credo', '--format', 'json', '--read-from-stdin', '--config-file', '.credo.exs', '--config-name', 'default'],
+          [
+            'credo', '--format', 'json', '--read-from-stdin',
+            '--config-file', `${$mainWorkspacePath}${path.sep}.credo.exs`,
+            '--config-name', 'default',
+          ],
         );
       });
     });
@@ -150,11 +175,6 @@ describe('Utilities', () => {
       beforeEach(() => {
         logSpy = sandbox.spy(loggingModule, 'log');
         sandbox.stub(fs, 'existsSync').returns(true);
-        sandbox.stub(vscode.workspace, 'workspaceFolders').value([{
-          index: 0,
-          name: 'test',
-          uri: vscode.Uri.parse('file:///usr/home'),
-        }]);
       });
 
       it('shows a warning message', () => {
@@ -162,10 +182,68 @@ describe('Utilities', () => {
         assert.calledOnceWithExactly(
           logSpy,
           {
-            message: 'Found multiple files (.credo.exs,/usr/home/.credo.exs) will use .credo.exs',
+            message: trunc`Found multiple files
+            (${$mainWorkspacePath}${path.sep}.credo.exs, ${$otherWorkspacePath}${path.sep}.credo.exs).
+            I will use ${$mainWorkspacePath}${path.sep}.credo.exs`,
             level: LogLevel.Warning,
           },
         );
+      });
+
+      context('when a document is specified', () => {
+        let textDocument: vscode.TextDocument;
+
+        beforeEach(() => {
+          textDocument = {
+            uri: vscode.Uri.file(`${$otherWorkspacePath}${path.sep}sample.ex`),
+          } as vscode.TextDocument;
+          sandbox.stub(vscode.workspace, 'getWorkspaceFolder').withArgs(textDocument.uri).returns({
+            index: 1,
+            name: 'other',
+            uri: vscode.Uri.file($otherWorkspacePath),
+          });
+        });
+
+        it('only finds the configuration file that resides in the same workspace folder as the document', () => {
+          expect(getCommandArguments(textDocument)).to.include(`${$otherWorkspacePath}${path.sep}.credo.exs`);
+          assert.notCalled(logSpy);
+        });
+      });
+    });
+
+    context('when the configuration file is an absolute path', () => {
+      let logSpy: SinonSpy<loggingModule.LogArguments[], void>;
+
+      def('configurationFile', () => `${$mainWorkspacePath}${path.sep}.credo.exs`);
+
+      beforeEach(() => {
+        logSpy = sandbox.spy(loggingModule, 'log');
+        sandbox.stub(fs, 'existsSync').callsFake((file) => file === `${$mainWorkspacePath}${path.sep}.credo.exs`);
+      });
+
+      context('when the file is in the current workspace folder', () => {
+        it('only finds one configuration file', () => {
+          expect(getCommandArguments()).to.include(`${$mainWorkspacePath}${path.sep}.credo.exs`);
+          assert.notCalled(logSpy);
+        });
+      });
+
+      context('when the file is not in any of the opened workspace folders', () => {
+        beforeEach(() => {
+          workspaceFolderStub.reset();
+          workspaceFolderStub.value([
+            {
+              index: 0,
+              name: 'other',
+              uri: vscode.Uri.file($otherWorkspacePath),
+            },
+          ]);
+        });
+
+        it('find the configuration file', () => {
+          expect(getCommandArguments()).to.include(`${$mainWorkspacePath}${path.sep}.credo.exs`);
+          assert.notCalled(logSpy);
+        });
       });
     });
 
