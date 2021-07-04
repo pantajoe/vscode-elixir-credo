@@ -47,7 +47,7 @@ export class CredoProvider {
 
     const task = new Task(uri, (token) => {
       const processes = executeCredo({
-        cmdArgs: getCommandArguments(),
+        cmdArgs: getCommandArguments(document),
         document,
         options: {
           cwd: currentPath,
@@ -71,7 +71,7 @@ export class CredoProvider {
     const { uri } = document;
     if (isFileUri(uri)) {
       log({
-        message: `Removing linter messages and cancel running linting processes for '${uri.fsPath}'.`,
+        message: `Removing linter messages and cancel running linting processes for ${uri.fsPath}.`,
         level: LogLevel.Debug,
       });
       this.taskQueue.cancel(uri);
