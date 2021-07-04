@@ -7,7 +7,7 @@
   },
   "displayName": "Elixir Linter (Credo)",
   "description": "VSC Support for Elixir linter 'Credo'.",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "engines": {
     "vscode": "^1.47.0"
   },

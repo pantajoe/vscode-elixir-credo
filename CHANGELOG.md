@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.4.5] - 2021-07-04
+
 ### Fixed
 
 - Only add the configuration file configured in the extension's configuration to all found configuration file
   if it's an absolute path, the file exists, and it is not already found (#4)
+- File paths in the output channel are not surronded by quotes anymore to resolve issues when opening these paths with `Cmd + Click` / `Ctrl + Click`
 
 ## [0.4.4] - 2021-04-16
 
