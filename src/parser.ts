@@ -14,9 +14,9 @@ function parseSeverity(credoSeverity: CredoSeverity): vscode.DiagnosticSeverity 
 }
 
 function triggerRange(
-  { line, trigger }: { line: string, trigger: string | null },
+  { line, trigger }: { line: string, trigger: unknown },
 ): { start: number, end: number } | null {
-  if (!trigger) return null;
+  if (!trigger || typeof trigger !== 'string') return null;
 
   // remove arity, e.g., 'Application.get_env/2' -> 'Application.get_env'
   const triggerWithoutArity = trigger.replace(/\/\d+$/, '');
