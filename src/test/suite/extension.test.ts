@@ -48,7 +48,7 @@ describe('Extension Tests', () => {
 
     context('when listening for configuration changes', () => {
       let eventListenerSpy: SinonSpy<any[], vscode.Disposable>;
-      let configurationSpy: SinonSpy<[], void>;
+      let configurationSpy: SinonSpy<((() => configurationModule.CredoConfiguration) | undefined)[], void>;
 
       const callOnDidChangeConfigurationHandler = () => {
         // call the extension's registered event handler for a `vscode.ConfigurationChangeEvent`
