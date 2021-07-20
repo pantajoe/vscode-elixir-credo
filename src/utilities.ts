@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import ConfigurationProvider from './ConfigurationProvider';
+import { getCurrentConfiguration } from './configuration';
 import { log, LogLevel } from './logger';
 
 const DEFAULT_CONFIG_FILE = '.credo.exs';
@@ -37,7 +37,7 @@ export function getCurrentPath(documentUri: vscode.Uri): string {
 
 export function getCommandArguments(document?: vscode.TextDocument): string[] {
   const commandArguments = [...DEFAULT_COMMAND_ARGUMENTS];
-  const extensionConfig = ConfigurationProvider.instance.config;
+  const extensionConfig = getCurrentConfiguration();
   const configurationFile = extensionConfig.configurationFile || DEFAULT_CONFIG_FILE;
 
   const currentWorkspaceFolder = document?.uri ? vscode.workspace.getWorkspaceFolder(document.uri) : undefined;

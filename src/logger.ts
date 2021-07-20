@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import ConfigurationProvider from './ConfigurationProvider';
+import { getCurrentConfiguration } from './configuration';
 
 export enum LogLevel {
   Debug = 0,
@@ -20,7 +20,7 @@ function logToOutputChannel(message: string): void {
 }
 
 export function log({ message, level = LogLevel.Error } : LogArguments) {
-  const { ignoreWarningMessages, enableDebug } = ConfigurationProvider.instance.config;
+  const { ignoreWarningMessages, enableDebug } = getCurrentConfiguration();
 
   switch (level) {
     case LogLevel.Debug:

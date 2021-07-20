@@ -5,14 +5,13 @@ import {
 } from 'sinon';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as configurationModule from '../../configuration';
 import { trunc, makeZeroBasedIndex, getCommandArguments, getCommandEnvironment, getCurrentPath } from '../../utilities';
-import { CredoConfiguration } from '../../configuration';
-import ConfigurationProvider from '../../ConfigurationProvider';
 import * as loggingModule from '../../logger';
 
 const { LogLevel } = loggingModule;
 
-declare let $config: CredoConfiguration;
+declare let $config: configurationModule.CredoConfiguration;
 declare let $documentUri: vscode.Uri;
 declare let $mainWorkspacePath: string;
 declare let $otherWorkspacePath: string;
@@ -109,10 +108,8 @@ describe('Utilities', () => {
     let workspaceFolderStub: SinonStub<any[], vscode.WorkspaceFolder[]>;
 
     beforeEach(() => {
-      sandbox.replaceGetter(ConfigurationProvider, 'instance', () => ({
-        config: $config,
-        reloadConfig: () => {},
-      }));
+      sandbox.stub(configurationModule, 'getCurrentConfiguration').returns($config);
+
       workspaceFolderStub = sandbox.stub(vscode.workspace, 'workspaceFolders');
       workspaceFolderStub.value([
         {

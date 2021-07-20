@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import { createSandbox, SinonSandbox } from 'sinon';
+import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { autodetectExecutePath } from '../../configuration';
+import * as configurationModule from '../../configuration';
 
 describe('Configuration', () => {
   let sandbox: SinonSandbox;
@@ -19,6 +19,8 @@ describe('Configuration', () => {
   });
 
   context('#autodetectExecutePath', () => {
+    const { autodetectExecutePath } = configurationModule;
+
     context('with a valid execute path', () => {
       context('on a UNIX based OS', () => {
         const validPath = '/usr/bin/.asdf/shims';
@@ -58,6 +60,75 @@ describe('Configuration', () => {
 
       it('returns an empty execute path to try executing mix on a global scope', () => {
         expect(autodetectExecutePath()).to.equal('');
+      });
+    });
+  });
+
+  context('#configuration', () => {
+    let fetchConfigStub: SinonStub<void[], configurationModule.CredoConfiguration>;
+    const reloadConfig = () => {
+      configurationModule.reloadConfiguration(fetchConfigStub);
+    };
+
+    context('when fetching the extension config', () => {
+      beforeEach(() => {
+        fetchConfigStub = sandbox.stub(configurationModule, 'fetchConfig').returns({
+          command: 'mix',
+          configurationFile: '.credo.exs',
+          credoConfiguration: 'default',
+          strictMode: false,
+          ignoreWarningMessages: false,
+          lintEverything: false,
+          enableDebug: false,
+        });
+      });
+
+      it('returns a valid config', () => {
+        reloadConfig();
+        const {
+          command,
+          configurationFile,
+          credoConfiguration,
+          strictMode,
+          ignoreWarningMessages,
+          lintEverything,
+          enableDebug,
+        } = configurationModule.getCurrentConfiguration();
+        expect(command).to.equal('mix');
+        expect(configurationFile).to.equal('.credo.exs');
+        expect(credoConfiguration).to.equal('default');
+        expect(strictMode).to.be.false;
+        expect(ignoreWarningMessages).to.be.false;
+        expect(lintEverything).to.be.false;
+        expect(enableDebug).to.be.false;
+      });
+    });
+
+    context('when the config changes', () => {
+      beforeEach(() => {
+        const initialConfig = {
+          command: 'mix',
+          configurationFile: '.credo.exs',
+          credoConfiguration: 'default',
+          strictMode: false,
+          ignoreWarningMessages: false,
+          lintEverything: false,
+          enableDebug: false,
+        };
+        fetchConfigStub = sandbox.stub(configurationModule, 'fetchConfig').returns(initialConfig);
+        reloadConfig();
+        fetchConfigStub.restore();
+        fetchConfigStub = sandbox.stub(configurationModule, 'fetchConfig').returns({
+          ...initialConfig,
+          ignoreWarningMessages: true,
+        });
+      });
+
+      it('reloads the config', () => {
+        expect(configurationModule.getCurrentConfiguration().ignoreWarningMessages).to.be.false;
+        reloadConfig();
+        expect(fetchConfigStub.called).to.be.true;
+        expect(configurationModule.getCurrentConfiguration().ignoreWarningMessages).to.be.true;
       });
     });
   });

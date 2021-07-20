@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 import { CredoProvider } from './provider';
-import ConfigurationProvider from './ConfigurationProvider';
+import { reloadConfiguration } from './configuration';
 import { log, LogLevel } from './logger';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   workspace.onDidChangeConfiguration(() => {
     log({ message: 'Extension configuration has changed. Refreshing configuration ...', level: LogLevel.Debug });
-    ConfigurationProvider.instance.reloadConfig();
+    reloadConfiguration();
   });
 
   workspace.textDocuments.forEach((document: vscode.TextDocument) => {

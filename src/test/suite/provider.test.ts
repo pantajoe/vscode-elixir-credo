@@ -5,14 +5,13 @@ import { createSandbox, SinonSandbox, SinonSpy, assert as sinonAssert, SinonStub
 import { expect } from 'chai';
 import { def } from 'bdd-lazy-var/global';
 import * as taskQueueModule from '../../task-queue';
+import * as configurationModule from '../../configuration';
 import * as executionModule from '../../execution';
-import ConfigurationProvider from '../../ConfigurationProvider';
 import * as loggerModule from '../../logger';
 import { CredoProvider, CredoProviderOptions } from '../../provider';
 import { CredoInformation, CredoOutput } from '../../output';
-import { CredoConfiguration } from '../../configuration';
 
-declare let $config: CredoConfiguration;
+declare let $config: configurationModule.CredoConfiguration;
 declare let $diagnosticCollection: vscode.DiagnosticCollection;
 declare let $providerOptions: CredoProviderOptions;
 declare let $credoProvider: CredoProvider;
@@ -148,10 +147,7 @@ describe('CredoProvider', () => {
           index: 0,
           uri: vscode.Uri.file($workspaceFilePath),
         }));
-        sandbox.replaceGetter(ConfigurationProvider, 'instance', () => ({
-          config: $config,
-          reloadConfig: () => {},
-        }));
+        sandbox.stub(configurationModule, 'getCurrentConfiguration').returns($config);
         execFileStub = sandbox
           .stub(cp, 'execFile')
           .callsFake((_command, commandArguments, _options, callback) => {
