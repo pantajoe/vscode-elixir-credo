@@ -1,12 +1,11 @@
 import * as vscode from 'vscode';
 import { createSandbox, SinonSandbox, SinonSpy } from 'sinon';
+import * as configurationModule from '../../configuration';
 import { outputChannel, log, LogLevel } from '../../logger';
-import { CredoConfiguration } from '../../configuration';
-import ConfigurationProvider from '../../ConfigurationProvider';
 
 declare let $message: string;
 declare let $logLevel: LogLevel;
-declare let $config: CredoConfiguration;
+declare let $config: configurationModule.CredoConfiguration;
 declare let $ignoreWarningMessages: boolean;
 declare let $enableDebug: boolean;
 
@@ -32,10 +31,7 @@ describe('Loggging', () => {
   beforeEach(() => {
     sandbox = createSandbox();
     outputChannelSpy = sandbox.spy(outputChannel, 'appendLine');
-    sandbox.replaceGetter(ConfigurationProvider, 'instance', () => ({
-      config: $config,
-      reloadConfig: () => {},
-    }));
+    sandbox.stub(configurationModule, 'getCurrentConfiguration').returns($config);
   });
 
   afterEach(() => {

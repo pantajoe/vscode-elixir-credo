@@ -2,9 +2,9 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { createSandbox, match, SinonSandbox, SinonSpy, SinonStub } from 'sinon';
 import { expect } from 'chai';
+import * as configurationModule from '../../configuration';
 import * as loggerModule from '../../logger';
 import { activate } from '../../extension';
-import ConfigurationProvider from '../../ConfigurationProvider';
 import { CredoExecutionArgs, CredoProvider } from '../../provider';
 
 const { LogLevel } = loggerModule;
@@ -61,7 +61,7 @@ describe('Extension Tests', () => {
 
       beforeEach(() => {
         eventListenerSpy = sandbox.spy(vscode.workspace, 'onDidChangeConfiguration');
-        configurationSpy = sandbox.spy(ConfigurationProvider.instance, 'reloadConfig');
+        configurationSpy = sandbox.spy(configurationModule, 'reloadConfiguration');
       });
 
       it('registers an event handler for a ConfigurationChangeEvent', () => {

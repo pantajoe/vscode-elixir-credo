@@ -5,7 +5,7 @@ import { CredoInformation, CredoOutput, CredoCommandOutput } from './output';
 import { TaskToken } from './task-queue';
 import { parseCredoOutput } from './parser';
 import { log, LogLevel } from './logger';
-import ConfigurationProvider from './ConfigurationProvider';
+import { getCurrentConfiguration } from './configuration';
 import { trunc } from './utilities';
 
 const CREDO_INFO_ARGS = ['credo', 'info', '--format', 'json', '--verbose'];
@@ -31,7 +31,7 @@ export function parseOutput<OutputType extends CredoCommandOutput>(stdout: strin
 
   if (!output.length) {
     log({
-      message: trunc`Command \`${ConfigurationProvider.instance.config.command} credo\`
+      message: trunc`Command \`${getCurrentConfiguration().command} credo\`
         returns empty output! Please check your configuration.
         Did you add or modify your dependencies? You might need to run \`mix deps.get\` or recompile.`,
       level: LogLevel.Error,
@@ -66,7 +66,7 @@ export function reportError({ error, stderr }: ReportErrorArguments): boolean {
   const errorOutput = stderr.toString();
   if ((error as any)?.code === 'ENOENT') {
     log({
-      message: trunc`\`${ConfigurationProvider.instance.config.command}\` is not executable.
+      message: trunc`\`${getCurrentConfiguration().command}\` is not executable.
       Try setting the option in this extension's configuration "elixir.credo.executePath"
       to the path of the mix binary.`,
       level: LogLevel.Error,
@@ -120,13 +120,13 @@ function executeCredoProcess(
   { cmdArgs, document, options, onFinishedExecution }: CredoExecutionArguments,
 ): cp.ChildProcess {
   log({
-    message: trunc`Executing credo command \`${[ConfigurationProvider.instance.config.command, ...cmdArgs].join(' ')}\`
+    message: trunc`Executing credo command \`${[getCurrentConfiguration().command, ...cmdArgs].join(' ')}\`
     for ${document.uri.fsPath} in directory ${options.cwd}`,
     level: LogLevel.Debug,
   });
 
   const credoProcess = cp.execFile(
-    ConfigurationProvider.instance.config.command,
+    getCurrentConfiguration().command,
     cmdArgs,
     options,
     onFinishedExecution,
@@ -143,7 +143,7 @@ function executeCredoProcess(
 export function executeCredo(
   { cmdArgs, document, options, onFinishedExecution }: CredoExecutionArguments,
 ): cp.ChildProcess[] {
-  if (ConfigurationProvider.instance.config.lintEverything) {
+  if (getCurrentConfiguration().lintEverything) {
     const credoProcess = executeCredoProcess({ cmdArgs, document, options, onFinishedExecution });
 
     return [credoProcess];
@@ -157,12 +157,12 @@ export function executeCredo(
 
   log({
     message: trunc`Retreiving credo information: Executing credo command
-    \`${[ConfigurationProvider.instance.config.command, ...CREDO_INFO_ARGS].join(' ')}\` for ${document.uri.fsPath}
+    \`${[getCurrentConfiguration().command, ...CREDO_INFO_ARGS].join(' ')}\` for ${document.uri.fsPath}
     in directory ${options.cwd}`,
     level: LogLevel.Debug,
   });
   // eslint-disable-next-line max-len
-  const infoProcess = cp.execFile(ConfigurationProvider.instance.config.command, CREDO_INFO_ARGS, options, (error, stdout, stderr) => {
+  const infoProcess = cp.execFile(getCurrentConfiguration().command, CREDO_INFO_ARGS, options, (error, stdout, stderr) => {
     if (reportError({ error, stderr })) return;
 
     const credoInformation = parseOutput<CredoInformation>(stdout);

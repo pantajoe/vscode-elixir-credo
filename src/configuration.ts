@@ -43,7 +43,7 @@ export function autodetectExecutePath(): string {
   return executePath;
 }
 
-export function getConfig(): CredoConfiguration {
+export function fetchConfig(): CredoConfiguration {
   const conf = vscode.workspace.getConfiguration('elixir.credo');
   const mixCommand = os.platform() === 'win32' ? MIX_COMMAND.win32 : MIX_COMMAND.unix;
 
@@ -56,4 +56,17 @@ export function getConfig(): CredoConfiguration {
     lintEverything: conf.get('lintEverything', false),
     enableDebug: conf.get('enableDebug', false),
   };
+}
+
+let configuration: CredoConfiguration;
+
+export function getCurrentConfiguration(): CredoConfiguration {
+  if (!configuration) {
+    configuration = { ...fetchConfig() };
+  }
+  return configuration;
+}
+
+export function reloadConfiguration(configurationFetcher: () => CredoConfiguration = fetchConfig): void {
+  configuration = { ...configurationFetcher() };
 }
