@@ -37,6 +37,32 @@ describe('Parse Credo Output', () => {
 
     context('when `column` and `column_end` are null', () => {
       context('when a trigger is given', () => {
+        context('when the trigger is anything but a string', () => {
+          def('documentContent', () => 'defmodule Web.WebhookController do\n  @key get_env(:my_app, :key)\nend\n');
+          def('credoIssue', () => ({
+            category: 'warning',
+            check: 'Credo.Check.Warning.ApplicationConfigInModuleAttribute',
+            column: null,
+            column_end: null,
+            filename: 'lib/web/controllers/webhook/webhook_controller.ex',
+            line_no: 2,
+            message: 'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2',
+            priority: 11,
+            scope: 'Web.WebhookController',
+            trigger: ['Application.get_env/2', 'Dep1'],
+          }));
+
+          it('marks the entire line', () => {
+            // eslint-disable-next-line max-len
+            expect($parsedDiagnostic.message).to.equal('Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)');
+            expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning);
+            expect($parsedDiagnostic.range.start.line).to.equal(1);
+            expect($parsedDiagnostic.range.start.character).to.equal(0);
+            expect($parsedDiagnostic.range.end.line).to.equal(1);
+            expect($parsedDiagnostic.range.end.character).to.equal(29);
+          });
+        });
+
         context('when the trigger is a method', () => {
           def('credoIssue', () => ({
             category: 'warning',
@@ -66,7 +92,7 @@ describe('Parse Credo Output', () => {
             });
           });
 
-          context('when the trigger occur in the given line', () => {
+          context('when the trigger occurs in the given line', () => {
             def('documentContent', () => 'defmodule Web.WebhookController do\n  @key get_env(:my_app, :key)\nend\n');
 
             it('marks the entire line', () => {

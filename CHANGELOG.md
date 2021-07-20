@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - rework internal `ConfigurationProvider`: instead of using a singleton, use functional approach
 
+### Fixed
+
+- Fixes evaluation of triggers within Credo issues as they can be arrays or other unknown types (#27)
+
 ## [0.4.5] - 2021-07-04
 
 ### Fixed
