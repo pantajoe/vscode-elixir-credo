@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.5.0] - 2021-07-20
+
 ### Changed
 
 - rework internal `ConfigurationProvider`: instead of using a singleton, use functional approach
