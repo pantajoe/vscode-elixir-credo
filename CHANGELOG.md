@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None.
+### Added
+
+- Allow specifying `Checks With Tag(s)`, so only checks with specified tags are used by credo (#30)
+- Allow specifying `Checks Without Tag(s)`, so checks with specified tags are ignored by credo (#30)
+
+### Changed
+
+- Changed display name to `Credo (Elixir Linter)`
 
 ## [0.5.0] - 2021-07-20
 
