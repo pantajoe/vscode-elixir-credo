@@ -45,7 +45,7 @@
         "properties": {
           "elixir.credo.configurationFile": {
             "title": "Configuration File",
-            "description": "Configures which configuration file Credo should use. Default is `.credo.exs`.",
+            "markdownDescription": "Configures which configuration file Credo should use. Default is `.credo.exs`.",
             "type": "string",
             "default": ".credo.exs"
           },
@@ -57,7 +57,7 @@
           },
           "elixir.credo.executePath": {
             "title": "Execute Path",
-            "description": "Specifies the execute path where mix can be run from, e.g., `/usr/bin/.asdf/shims`",
+            "markdownDescription": "Specifies the execute path where mix can be run from, e.g., `/usr/bin/.asdf/shims`",
             "type": "string",
             "default": ""
           },
@@ -89,13 +89,13 @@
           },
           "elixir.credo.ignoreWarningMessages": {
             "title": "Ignore Warning Messages",
-            "description": "Ignore messages \"Found multiple files ...\", \"... file does not exist. Ignoring ...\"",
+            "markdownDescription": "Ignore messages like `Found multiple files ...`, `.. file does not exist. Ignoring ...`",
             "type": "boolean",
             "default": false
           },
           "elixir.credo.lintEverything": {
             "title": "Lint Everything",
-            "description": "Lint every Elixir file, regardless of your .credo.exs config",
+            "markdownDescription": "Lint every Elixir file, regardless of your `.credo.exs` config",
             "type": "boolean",
             "default": false
           },
