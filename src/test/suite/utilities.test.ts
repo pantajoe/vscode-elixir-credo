@@ -12,6 +12,8 @@ import * as loggingModule from '../../logger';
 const { LogLevel } = loggingModule;
 
 declare let $config: configurationModule.CredoConfiguration;
+declare let $checksWithTag: string[];
+declare let $checksWithoutTag: string[];
 declare let $documentUri: vscode.Uri;
 declare let $mainWorkspacePath: string;
 declare let $otherWorkspacePath: string;
@@ -96,13 +98,16 @@ describe('Utilities', () => {
     def('configurationFile', () => '.credo.exs');
     def('mainWorkspacePath', () => path.resolve(__dirname));
     def('otherWorkspacePath', () => path.resolve(__dirname, '..', 'fixtures'));
-    def('config', () => ({
+    def('config', (): configurationModule.CredoConfiguration => ({
       command: 'mix',
       configurationFile: $configurationFile,
       credoConfiguration: 'default',
+      checksWithTag: [],
+      checksWithoutTag: [],
       strictMode: false,
       ignoreWarningMessages: false,
       lintEverything: false,
+      enableDebug: false,
     }));
 
     let workspaceFolderStub: SinonStub<any[], vscode.WorkspaceFolder[]>;
@@ -245,17 +250,85 @@ describe('Utilities', () => {
     });
 
     context('with enabled strict-mode', () => {
-      def('config', () => ({
+      def('config', (): configurationModule.CredoConfiguration => ({
         command: 'mix',
         configurationFile: '.credo.exs',
         credoConfiguration: 'default',
+        checksWithTag: [],
+        checksWithoutTag: [],
         strictMode: true,
         ignoreWarningMessages: false,
         lintEverything: false,
+        enableDebug: false,
       }));
 
       it('includes `--strict-mode`', () => {
         expect(getCommandArguments()).to.include('--strict');
+      });
+    });
+
+    context('with configured tags', () => {
+      def('checksWithTag', () => []);
+      def('checksWithoutTag', () => []);
+      def('config', (): configurationModule.CredoConfiguration => ({
+        command: 'mix',
+        configurationFile: '.credo.exs',
+        credoConfiguration: 'default',
+        checksWithTag: $checksWithTag,
+        checksWithoutTag: $checksWithoutTag,
+        strictMode: false,
+        ignoreWarningMessages: false,
+        lintEverything: false,
+        enableDebug: false,
+      }));
+
+      context('when checksWithTag are specified', () => {
+        def('checksWithTag', () => ['no_editor', 'no_test']);
+
+        it('includes the checksWithTag as arguments', () => {
+          assert.match(
+            getCommandArguments(),
+            [
+              'credo', '--format', 'json', '--read-from-stdin',
+              '--config-name', 'default',
+              '--checks-with-tag', 'no_editor',
+              '--checks-with-tag', 'no_test',
+            ],
+          );
+        });
+      });
+
+      context('when checksWithoutTag are specified', () => {
+        def('checksWithoutTag', () => ['no_editor', 'no_test']);
+
+        it('includes the checksWithoutTag as arguments', () => {
+          assert.match(
+            getCommandArguments(),
+            [
+              'credo', '--format', 'json', '--read-from-stdin',
+              '--config-name', 'default',
+              '--checks-without-tag', 'no_editor',
+              '--checks-without-tag', 'no_test',
+            ],
+          );
+        });
+      });
+
+      context('when both settings are specified', () => {
+        def('checksWithTag', () => ['no_editor', 'no_test']);
+        def('checksWithoutTag', () => ['broken']);
+
+        it('prioritizes checksWithTag over checksWithoutTag', () => {
+          assert.match(
+            getCommandArguments(),
+            [
+              'credo', '--format', 'json', '--read-from-stdin',
+              '--config-name', 'default',
+              '--checks-with-tag', 'no_editor',
+              '--checks-with-tag', 'no_test',
+            ],
+          );
+        });
       });
     });
   });

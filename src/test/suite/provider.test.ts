@@ -164,13 +164,16 @@ describe('CredoProvider', () => {
       });
 
       context('when lintEverything is true', () => {
-        def('config', () => ({
+        def('config', (): configurationModule.CredoConfiguration => ({
           command: 'mix',
           configurationFile: '.credo.exs',
           credoConfiguration: 'default',
+          checksWithTag: [],
+          checksWithoutTag: [],
           strictMode: false,
           ignoreWarningMessages: false,
           lintEverything: true,
+          enableDebug: false,
         }));
 
         it('correctly sets a diagnostic collection for the current document', () => {
@@ -297,13 +300,16 @@ describe('CredoProvider', () => {
       });
 
       context('when the extension only lints the files specified through the credo configuration file', () => {
-        def('config', () => ({
+        def('config', (): configurationModule.CredoConfiguration => ({
           command: 'mix',
           configurationFile: '.credo.exs',
           credoConfiguration: 'default',
+          checksWithTag: [],
+          checksWithoutTag: [],
           strictMode: false,
           ignoreWarningMessages: false,
           lintEverything: false,
+          enableDebug: false,
         }));
 
         context('when the current document should be linted', () => {

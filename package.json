@@ -5,7 +5,7 @@
     "name": "pantajoe",
     "url": "https://www.github.com/pantajoe"
   },
-  "displayName": "Elixir Linter (Credo)",
+  "displayName": "Credo (Elixir Linter)",
   "description": "VSC Support for Elixir linter 'Credo'.",
   "version": "0.5.0",
   "engines": {
@@ -41,11 +41,11 @@
     ],
     "configuration": [
       {
-        "title": "Elixir-Credo Configuration",
+        "title": "Credo (Elixir Linter)",
         "properties": {
           "elixir.credo.configurationFile": {
             "title": "Configuration File",
-            "description": "Configures which configuration file Credo should use. Default is `.credo.exs`.",
+            "markdownDescription": "Configures which configuration file Credo should use. Default is `.credo.exs`.",
             "type": "string",
             "default": ".credo.exs"
           },
@@ -57,7 +57,7 @@
           },
           "elixir.credo.executePath": {
             "title": "Execute Path",
-            "description": "Specifies the execute path where mix can be run from, e.g., `/usr/bin/.asdf/shims`",
+            "markdownDescription": "Specifies the execute path where mix can be run from, e.g., `/usr/bin/.asdf/shims`",
             "type": "string",
             "default": ""
           },
@@ -67,15 +67,35 @@
             "type": "boolean",
             "default": false
           },
+          "elixir.credo.checksWithTag": {
+            "title": "Checks With Tag",
+            "markdownDescription": "Only include checks that match the given tag. This setting takes precedence over `#elixir.credo.checksWithoutTag#`.\n\n(see [Credo Docs](https://hexdocs.pm/credo/check_params.html#tags))",
+            "type": "array",
+            "default": [],
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "elixir.credo.checksWithoutTag": {
+            "title": "Checks Without Tag",
+            "markdownDescription": "Ignore checks that match the given tag. This setting is overridden by `#elixir.credo.checksWithTag#`.\n\n(see [Credo Docs](https://hexdocs.pm/credo/check_params.html#tags))",
+            "type": "array",
+            "default": [],
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          },
           "elixir.credo.ignoreWarningMessages": {
             "title": "Ignore Warning Messages",
-            "description": "Ignore messages \"Found multiple files ...\", \"... file does not exist. Ignoring ...\"",
+            "markdownDescription": "Ignore messages like `Found multiple files ...`, `.. file does not exist. Ignoring ...`",
             "type": "boolean",
             "default": false
           },
           "elixir.credo.lintEverything": {
             "title": "Lint Everything",
-            "description": "Lint every Elixir file, regardless of your .credo.exs config",
+            "markdownDescription": "Lint every Elixir file, regardless of your `.credo.exs` config",
             "type": "boolean",
             "default": false
           },

@@ -76,6 +76,8 @@ describe('Configuration', () => {
           command: 'mix',
           configurationFile: '.credo.exs',
           credoConfiguration: 'default',
+          checksWithTag: [],
+          checksWithoutTag: [],
           strictMode: false,
           ignoreWarningMessages: false,
           lintEverything: false,
@@ -106,10 +108,12 @@ describe('Configuration', () => {
 
     context('when the config changes', () => {
       beforeEach(() => {
-        const initialConfig = {
+        const initialConfig: configurationModule.CredoConfiguration = {
           command: 'mix',
           configurationFile: '.credo.exs',
           credoConfiguration: 'default',
+          checksWithTag: [],
+          checksWithoutTag: [],
           strictMode: false,
           ignoreWarningMessages: false,
           lintEverything: false,

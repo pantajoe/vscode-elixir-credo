@@ -40,7 +40,7 @@ describe('Extension Tests', () => {
       sandbox.assert.calledWith(
         logSpy,
         {
-          message: 'Elixir Linter (Credo) initiated successfully.',
+          message: 'Credo (Elixir Linter) initiated successfully.',
           level: LogLevel.Info,
         },
       );

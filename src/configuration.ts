@@ -16,6 +16,8 @@ export interface CredoConfiguration {
   ignoreWarningMessages: boolean;
   lintEverything: boolean;
   enableDebug: boolean;
+  checksWithTag: string[];
+  checksWithoutTag: string[];
 }
 
 export function autodetectExecutePath(): string {
@@ -52,6 +54,8 @@ export function fetchConfig(): CredoConfiguration {
     configurationFile: conf.get('configurationFile', '.credo.exs'),
     credoConfiguration: conf.get('credoConfiguration', 'default'),
     strictMode: conf.get('strictMode', false),
+    checksWithTag: conf.get('checksWithTag', []),
+    checksWithoutTag: conf.get('checksWithoutTag', []),
     ignoreWarningMessages: conf.get('ignoreWarningMessages', false),
     lintEverything: conf.get('lintEverything', false),
     enableDebug: conf.get('enableDebug', false),

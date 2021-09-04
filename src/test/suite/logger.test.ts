@@ -18,10 +18,12 @@ describe('Loggging', () => {
   def('message', () => 'Sample message');
   def('ignoreWarningMessages', () => false);
   def('enableDebug', () => false);
-  def('config', () => ({
+  def('config', (): configurationModule.CredoConfiguration => ({
     command: 'mix',
     configurationFile: '.credo.exs',
     credoConfiguration: 'default',
+    checksWithTag: [],
+    checksWithoutTag: [],
     strictMode: false,
     ignoreWarningMessages: $ignoreWarningMessages,
     lintEverything: false,

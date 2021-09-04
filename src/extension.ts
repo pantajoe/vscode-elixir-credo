@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
     credo.clear({ document });
   });
 
-  log({ message: 'Elixir Linter (Credo) initiated successfully.', level: LogLevel.Info });
+  log({ message: 'Credo (Elixir Linter) initiated successfully.', level: LogLevel.Info });
 }
 
 export function deactivate() {}
