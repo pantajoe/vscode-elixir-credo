@@ -65,6 +65,16 @@ export function getCommandArguments(document?: vscode.TextDocument): string[] {
     commandArguments.push('--config-name', extensionConfig.credoConfiguration);
   }
 
+  if (extensionConfig.checksWithTag.length) {
+    extensionConfig.checksWithTag.forEach((tag) => {
+      commandArguments.push('--checks-with-tag', tag);
+    });
+  } else if (extensionConfig.checksWithoutTag.length) {
+    extensionConfig.checksWithoutTag.forEach((tag) => {
+      commandArguments.push('--checks-without-tag', tag);
+    });
+  }
+
   if (extensionConfig.strictMode) {
     commandArguments.push('--strict');
   }

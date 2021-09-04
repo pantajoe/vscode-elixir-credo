@@ -67,6 +67,26 @@
             "type": "boolean",
             "default": false
           },
+          "elixir.credo.checksWithTag": {
+            "title": "Checks With Tag",
+            "markdownDescription": "Only include checks that match the given tag. This setting takes precedence over `#elixir.credo.checksWithoutTag#`.\n\n(see [Credo Docs](https://hexdocs.pm/credo/check_params.html#tags))",
+            "type": "array",
+            "default": [],
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "elixir.credo.checksWithoutTag": {
+            "title": "Checks Without Tag",
+            "markdownDescription": "Ignore checks that match the given tag. This setting is overridden by `#elixir.credo.checksWithTag#`.\n\n(see [Credo Docs](https://hexdocs.pm/credo/check_params.html#tags))",
+            "type": "array",
+            "default": [],
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          },
           "elixir.credo.ignoreWarningMessages": {
             "title": "Ignore Warning Messages",
             "description": "Ignore messages \"Found multiple files ...\", \"... file does not exist. Ignoring ...\"",
