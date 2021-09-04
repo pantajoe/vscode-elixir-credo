@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.6.0] - 2021-09-04
+
 ### Added
 
 - Allow specifying `Checks With Tag(s)`, so only checks with specified tags are used by credo (#30)
