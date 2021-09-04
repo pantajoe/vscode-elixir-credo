@@ -5,7 +5,7 @@
     "name": "pantajoe",
     "url": "https://www.github.com/pantajoe"
   },
-  "displayName": "Elixir Linter (Credo)",
+  "displayName": "Credo (Elixir Linter)",
   "description": "VSC Support for Elixir linter 'Credo'.",
   "version": "0.5.0",
   "engines": {
@@ -41,7 +41,7 @@
     ],
     "configuration": [
       {
-        "title": "Elixir-Credo Configuration",
+        "title": "Credo (Elixir Linter)",
         "properties": {
           "elixir.credo.configurationFile": {
             "title": "Configuration File",

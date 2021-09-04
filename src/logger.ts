@@ -13,7 +13,7 @@ export interface LogArguments {
   level?: LogLevel,
 }
 
-export const outputChannel = vscode.window.createOutputChannel('Elixir Linter (Credo)');
+export const outputChannel = vscode.window.createOutputChannel('Credo (Elixir Linter)');
 
 function logToOutputChannel(message: string): void {
   outputChannel.appendLine(`> ${message}\n`);

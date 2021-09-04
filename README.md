@@ -1,4 +1,4 @@
-# VS Code – Elixir Linter (Credo)
+# VS Code – Credo (Elixir Linter)
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pantajoe/vscode-elixir-credo/CI?style=for-the-badge)](https://github.com/pantajoe/vscode-elixir-credo/actions)
 [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/pantajoe.vscode-elixir-credo?label=VS%20Code%20Downloads&style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=pantajoe.vscode-elixir-credo)
