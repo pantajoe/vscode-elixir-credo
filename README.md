@@ -43,6 +43,22 @@ This extension contributes the following settings:
 If this warning pops up, the vscode extension's credo child process does not have the path of the mix binary in its `PATH`.
 Thus, try to set the correct path of the `mix` binary in the configuration's settings under `"elixir.credo.executePath"` (Elixir > Credo > **Execute Path**).
 
+> "Command `/bin/mix credo` returns empty output!"
+
+This message indicates that the extension cannot get an output from Credo. The problem could be caused by:
+- Credo or one of its dependencies is missing.
+- Credo has a problem reading your project's configuration.
+
+First make sure Credo is installed and that Credo has the dependencies installed locally it requires to function. Install them to local archive by running the following commands.
+
+```bash
+mix archive.install hex credo
+mix archive.install hex bunt
+mix archive.install hex jason
+```
+
+Then try to generate `.credo.exs` for your project by running `mix credo gen.config` in your project's root folder. If this step fails the output could tell you the exact reason for the failure. The problem can be something as simple as a minor syntax error in your `config/dev.exs`.
+
 ## Changelog
 
 See [Changelog](/CHANGELOG.md)
