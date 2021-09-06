@@ -1,4 +1,4 @@
-# VS Code – Credo (Elixir Linter)
+# VS Code Credo (Elixir Linter)
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pantajoe/vscode-elixir-credo/CI?style=for-the-badge)](https://github.com/pantajoe/vscode-elixir-credo/actions)
 [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/pantajoe.vscode-elixir-credo?label=VS%20Code%20Downloads&style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=pantajoe.vscode-elixir-credo)
@@ -32,6 +32,8 @@ This extension contributes the following settings:
 * `elixir.credo.credoConfiguration`: name of the configuration Credo should use. Uses the default configuration per default (`default`).
 * `elixir.credo.strictMode`: whether to utilize Credo's strict mode when linting.
 * `elixir.credo.executePath`: execute path of the `mix` executable
+* `elixir.credo.checksWithTag`: specify tags of those checks which should be used in VS Code (all other checks will be ignored)
+* `elixir.credo.checksWithoutTag`: specify tags of checks which should be ignored in VS Code
 * `elixir.credo.ignoreWarningMessages`: ignore warning messages (concerning finding the configuration file)
 * `elixir.credo.lintEverything`: lint any elixir file (even if excluded in the Credo configuration file)
 * `elixir.credo.enableDebug`: toggle extensive logging to extension's output channel
@@ -46,8 +48,9 @@ Thus, try to set the correct path of the `mix` binary in the configuration's set
 > "Command `/bin/mix credo` returns empty output!"
 
 This message indicates that the extension cannot get an output from Credo. The problem could be caused by:
-- Credo or one of its dependencies is missing.
-- Credo has a problem reading your project's configuration.
+
+* Credo or one of its dependencies is missing.
+* Credo has a problem reading your project's configuration.
 
 First make sure Credo is installed and that Credo has the dependencies installed locally it requires to function. Install them to local archive by running the following commands.
 
@@ -57,7 +60,14 @@ mix archive.install hex bunt
 mix archive.install hex jason
 ```
 
-Then try to generate `.credo.exs` for your project by running `mix credo gen.config` in your project's root folder. If this step fails the output could tell you the exact reason for the failure. The problem can be something as simple as a minor syntax error in your `config/dev.exs`.
+Then try to generate `.credo.exs` for your project by running `mix credo gen.config` in your project's root folder.
+If this step fails the output could tell you the exact reason for the failure. The problem can be something as simple as a minor syntax error in your `config/dev.exs`.
+
+**Hint:**
+
+Sometimes, any problem you might have is caused by VS Code not having the same `PATH` environment variable as your shell.
+To make sure VS Code has the same environment as your shell,
+simply close all VS Code processes and open VS Code from you command line by executing the binary `code` in your shell of choice.
 
 ## Changelog
 
