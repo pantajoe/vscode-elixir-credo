@@ -47,13 +47,15 @@
             "title": "Configuration File",
             "markdownDescription": "Configures which configuration file Credo should use. Default is `.credo.exs`.",
             "type": "string",
-            "default": ".credo.exs"
+            "default": ".credo.exs",
+            "scope": "resource"
           },
           "elixir.credo.credoConfiguration": {
             "title": "Credo Configuration Name",
             "description": "Configures the name of the used configuration (Credo supports having multiple configurations).",
             "type": "string",
-            "default": "default"
+            "default": "default",
+            "scope": "resource"
           },
           "elixir.credo.executePath": {
             "title": "Execute Path",
@@ -65,7 +67,8 @@
             "title": "Strict Mode",
             "description": "Specifies whether to activate Credo's strict mode",
             "type": "boolean",
-            "default": false
+            "default": false,
+            "scope": "resource"
           },
           "elixir.credo.checksWithTag": {
             "title": "Checks With Tag",
@@ -75,7 +78,8 @@
             "uniqueItems": true,
             "items": {
               "type": "string"
-            }
+            },
+            "scope": "resource"
           },
           "elixir.credo.checksWithoutTag": {
             "title": "Checks Without Tag",
@@ -85,7 +89,8 @@
             "uniqueItems": true,
             "items": {
               "type": "string"
-            }
+            },
+            "scope": "resource"
           },
           "elixir.credo.ignoreWarningMessages": {
             "title": "Ignore Warning Messages",
@@ -97,7 +102,8 @@
             "title": "Lint Everything",
             "markdownDescription": "Lint every Elixir file, regardless of your `.credo.exs` config",
             "type": "boolean",
-            "default": false
+            "default": false,
+            "scope": "resource"
           },
           "elixir.credo.enableDebug": {
             "title": "Enable Debug Mode",
