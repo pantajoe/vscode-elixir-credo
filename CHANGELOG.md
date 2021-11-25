@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None.
 
+## [0.6.2] - 2021-11-25
+
+- Make most configurations also available in folder settings.
+
 ## [0.6.1] - 2021-09-06
 
 - Small improvements to README
