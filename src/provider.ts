@@ -2,24 +2,19 @@ import * as vscode from 'vscode';
 import { TaskQueue, Task } from './task-queue';
 import { createLintDocumentCallback, executeCredo } from './execution';
 import { log, LogLevel } from './logger';
-import {
-  isFileUri,
-  getCurrentPath,
-  getCommandArguments,
-  getCommandEnvironment,
-} from './utilities';
+import { isFileUri, getCurrentPath, getCommandArguments, getCommandEnvironment } from './utilities';
 
 export interface CredoProviderOptions {
-  diagnosticCollection: vscode.DiagnosticCollection,
+  diagnosticCollection: vscode.DiagnosticCollection;
 }
 
 export interface CredoExecutionArgs {
-  document: vscode.TextDocument,
-  onComplete?: (() => void) | undefined,
+  document: vscode.TextDocument;
+  onComplete?: (() => void) | undefined;
 }
 
 export interface CredoClearArgs {
-  document: vscode.TextDocument,
+  document: vscode.TextDocument;
 }
 
 export class CredoProvider {
@@ -33,11 +28,7 @@ export class CredoProvider {
   }
 
   public execute({ document, onComplete }: CredoExecutionArgs): void {
-    if (
-      (document.languageId !== 'elixir')
-      || document.isUntitled
-      || !isFileUri(document.uri)
-    ) {
+    if (document.languageId !== 'elixir' || document.isUntitled || !isFileUri(document.uri)) {
       // git diff has elixir-mode. but it is Untitled file.
       return;
     }
@@ -61,7 +52,10 @@ export class CredoProvider {
         }),
       });
 
-      return () => processes.forEach((process) => { process.kill(); });
+      return () =>
+        processes.forEach((process) => {
+          process.kill();
+        });
     });
 
     this.taskQueue.enqueue(task);

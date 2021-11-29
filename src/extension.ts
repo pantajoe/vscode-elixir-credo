@@ -36,4 +36,5 @@ export function activate(context: vscode.ExtensionContext) {
   log({ message: 'Credo (Elixir Linter) initiated successfully.', level: LogLevel.Info });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export function deactivate() {}

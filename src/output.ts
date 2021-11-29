@@ -1,5 +1,3 @@
-export interface CredoCommandOutput {}
-
 export type CredoSeverity = 'readability' | 'design' | 'consistency' | 'refactor' | 'warning';
 
 export interface CredoIssue {
@@ -14,18 +12,20 @@ export interface CredoIssue {
   trigger: string | null;
 }
 
-export interface CredoOutput extends CredoCommandOutput {
+export interface CredoOutput {
   issues: CredoIssue[];
 }
 
-export interface CredoInformation extends CredoCommandOutput {
+export interface CredoInformation {
   config: {
-    checks: string[],
-    files: string[],
+    checks: string[];
+    files: string[];
   };
   system: {
-    credo: string,
-    elixir: string,
-    erlang: string,
+    credo: string;
+    elixir: string;
+    erlang: string;
   };
 }
+
+export type CredoCommandOutput = CredoInformation | CredoOutput;

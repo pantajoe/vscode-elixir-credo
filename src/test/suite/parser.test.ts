@@ -54,7 +54,9 @@ describe('Parse Credo Output', () => {
 
           it('marks the entire line', () => {
             // eslint-disable-next-line max-len
-            expect($parsedDiagnostic.message).to.equal('Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)');
+            expect($parsedDiagnostic.message).to.equal(
+              'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)',
+            );
             expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning);
             expect($parsedDiagnostic.range.start.line).to.equal(1);
             expect($parsedDiagnostic.range.start.character).to.equal(0);
@@ -79,11 +81,17 @@ describe('Parse Credo Output', () => {
 
           context('when the trigger occurs in the given line', () => {
             // eslint-disable-next-line max-len
-            def('documentContent', () => 'defmodule Web.WebhookController do\n  @key Application.get_env(:my_app, :webhook_signing_key)\nend\n');
+            def(
+              'documentContent',
+              () =>
+                'defmodule Web.WebhookController do\n  @key Application.get_env(:my_app, :webhook_signing_key)\nend\n',
+            );
 
             it('marks the substring of the line', () => {
               // eslint-disable-next-line max-len
-              expect($parsedDiagnostic.message).to.equal('Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)');
+              expect($parsedDiagnostic.message).to.equal(
+                'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)',
+              );
               expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning);
               expect($parsedDiagnostic.range.start.line).to.equal(1);
               expect($parsedDiagnostic.range.start.character).to.equal(7);
@@ -97,7 +105,9 @@ describe('Parse Credo Output', () => {
 
             it('marks the entire line', () => {
               // eslint-disable-next-line max-len
-              expect($parsedDiagnostic.message).to.equal('Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)');
+              expect($parsedDiagnostic.message).to.equal(
+                'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)',
+              );
               expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning);
               expect($parsedDiagnostic.range.start.line).to.equal(1);
               expect($parsedDiagnostic.range.start.character).to.equal(0);

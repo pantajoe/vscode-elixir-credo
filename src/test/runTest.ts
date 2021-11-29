@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { runTests } from 'vscode-test';
 import * as path from 'path';
 

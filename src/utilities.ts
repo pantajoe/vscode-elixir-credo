@@ -22,7 +22,7 @@ export function makeZeroBasedIndex(index: number | undefined | null): number {
 }
 
 export function trunc(strings: TemplateStringsArray, ...placeholders: any[]): string {
-  return strings.reduce((result, string, i) => (result + placeholders[i - 1] + string)).replace(/$\n^\s*/gm, ' ');
+  return strings.reduce((result, string, i) => result + placeholders[i - 1] + string).replace(/$\n^\s*/gm, ' ');
 }
 
 export function isFileUri(uri: vscode.Uri): boolean {
@@ -43,9 +43,9 @@ export function getCommandArguments(document?: vscode.TextDocument): string[] {
   const currentWorkspaceFolder = document?.uri ? vscode.workspace.getWorkspaceFolder(document.uri) : undefined;
   const currentWorkspaces = currentWorkspaceFolder ? [currentWorkspaceFolder] : vscode.workspace.workspaceFolders ?? [];
 
-  const found = currentWorkspaces.map(
-    (ws: vscode.WorkspaceFolder) => path.join(ws.uri.fsPath, configurationFile),
-  ).filter((fullPath: string) => fs.existsSync(fullPath));
+  const found = currentWorkspaces
+    .map((ws: vscode.WorkspaceFolder) => path.join(ws.uri.fsPath, configurationFile))
+    .filter((fullPath: string) => fs.existsSync(fullPath));
 
   // add unchanged value of `configurationFile` in case it is an absolute path
   if (path.isAbsolute(configurationFile) && !found.includes(configurationFile) && fs.existsSync(configurationFile)) {

@@ -13,20 +13,20 @@ const CREDO_INFO_ARGS = ['credo', 'info', '--format', 'json', '--verbose'];
 type LintDocumentCallback = (error: cp.ExecException | null, stdout: string | Buffer, stderr: string | Buffer) => void;
 
 interface CreateLintDocumentCallbackArguments {
-  token: TaskToken,
-  diagnosticCollection: vscode.DiagnosticCollection,
-  document: vscode.TextDocument,
-  onComplete?: () => void,
+  token: TaskToken;
+  diagnosticCollection: vscode.DiagnosticCollection;
+  document: vscode.TextDocument;
+  onComplete?: () => void;
 }
 
 export interface CredoExecutionArguments {
-  cmdArgs: string[],
-  document: vscode.TextDocument,
-  options: cp.ExecFileOptions,
-  onFinishedExecution: LintDocumentCallback,
+  cmdArgs: string[];
+  document: vscode.TextDocument;
+  options: cp.ExecFileOptions;
+  onFinishedExecution: LintDocumentCallback;
 }
 
-export function parseOutput<OutputType extends CredoCommandOutput>(stdout: string | Buffer): OutputType | null {
+export function parseOutput<T extends CredoCommandOutput>(stdout: string | Buffer): T | null {
   const output = stdout.toString();
 
   if (!output.length) {
@@ -57,8 +57,8 @@ export function parseOutput<OutputType extends CredoCommandOutput>(stdout: strin
 }
 
 interface ReportErrorArguments {
-  error: cp.ExecException | null,
-  stderr: string | Buffer,
+  error: cp.ExecException | null;
+  stderr: string | Buffer;
 }
 
 // checking whether running credo command results in an error
@@ -93,9 +93,12 @@ export function reportError({ error, stderr }: ReportErrorArguments): boolean {
   return false;
 }
 
-export function createLintDocumentCallback(
-  { token, diagnosticCollection, document, onComplete }: CreateLintDocumentCallbackArguments,
-): LintDocumentCallback {
+export function createLintDocumentCallback({
+  token,
+  diagnosticCollection,
+  document,
+  onComplete,
+}: CreateLintDocumentCallbackArguments): LintDocumentCallback {
   const { uri } = document;
 
   return (error, stdout, stderr) => {
@@ -116,21 +119,19 @@ export function createLintDocumentCallback(
   };
 }
 
-function executeCredoProcess(
-  { cmdArgs, document, options, onFinishedExecution }: CredoExecutionArguments,
-): cp.ChildProcess {
+function executeCredoProcess({
+  cmdArgs,
+  document,
+  options,
+  onFinishedExecution,
+}: CredoExecutionArguments): cp.ChildProcess {
   log({
     message: trunc`Executing credo command \`${[getCurrentConfiguration().command, ...cmdArgs].join(' ')}\`
     for ${document.uri.fsPath} in directory ${options.cwd}`,
     level: LogLevel.Debug,
   });
 
-  const credoProcess = cp.execFile(
-    getCurrentConfiguration().command,
-    cmdArgs,
-    options,
-    onFinishedExecution,
-  );
+  const credoProcess = cp.execFile(getCurrentConfiguration().command, cmdArgs, options, onFinishedExecution);
 
   if (credoProcess.stdin) {
     credoProcess.stdin.write(document.getText());
@@ -140,9 +141,12 @@ function executeCredoProcess(
   return credoProcess;
 }
 
-export function executeCredo(
-  { cmdArgs, document, options, onFinishedExecution }: CredoExecutionArguments,
-): cp.ChildProcess[] {
+export function executeCredo({
+  cmdArgs,
+  document,
+  options,
+  onFinishedExecution,
+}: CredoExecutionArguments): cp.ChildProcess[] {
   if (getCurrentConfiguration().lintEverything) {
     const credoProcess = executeCredoProcess({ cmdArgs, document, options, onFinishedExecution });
 
@@ -162,23 +166,30 @@ export function executeCredo(
     level: LogLevel.Debug,
   });
   // eslint-disable-next-line max-len
-  const infoProcess = cp.execFile(getCurrentConfiguration().command, CREDO_INFO_ARGS, options, (error, stdout, stderr) => {
-    if (reportError({ error, stderr })) return;
+  const infoProcess = cp.execFile(
+    getCurrentConfiguration().command,
+    CREDO_INFO_ARGS,
+    options,
+    (error, stdout, stderr) => {
+      if (reportError({ error, stderr })) return;
 
-    const credoInformation = parseOutput<CredoInformation>(stdout);
-    if (!credoInformation) return;
+      const credoInformation = parseOutput<CredoInformation>(stdout);
+      if (!credoInformation) return;
 
-    // file paths of credo are shown in UNIX style with a '/' path separator
-    credoInformation.config.files = credoInformation.config.files.map((filePath) => filePath.replace(/\//g, path.sep));
+      // file paths of credo are shown in UNIX style with a '/' path separator
+      credoInformation.config.files = credoInformation.config.files.map((filePath) =>
+        filePath.replace(/\//g, path.sep),
+      );
 
-    if (!credoInformation.config.files.includes(relativeDocumentPath)) {
-      onFinishedExecution(null, '{ "issues": [] }', '');
-      return;
-    }
+      if (!credoInformation.config.files.includes(relativeDocumentPath)) {
+        onFinishedExecution(null, '{ "issues": [] }', '');
+        return;
+      }
 
-    const credoProcess = executeCredoProcess({ cmdArgs, document, options, onFinishedExecution });
-    processes.push(credoProcess);
-  });
+      const credoProcess = executeCredoProcess({ cmdArgs, document, options, onFinishedExecution });
+      processes.push(credoProcess);
+    },
+  );
   processes.push(infoProcess);
 
   return processes;

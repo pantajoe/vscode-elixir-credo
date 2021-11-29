@@ -37,14 +37,12 @@ describe('Credo Execution Functions', () => {
         it('logs an error', () => {
           parse();
 
-          sandbox.assert.calledWith(
-            logSpy,
-            {
-              level: loggerModule.LogLevel.Error,
-              // eslint-disable-next-line max-len
-              message: 'Command `mix credo` returns empty output! Please check your configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
-            },
-          );
+          sandbox.assert.calledWith(logSpy, {
+            level: loggerModule.LogLevel.Error,
+            // eslint-disable-next-line max-len
+            message:
+              'Command `mix credo` returns empty output! Please check your configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
+          });
         });
       });
 
@@ -58,19 +56,18 @@ describe('Credo Execution Functions', () => {
         it('logs an error', () => {
           parse();
 
-          sandbox.assert.calledWith(
-            logSpy,
-            {
-              level: loggerModule.LogLevel.Error,
-              // eslint-disable-next-line max-len
-              message: 'Error on parsing output (It might be non-JSON output): "No JSON"',
-            },
-          );
+          sandbox.assert.calledWith(logSpy, {
+            level: loggerModule.LogLevel.Error,
+            // eslint-disable-next-line max-len
+            message: 'Error on parsing output (It might be non-JSON output): "No JSON"',
+          });
         });
       });
 
       context('with valid JSON output', () => {
-        def('output', () => `
+        def(
+          'output',
+          () => `
           Some warning message.
           {
             "config": {
@@ -83,15 +80,14 @@ describe('Credo Execution Functions', () => {
               "erlang": "23"
             }
           }
-        `);
+        `,
+        );
 
         it('returns parsed credo information', () => {
           expect(parse()).to.deep.equal({
             config: {
               checks: [],
-              files: [
-                'lib/sample_web/telemetry.ex',
-              ],
+              files: ['lib/sample_web/telemetry.ex'],
             },
             system: {
               credo: '1.5.4-ref.main.9fe4739+uncommittedchanges',
@@ -122,14 +118,12 @@ describe('Credo Execution Functions', () => {
         it('logs an error', () => {
           parse();
 
-          sandbox.assert.calledWith(
-            logSpy,
-            {
-              level: loggerModule.LogLevel.Error,
-              // eslint-disable-next-line max-len
-              message: 'Command `mix credo` returns empty output! Please check your configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
-            },
-          );
+          sandbox.assert.calledWith(logSpy, {
+            level: loggerModule.LogLevel.Error,
+            // eslint-disable-next-line max-len
+            message:
+              'Command `mix credo` returns empty output! Please check your configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
+          });
         });
       });
 
@@ -143,19 +137,18 @@ describe('Credo Execution Functions', () => {
         it('logs an error', () => {
           parse();
 
-          sandbox.assert.calledWith(
-            logSpy,
-            {
-              level: loggerModule.LogLevel.Error,
-              // eslint-disable-next-line max-len
-              message: 'Error on parsing output (It might be non-JSON output): "No JSON"',
-            },
-          );
+          sandbox.assert.calledWith(logSpy, {
+            level: loggerModule.LogLevel.Error,
+            // eslint-disable-next-line max-len
+            message: 'Error on parsing output (It might be non-JSON output): "No JSON"',
+          });
         });
       });
 
       context('with valid JSON output', () => {
-        def('output', () => `
+        def(
+          'output',
+          () => `
           Some warning message.
           {
             "issues": [{
@@ -170,21 +163,24 @@ describe('Credo Execution Functions', () => {
               "trigger": "SampleWeb.Telemetry"
             }]
           }
-        `);
+        `,
+        );
 
         it('returns parsed credo output', () => {
           expect(parse()).to.deep.equal({
-            issues: [{
-              category: 'readability',
-              check: 'Credo.Check.Readability.ModuleDoc',
-              column: 11,
-              column_end: 32,
-              filename: 'lib/sample_web/telemetry.ex',
-              line_no: 1,
-              message: 'Modules should have a @moduledoc tag.',
-              priority: 1,
-              trigger: 'SampleWeb.Telemetry',
-            }],
+            issues: [
+              {
+                category: 'readability',
+                check: 'Credo.Check.Readability.ModuleDoc',
+                column: 11,
+                column_end: 32,
+                filename: 'lib/sample_web/telemetry.ex',
+                line_no: 1,
+                message: 'Modules should have a @moduledoc tag.',
+                priority: 1,
+                trigger: 'SampleWeb.Telemetry',
+              },
+            ],
           });
         });
 
@@ -211,14 +207,12 @@ describe('Credo Execution Functions', () => {
       it('logs an error message that the mix binary is not found', () => {
         report();
 
-        sandbox.assert.calledWith(
-          logSpy,
-          {
-            level: loggerModule.LogLevel.Error,
-            // eslint-disable-next-line max-len
-            message: '`mix` is not executable. Try setting the option in this extension\'s configuration "elixir.credo.executePath" to the path of the mix binary.',
-          },
-        );
+        sandbox.assert.calledWith(logSpy, {
+          level: loggerModule.LogLevel.Error,
+          // eslint-disable-next-line max-len
+          message:
+            '`mix` is not executable. Try setting the option in this extension\'s configuration "elixir.credo.executePath" to the path of the mix binary.',
+        });
       });
     });
 
@@ -233,13 +227,10 @@ describe('Credo Execution Functions', () => {
       it('logs an error message', () => {
         report();
 
-        sandbox.assert.calledWith(
-          logSpy,
-          {
-            level: loggerModule.LogLevel.Error,
-            message: 'An error occurred: "Any error" - Error Object: {"code":127}',
-          },
-        );
+        sandbox.assert.calledWith(logSpy, {
+          level: loggerModule.LogLevel.Error,
+          message: 'An error occurred: "Any error" - Error Object: {"code":127}',
+        });
       });
     });
 
@@ -254,13 +245,10 @@ describe('Credo Execution Functions', () => {
       it('logs a warning', () => {
         report();
 
-        sandbox.assert.calledWith(
-          logSpy,
-          {
-            level: loggerModule.LogLevel.Warning,
-            message: 'Warning: "A warning message"',
-          },
-        );
+        sandbox.assert.calledWith(logSpy, {
+          level: loggerModule.LogLevel.Warning,
+          message: 'Warning: "A warning message"',
+        });
       });
     });
 

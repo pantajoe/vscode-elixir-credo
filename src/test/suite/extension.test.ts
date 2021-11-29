@@ -28,7 +28,9 @@ describe('Extension Tests', () => {
   });
 
   context('activation', () => {
-    const activateExtension = () => { activate($extensionContext); };
+    const activateExtension = () => {
+      activate($extensionContext);
+    };
 
     def('extensionContext', () => ({ subscriptions: [] }));
 
@@ -37,13 +39,10 @@ describe('Extension Tests', () => {
 
       activateExtension();
 
-      sandbox.assert.calledWith(
-        logSpy,
-        {
-          message: 'Credo (Elixir Linter) initiated successfully.',
-          level: LogLevel.Info,
-        },
-      );
+      sandbox.assert.calledWith(logSpy, {
+        message: 'Credo (Elixir Linter) initiated successfully.',
+        level: LogLevel.Info,
+      });
     });
 
     context('when listening for configuration changes', () => {
@@ -150,13 +149,7 @@ describe('Extension Tests', () => {
       it('executes credo when a document is opened', (done) => {
         activateExtension();
         openDocument($textDocument).then(() => {
-          sandbox.assert.calledWith(
-            credoExecutionSpy,
-            match.hasNested(
-              'document.fileName',
-              match($exampleFilePath),
-            ),
-          );
+          sandbox.assert.calledWith(credoExecutionSpy, match.hasNested('document.fileName', match($exampleFilePath)));
           done();
         });
       });
@@ -167,9 +160,9 @@ describe('Extension Tests', () => {
       let credoExecutionSpy: SinonSpy<CredoExecutionArgs[], void>;
       // eslint-disable-next-line arrow-body-style
       const saveDocument = (document: vscode.TextDocument) => {
-        return vscode.window.showTextDocument(document.uri, { preview: false, preserveFocus: false }).then(
-          () => vscode.window.activeTextEditor?.document.save(),
-        );
+        return vscode.window
+          .showTextDocument(document.uri, { preview: false, preserveFocus: false })
+          .then(() => vscode.window.activeTextEditor?.document.save());
       };
 
       afterEach(() => {
@@ -208,6 +201,7 @@ describe('Extension Tests', () => {
 
       beforeEach(() => {
         eventListenerSpy = sandbox.spy(vscode.workspace, 'onDidCloseTextDocument');
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         credoClearStub = sandbox.stub(CredoProvider.prototype, 'clear').callsFake((_args) => {});
       });
 
@@ -217,7 +211,7 @@ describe('Extension Tests', () => {
         sandbox.assert.calledOnce(eventListenerSpy);
       });
 
-      it('clears document\'s diagnostics when closed', () => {
+      it("clears document's diagnostics when closed", () => {
         activateExtension();
 
         // call the extension's registered event handler for a `vscode.ConfigurationChangeEvent`

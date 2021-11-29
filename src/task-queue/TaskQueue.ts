@@ -2,10 +2,10 @@ import * as vscode from 'vscode';
 import Task from './Task';
 
 /**
-* Provides single-threaded task queue which runs single asynchronous
-* Task at a time. This restricts concurrent execution of credo
-* processes to prevent from running out machine resource.
-*/
+ * Provides single-threaded task queue which runs single asynchronous
+ * Task at a time. This restricts concurrent execution of credo
+ * processes to prevent from running out machine resource.
+ */
 export default class TaskQueue {
   private tasks: Task[] = [];
 

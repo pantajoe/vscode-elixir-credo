@@ -35,9 +35,8 @@ export function autodetectExecutePath(): string {
   }
 
   pathParts.forEach((pathPart) => {
-    const binPath = os.platform() === 'win32'
-      ? path.join(pathPart, MIX_COMMAND.win32)
-      : path.join(pathPart, MIX_COMMAND.unix);
+    const binPath =
+      os.platform() === 'win32' ? path.join(pathPart, MIX_COMMAND.win32) : path.join(pathPart, MIX_COMMAND.unix);
 
     if (fs.existsSync(binPath)) executePath = pathPart + path.sep;
   });

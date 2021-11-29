@@ -13,22 +13,27 @@ describe('Loggging', () => {
   let sandbox: SinonSandbox;
   let outputChannelSpy: SinonSpy<string[], void>;
   let vscodeMessageSpy: SinonSpy;
-  const logMessage = () => { log({ message: $message, level: $logLevel }); };
+  const logMessage = () => {
+    log({ message: $message, level: $logLevel });
+  };
 
   def('message', () => 'Sample message');
   def('ignoreWarningMessages', () => false);
   def('enableDebug', () => false);
-  def('config', (): configurationModule.CredoConfiguration => ({
-    command: 'mix',
-    configurationFile: '.credo.exs',
-    credoConfiguration: 'default',
-    checksWithTag: [],
-    checksWithoutTag: [],
-    strictMode: false,
-    ignoreWarningMessages: $ignoreWarningMessages,
-    lintEverything: false,
-    enableDebug: $enableDebug,
-  }));
+  def(
+    'config',
+    (): configurationModule.CredoConfiguration => ({
+      command: 'mix',
+      configurationFile: '.credo.exs',
+      credoConfiguration: 'default',
+      checksWithTag: [],
+      checksWithoutTag: [],
+      strictMode: false,
+      ignoreWarningMessages: $ignoreWarningMessages,
+      lintEverything: false,
+      enableDebug: $enableDebug,
+    }),
+  );
 
   beforeEach(() => {
     sandbox = createSandbox();

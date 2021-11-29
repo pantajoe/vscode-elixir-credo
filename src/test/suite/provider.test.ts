@@ -109,24 +109,24 @@ describe('CredoProvider', () => {
         getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
       }));
       def('credoOutput', () => ({
-        issues: [{
-          category: 'readability',
-          check: 'Credo.Check.Readability.ModuleDoc',
-          column: 11,
-          column_end: 32,
-          filename: 'lib/sample_web/telemetry.ex',
-          line_no: 1,
-          message: 'Modules should have a @moduledoc tag.',
-          priority: 1,
-          trigger: 'SampleWeb.Telemetry',
-        }],
+        issues: [
+          {
+            category: 'readability',
+            check: 'Credo.Check.Readability.ModuleDoc',
+            column: 11,
+            column_end: 32,
+            filename: 'lib/sample_web/telemetry.ex',
+            line_no: 1,
+            message: 'Modules should have a @moduledoc tag.',
+            priority: 1,
+            trigger: 'SampleWeb.Telemetry',
+          },
+        ],
       }));
       def('credoInfoOutput', () => ({
         config: {
           checks: [],
-          files: [
-            'lib/sample_web/telemetry.ex',
-          ],
+          files: ['lib/sample_web/telemetry.ex'],
         },
         system: {
           credo: '1.5.4-ref.main.9fe4739+uncommittedchanges',
@@ -142,65 +142,65 @@ describe('CredoProvider', () => {
       beforeEach(() => {
         logSpy = sandbox.spy(loggerModule, 'log');
         setDiagnosticCollectionSpy = sandbox.spy($diagnosticCollection, 'set');
-        sandbox.stub(vscode.workspace, 'getWorkspaceFolder').withArgs($documentUri).callsFake(() => ({
-          name: 'phoenix-project',
-          index: 0,
-          uri: vscode.Uri.file($workspaceFilePath),
-        }));
+        sandbox
+          .stub(vscode.workspace, 'getWorkspaceFolder')
+          .withArgs($documentUri)
+          .callsFake(() => ({
+            name: 'phoenix-project',
+            index: 0,
+            uri: vscode.Uri.file($workspaceFilePath),
+          }));
         sandbox.stub(configurationModule, 'getCurrentConfiguration').returns($config);
-        execFileStub = sandbox
-          .stub(cp, 'execFile')
-          .callsFake((_command, commandArguments, _options, callback) => {
-            if (callback) {
-              if (commandArguments?.includes('info')) {
-                callback(null, JSON.stringify($credoInfoOutput), '');
-              } else {
-                callback(null, JSON.stringify($credoOutput), '');
-              }
+        execFileStub = sandbox.stub(cp, 'execFile').callsFake((_command, commandArguments, _options, callback) => {
+          if (callback) {
+            if (commandArguments?.includes('info')) {
+              callback(null, JSON.stringify($credoInfoOutput), '');
+            } else {
+              callback(null, JSON.stringify($credoOutput), '');
             }
+          }
 
-            return { kill: () => {} } as cp.ChildProcess;
-          });
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          return { kill: () => {} } as cp.ChildProcess;
+        });
       });
 
       context('when lintEverything is true', () => {
-        def('config', (): configurationModule.CredoConfiguration => ({
-          command: 'mix',
-          configurationFile: '.credo.exs',
-          credoConfiguration: 'default',
-          checksWithTag: [],
-          checksWithoutTag: [],
-          strictMode: false,
-          ignoreWarningMessages: false,
-          lintEverything: true,
-          enableDebug: false,
-        }));
+        def(
+          'config',
+          (): configurationModule.CredoConfiguration => ({
+            command: 'mix',
+            configurationFile: '.credo.exs',
+            credoConfiguration: 'default',
+            checksWithTag: [],
+            checksWithoutTag: [],
+            strictMode: false,
+            ignoreWarningMessages: false,
+            lintEverything: true,
+            enableDebug: false,
+          }),
+        );
 
         it('correctly sets a diagnostic collection for the current document', () => {
           execute();
 
-          sinonAssert.calledWith(
-            setDiagnosticCollectionSpy,
-            $documentUri,
-            [new vscode.Diagnostic(
+          sinonAssert.calledWith(setDiagnosticCollectionSpy, $documentUri, [
+            new vscode.Diagnostic(
               new vscode.Range(0, 10, 0, 31),
               'Modules should have a @moduledoc tag. (readability:Credo.Check.Readability.ModuleDoc)',
               vscode.DiagnosticSeverity.Information,
-            )],
-          );
+            ),
+          ]);
           expect(setDiagnosticCollectionSpy.calledOnce).to.true;
         });
 
         it('logs an info message when setting diagnostics', () => {
           execute();
 
-          sinonAssert.calledWith(
-            logSpy,
-            {
-              message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
-              level: loggerModule.LogLevel.Debug,
-            },
-          );
+          sinonAssert.calledWith(logSpy, {
+            message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
+            level: loggerModule.LogLevel.Debug,
+          });
         });
 
         it('executes credo', () => {
@@ -218,26 +218,19 @@ describe('CredoProvider', () => {
         it('logs that credo is being executed', () => {
           execute();
 
-          sinonAssert.calledWith(
-            logSpy,
-            {
-              // eslint-disable-next-line max-len
-              message: 'Executing credo command `mix credo --format json --read-from-stdin --config-name default` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
-              level: loggerModule.LogLevel.Debug,
-            },
-          );
+          sinonAssert.calledWith(logSpy, {
+            // eslint-disable-next-line max-len
+            message:
+              'Executing credo command `mix credo --format json --read-from-stdin --config-name default` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
+            level: loggerModule.LogLevel.Debug,
+          });
         });
 
         it('does not fetch credo information', () => {
           execute();
 
           expect(
-            execFileStub.calledWith(
-              'mix',
-              ['credo', 'info', '--format', 'json', '--verbose'],
-              match.any,
-              match.any,
-            ),
+            execFileStub.calledWith('mix', ['credo', 'info', '--format', 'json', '--verbose'], match.any, match.any),
           ).to.be.false;
         });
 
@@ -245,13 +238,12 @@ describe('CredoProvider', () => {
           execute();
 
           expect(
-            logSpy.calledWith(
-              {
-                // eslint-disable-next-line max-len
-                message: 'Retreiving credo information: Executing credo command `mix credo info --format json --verbose` /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
-                level: loggerModule.LogLevel.Debug,
-              },
-            ),
+            logSpy.calledWith({
+              // eslint-disable-next-line max-len
+              message:
+                'Retreiving credo information: Executing credo command `mix credo info --format json --verbose` /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
+              level: loggerModule.LogLevel.Debug,
+            }),
           ).to.be.false;
         });
 
@@ -290,54 +282,49 @@ describe('CredoProvider', () => {
 
             sandbox.assert.calledWith(
               executeCredoSpy,
-              match.hasNested(
-                'options.cwd',
-                path.resolve(__dirname, '../../../src/test/fixtures'),
-              ),
+              match.hasNested('options.cwd', path.resolve(__dirname, '../../../src/test/fixtures')),
             );
           });
         });
       });
 
       context('when the extension only lints the files specified through the credo configuration file', () => {
-        def('config', (): configurationModule.CredoConfiguration => ({
-          command: 'mix',
-          configurationFile: '.credo.exs',
-          credoConfiguration: 'default',
-          checksWithTag: [],
-          checksWithoutTag: [],
-          strictMode: false,
-          ignoreWarningMessages: false,
-          lintEverything: false,
-          enableDebug: false,
-        }));
+        def(
+          'config',
+          (): configurationModule.CredoConfiguration => ({
+            command: 'mix',
+            configurationFile: '.credo.exs',
+            credoConfiguration: 'default',
+            checksWithTag: [],
+            checksWithoutTag: [],
+            strictMode: false,
+            ignoreWarningMessages: false,
+            lintEverything: false,
+            enableDebug: false,
+          }),
+        );
 
         context('when the current document should be linted', () => {
           it('adds the diagnostic', () => {
             execute();
 
-            sinonAssert.calledWith(
-              setDiagnosticCollectionSpy,
-              $documentUri,
-              [new vscode.Diagnostic(
+            sinonAssert.calledWith(setDiagnosticCollectionSpy, $documentUri, [
+              new vscode.Diagnostic(
                 new vscode.Range(0, 10, 0, 31),
                 'Modules should have a @moduledoc tag. (readability:Credo.Check.Readability.ModuleDoc)',
                 vscode.DiagnosticSeverity.Information,
-              )],
-            );
+              ),
+            ]);
             expect(setDiagnosticCollectionSpy.calledOnce).to.true;
           });
 
           it('logs an info message when setting diagnostics', () => {
             execute();
 
-            sinonAssert.calledWith(
-              logSpy,
-              {
-                message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
-                level: loggerModule.LogLevel.Debug,
-              },
-            );
+            sinonAssert.calledWith(logSpy, {
+              message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
+              level: loggerModule.LogLevel.Debug,
+            });
           });
 
           it('executes credo', () => {
@@ -355,14 +342,12 @@ describe('CredoProvider', () => {
           it('logs that credo is being executed', () => {
             execute();
 
-            sinonAssert.calledWith(
-              logSpy,
-              {
-                // eslint-disable-next-line max-len
-                message: 'Executing credo command `mix credo --format json --read-from-stdin --config-name default` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
-                level: loggerModule.LogLevel.Debug,
-              },
-            );
+            sinonAssert.calledWith(logSpy, {
+              // eslint-disable-next-line max-len
+              message:
+                'Executing credo command `mix credo --format json --read-from-stdin --config-name default` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
+              level: loggerModule.LogLevel.Debug,
+            });
           });
 
           it('fetches credo information', () => {
@@ -380,14 +365,12 @@ describe('CredoProvider', () => {
           it('logs an info message when credo information is fetched', () => {
             execute();
 
-            sinonAssert.calledWith(
-              logSpy,
-              {
-                // eslint-disable-next-line max-len
-                message: 'Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
-                level: loggerModule.LogLevel.Debug,
-              },
-            );
+            sinonAssert.calledWith(logSpy, {
+              // eslint-disable-next-line max-len
+              message:
+                'Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
+              level: loggerModule.LogLevel.Debug,
+            });
           });
         });
 
@@ -397,24 +380,17 @@ describe('CredoProvider', () => {
           it('does not add any diagnostic', () => {
             execute();
 
-            sinonAssert.calledWith(
-              setDiagnosticCollectionSpy,
-              $documentUri,
-              [],
-            );
+            sinonAssert.calledWith(setDiagnosticCollectionSpy, $documentUri, []);
             expect(setDiagnosticCollectionSpy.calledOnce).to.true;
           });
 
           it('logs an info message when (not) setting diagnostics', () => {
             execute();
 
-            sinonAssert.calledWith(
-              logSpy,
-              {
-                message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry_test.ex.',
-                level: loggerModule.LogLevel.Debug,
-              },
-            );
+            sinonAssert.calledWith(logSpy, {
+              message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry_test.ex.',
+              level: loggerModule.LogLevel.Debug,
+            });
           });
 
           it('does not execute credo', () => {
@@ -436,7 +412,8 @@ describe('CredoProvider', () => {
             expect(
               logSpy.calledWith({
                 // eslint-disable-next-line max-len
-                message: 'Executing credo command `mix credo --format json --read-from-stdin --config-name default` for /Users/bot/sample/lib/sample_web/telemetry_test.ex in directory /Users/bot/sample',
+                message:
+                  'Executing credo command `mix credo --format json --read-from-stdin --config-name default` for /Users/bot/sample/lib/sample_web/telemetry_test.ex in directory /Users/bot/sample',
                 level: loggerModule.LogLevel.Debug,
               }),
             ).to.be.false;
@@ -457,14 +434,12 @@ describe('CredoProvider', () => {
           it('logs an info message when credo information is fetched', () => {
             execute();
 
-            sinonAssert.calledWith(
-              logSpy,
-              {
-                // eslint-disable-next-line max-len
-                message: 'Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for /Users/bot/sample/lib/sample_web/telemetry_test.ex in directory /Users/bot/sample',
-                level: loggerModule.LogLevel.Debug,
-              },
-            );
+            sinonAssert.calledWith(logSpy, {
+              // eslint-disable-next-line max-len
+              message:
+                'Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for /Users/bot/sample/lib/sample_web/telemetry_test.ex in directory /Users/bot/sample',
+              level: loggerModule.LogLevel.Debug,
+            });
           });
         });
       });
@@ -481,10 +456,7 @@ describe('CredoProvider', () => {
 
       clear();
 
-      sandbox.assert.calledOnceWithExactly(
-        deleteDiagnosticSpy,
-        $textDocument.uri,
-      );
+      sandbox.assert.calledOnceWithExactly(deleteDiagnosticSpy, $textDocument.uri);
     });
 
     it('cancels any ongoing tasks for this document', () => {
@@ -492,10 +464,7 @@ describe('CredoProvider', () => {
 
       clear();
 
-      sandbox.assert.calledOnceWithExactly(
-        taskCancelSpy,
-        $textDocument.uri,
-      );
+      sandbox.assert.calledOnceWithExactly(taskCancelSpy, $textDocument.uri);
     });
 
     it('logs an info message for clearing the diagnostics', () => {
@@ -503,14 +472,12 @@ describe('CredoProvider', () => {
 
       clear();
 
-      sandbox.assert.calledOnceWithExactly(
-        logSpy,
-        {
-          // eslint-disable-next-line max-len
-          message: 'Removing linter messages and cancel running linting processes for /Users/bot/sample/lib/sample_web/telemetry_test.ex.',
-          level: loggerModule.LogLevel.Debug,
-        },
-      );
+      sandbox.assert.calledOnceWithExactly(logSpy, {
+        // eslint-disable-next-line max-len
+        message:
+          'Removing linter messages and cancel running linting processes for /Users/bot/sample/lib/sample_web/telemetry_test.ex.',
+        level: loggerModule.LogLevel.Debug,
+      });
     });
   });
 

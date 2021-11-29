@@ -4,9 +4,9 @@ import TaskToken from './TaskToken';
 type CancelCallback = () => void;
 
 /**
-* Task with async operation. It will be enqueued to and managed by
-* TaskQueue. Useful for spawning ChildProcess.
-*/
+ * Task with async operation. It will be enqueued to and managed by
+ * TaskQueue. Useful for spawning ChildProcess.
+ */
 export default class Task {
   public readonly uri: vscode.Uri;
 
@@ -21,10 +21,10 @@ export default class Task {
   private onCancel?: CancelCallback;
 
   /**
-  * @param body Function of task body, which returns callback called
-  *             when cancelation is requested. You should call
-  *             token.finished() after async operation is done.
-  */
+   * @param body Function of task body, which returns callback called
+   *             when cancelation is requested. You should call
+   *             token.finished() after async operation is done.
+   */
   constructor(uri: vscode.Uri, body: (token: TaskToken) => CancelCallback) {
     this.uri = uri;
     this.body = body;
@@ -32,21 +32,22 @@ export default class Task {
 
   public run(): Promise<void> {
     if (this.isCanceled) {
-      return new Promise<void>((resolve) => { resolve(); });
+      return new Promise<void>((resolve) => {
+        resolve();
+      });
     }
-    const task = this;
     return new Promise<void>((resolve, _reject) => {
-      task.resolver = () => resolve();
+      this.resolver = () => resolve();
       const token = {
         get isCanceled(): boolean {
-          return task.isCanceled;
+          return this.isCanceled;
         },
 
-        finished(): void {
-          task.resolveOnce();
+        finished: (): void => {
+          this.resolveOnce();
         },
       };
-      task.onCancel = this.body(token);
+      this.onCancel = this.body(token);
     });
   }
 

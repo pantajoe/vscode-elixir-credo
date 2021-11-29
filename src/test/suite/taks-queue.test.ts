@@ -18,7 +18,9 @@ class TestTaskWrapper {
     this.task = new Task(url, (taskToken: TaskToken) => {
       this.isBodyCalled = true;
       this.token = taskToken;
-      return () => { this.isCancelCallbackCalled = true; };
+      return () => {
+        this.isCancelCallbackCalled = true;
+      };
     });
   }
 }

@@ -5,8 +5,4 @@ import Task from './Task';
 import TaskQueue from './TaskQueue';
 import TaskToken from './TaskToken';
 
-export {
-  Task,
-  TaskQueue,
-  TaskToken,
-};
+export { Task, TaskQueue, TaskToken };

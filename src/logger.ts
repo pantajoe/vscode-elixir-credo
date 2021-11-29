@@ -9,8 +9,8 @@ export enum LogLevel {
 }
 
 export interface LogArguments {
-  message: string,
-  level?: LogLevel,
+  message: string;
+  level?: LogLevel;
 }
 
 export const outputChannel = vscode.window.createOutputChannel('Credo (Elixir Linter)');
@@ -19,7 +19,7 @@ function logToOutputChannel(message: string): void {
   outputChannel.appendLine(`> ${message}\n`);
 }
 
-export function log({ message, level = LogLevel.Error } : LogArguments) {
+export function log({ message, level = LogLevel.Error }: LogArguments) {
   const { ignoreWarningMessages, enableDebug } = getCurrentConfiguration();
 
   switch (level) {

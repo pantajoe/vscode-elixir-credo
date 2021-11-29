@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 import { expect } from 'chai';
-import {
-  assert, createSandbox, SinonSandbox, SinonSpy, SinonStub,
-} from 'sinon';
+import { assert, createSandbox, SinonSandbox, SinonSpy, SinonStub } from 'sinon';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as configurationModule from '../../configuration';
@@ -80,7 +78,7 @@ describe('Utilities', () => {
     context('with a file in an opened workspace', () => {
       def('documentUri', () => vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures/sample.ex')));
 
-      it('returns the main workspace\'s directory', () => {
+      it("returns the main workspace's directory", () => {
         expect(fetchCurrentPath()).to.equal(path.resolve(__dirname, '../../../src/test/fixtures'));
       });
     });
@@ -98,17 +96,20 @@ describe('Utilities', () => {
     def('configurationFile', () => '.credo.exs');
     def('mainWorkspacePath', () => path.resolve(__dirname));
     def('otherWorkspacePath', () => path.resolve(__dirname, '..', 'fixtures'));
-    def('config', (): configurationModule.CredoConfiguration => ({
-      command: 'mix',
-      configurationFile: $configurationFile,
-      credoConfiguration: 'default',
-      checksWithTag: [],
-      checksWithoutTag: [],
-      strictMode: false,
-      ignoreWarningMessages: false,
-      lintEverything: false,
-      enableDebug: false,
-    }));
+    def(
+      'config',
+      (): configurationModule.CredoConfiguration => ({
+        command: 'mix',
+        configurationFile: $configurationFile,
+        credoConfiguration: 'default',
+        checksWithTag: [],
+        checksWithoutTag: [],
+        strictMode: false,
+        ignoreWarningMessages: false,
+        lintEverything: false,
+        enableDebug: false,
+      }),
+    );
 
     let workspaceFolderStub: SinonStub<any[], vscode.WorkspaceFolder[]>;
 
@@ -136,14 +137,16 @@ describe('Utilities', () => {
       });
 
       it('successfully adds the config file to the CLI arguments', () => {
-        assert.match(
-          getCommandArguments(),
-          [
-            'credo', '--format', 'json', '--read-from-stdin',
-            '--config-file', `${$mainWorkspacePath}${path.sep}.credo.exs`,
-            '--config-name', 'default',
-          ],
-        );
+        assert.match(getCommandArguments(), [
+          'credo',
+          '--format',
+          'json',
+          '--read-from-stdin',
+          '--config-file',
+          `${$mainWorkspacePath}${path.sep}.credo.exs`,
+          '--config-name',
+          'default',
+        ]);
       });
     });
 
@@ -157,13 +160,10 @@ describe('Utilities', () => {
 
       it('shows a warning message', () => {
         getCommandArguments();
-        sandbox.assert.calledOnceWithExactly(
-          logSpy,
-          {
-            message: '.credo.exs file does not exist. Ignoring...',
-            level: LogLevel.Warning,
-          },
-        );
+        sandbox.assert.calledOnceWithExactly(logSpy, {
+          message: '.credo.exs file does not exist. Ignoring...',
+          level: LogLevel.Warning,
+        });
       });
 
       it('does not include a --config-file argument', () => {
@@ -181,15 +181,12 @@ describe('Utilities', () => {
 
       it('shows a warning message', () => {
         getCommandArguments();
-        assert.calledOnceWithExactly(
-          logSpy,
-          {
-            message: trunc`Found multiple files
+        assert.calledOnceWithExactly(logSpy, {
+          message: trunc`Found multiple files
             (${$mainWorkspacePath}${path.sep}.credo.exs, ${$otherWorkspacePath}${path.sep}.credo.exs).
             I will use ${$mainWorkspacePath}${path.sep}.credo.exs`,
-            level: LogLevel.Warning,
-          },
-        );
+          level: LogLevel.Warning,
+        });
       });
 
       context('when a document is specified', () => {
@@ -199,11 +196,14 @@ describe('Utilities', () => {
           textDocument = {
             uri: vscode.Uri.file(`${$otherWorkspacePath}${path.sep}sample.ex`),
           } as vscode.TextDocument;
-          sandbox.stub(vscode.workspace, 'getWorkspaceFolder').withArgs(textDocument.uri).returns({
-            index: 1,
-            name: 'other',
-            uri: vscode.Uri.file($otherWorkspacePath),
-          });
+          sandbox
+            .stub(vscode.workspace, 'getWorkspaceFolder')
+            .withArgs(textDocument.uri)
+            .returns({
+              index: 1,
+              name: 'other',
+              uri: vscode.Uri.file($otherWorkspacePath),
+            });
         });
 
         it('only finds the configuration file that resides in the same workspace folder as the document', () => {
@@ -250,17 +250,20 @@ describe('Utilities', () => {
     });
 
     context('with enabled strict-mode', () => {
-      def('config', (): configurationModule.CredoConfiguration => ({
-        command: 'mix',
-        configurationFile: '.credo.exs',
-        credoConfiguration: 'default',
-        checksWithTag: [],
-        checksWithoutTag: [],
-        strictMode: true,
-        ignoreWarningMessages: false,
-        lintEverything: false,
-        enableDebug: false,
-      }));
+      def(
+        'config',
+        (): configurationModule.CredoConfiguration => ({
+          command: 'mix',
+          configurationFile: '.credo.exs',
+          credoConfiguration: 'default',
+          checksWithTag: [],
+          checksWithoutTag: [],
+          strictMode: true,
+          ignoreWarningMessages: false,
+          lintEverything: false,
+          enableDebug: false,
+        }),
+      );
 
       it('includes `--strict-mode`', () => {
         expect(getCommandArguments()).to.include('--strict');
@@ -270,31 +273,37 @@ describe('Utilities', () => {
     context('with configured tags', () => {
       def('checksWithTag', () => []);
       def('checksWithoutTag', () => []);
-      def('config', (): configurationModule.CredoConfiguration => ({
-        command: 'mix',
-        configurationFile: '.credo.exs',
-        credoConfiguration: 'default',
-        checksWithTag: $checksWithTag,
-        checksWithoutTag: $checksWithoutTag,
-        strictMode: false,
-        ignoreWarningMessages: false,
-        lintEverything: false,
-        enableDebug: false,
-      }));
+      def(
+        'config',
+        (): configurationModule.CredoConfiguration => ({
+          command: 'mix',
+          configurationFile: '.credo.exs',
+          credoConfiguration: 'default',
+          checksWithTag: $checksWithTag,
+          checksWithoutTag: $checksWithoutTag,
+          strictMode: false,
+          ignoreWarningMessages: false,
+          lintEverything: false,
+          enableDebug: false,
+        }),
+      );
 
       context('when checksWithTag are specified', () => {
         def('checksWithTag', () => ['no_editor', 'no_test']);
 
         it('includes the checksWithTag as arguments', () => {
-          assert.match(
-            getCommandArguments(),
-            [
-              'credo', '--format', 'json', '--read-from-stdin',
-              '--config-name', 'default',
-              '--checks-with-tag', 'no_editor',
-              '--checks-with-tag', 'no_test',
-            ],
-          );
+          assert.match(getCommandArguments(), [
+            'credo',
+            '--format',
+            'json',
+            '--read-from-stdin',
+            '--config-name',
+            'default',
+            '--checks-with-tag',
+            'no_editor',
+            '--checks-with-tag',
+            'no_test',
+          ]);
         });
       });
 
@@ -302,15 +311,18 @@ describe('Utilities', () => {
         def('checksWithoutTag', () => ['no_editor', 'no_test']);
 
         it('includes the checksWithoutTag as arguments', () => {
-          assert.match(
-            getCommandArguments(),
-            [
-              'credo', '--format', 'json', '--read-from-stdin',
-              '--config-name', 'default',
-              '--checks-without-tag', 'no_editor',
-              '--checks-without-tag', 'no_test',
-            ],
-          );
+          assert.match(getCommandArguments(), [
+            'credo',
+            '--format',
+            'json',
+            '--read-from-stdin',
+            '--config-name',
+            'default',
+            '--checks-without-tag',
+            'no_editor',
+            '--checks-without-tag',
+            'no_test',
+          ]);
         });
       });
 
@@ -319,39 +331,48 @@ describe('Utilities', () => {
         def('checksWithoutTag', () => ['broken']);
 
         it('prioritizes checksWithTag over checksWithoutTag', () => {
-          assert.match(
-            getCommandArguments(),
-            [
-              'credo', '--format', 'json', '--read-from-stdin',
-              '--config-name', 'default',
-              '--checks-with-tag', 'no_editor',
-              '--checks-with-tag', 'no_test',
-            ],
-          );
+          assert.match(getCommandArguments(), [
+            'credo',
+            '--format',
+            'json',
+            '--read-from-stdin',
+            '--config-name',
+            'default',
+            '--checks-with-tag',
+            'no_editor',
+            '--checks-with-tag',
+            'no_test',
+          ]);
         });
       });
     });
   });
 
   context('#getCommandEnvironment', () => {
-    context('without any given executePath in the extension\'s configuration', () => {
+    context("without any given executePath in the extension's configuration", () => {
       it('returns a shallow copy of the PATH variable without any changes', () => {
         expect(getCommandEnvironment().PATH).to.equal(process.env.PATH);
       });
     });
 
-    context('with a given executePath in the extension\'s configuration', () => {
+    context("with a given executePath in the extension's configuration", () => {
       const executePath = '/usr/.asdf/shims';
 
       beforeEach(() => {
-        sandbox.stub(vscode.workspace, 'getConfiguration').withArgs('elixir.credo').callsFake(() => ({
-          get(prop: string) {
-            if (prop === 'executePath') {
-              return executePath;
-            }
-            return null;
-          },
-        } as any));
+        sandbox
+          .stub(vscode.workspace, 'getConfiguration')
+          .withArgs('elixir.credo')
+          .callsFake(
+            () =>
+              ({
+                get(prop: string) {
+                  if (prop === 'executePath') {
+                    return executePath;
+                  }
+                  return null;
+                },
+              } as any),
+          );
       });
 
       it('returns a shallow copy of the PATH variable without any changes', () => {
