@@ -171,6 +171,7 @@ describe('CredoProvider', () => {
             index: 0,
             uri: vscode.Uri.file($workspaceFilePath),
           }));
+        sandbox.stub(utilModule, 'inMixProject').returns(true);
         sandbox.stub(configurationModule, 'getCurrentConfiguration').returns($config);
         execFileStub = sandbox.stub(cp, 'execFile').callsFake((_command, commandArguments, _options, callback) => {
           if (callback) {
