@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None.
+### Changed
+
+- **BREAKING CHANGE**: Now required minimum version of VS Code is `1.62.0`
+
+### Fixed
+
+- Update dev dependencies to latest version
+- Update test dependencies to latest version
+- Setup prettier and configure ESLint
 
 ## [0.6.2] - 2021-11-25
 
