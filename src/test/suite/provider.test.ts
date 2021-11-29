@@ -8,6 +8,7 @@ import * as taskQueueModule from '../../task-queue';
 import * as configurationModule from '../../configuration';
 import * as executionModule from '../../execution';
 import * as loggerModule from '../../logger';
+import * as utilModule from '../../utilities';
 import { CredoProvider, CredoProviderOptions } from '../../provider';
 import { CredoInformation, CredoOutput } from '../../output';
 
@@ -80,13 +81,33 @@ describe('CredoProvider', () => {
         });
       });
 
-      context('when linting an file not stored locally, i.e., its uri does not use the file scheme', () => {
+      context('when linting a file not stored locally, i.e., its uri does not use the file scheme', () => {
         def('textDocument', () => ({
           languageId: 'elixir',
           isUntitled: false,
           uri: vscode.Uri.parse('https://example.com/path'),
           getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
         }));
+
+        it('does not execute credo', () => {
+          execute();
+
+          expect(taskSpy.called).to.be.false;
+          expect(executeCredoSpy.called).to.be.false;
+        });
+      });
+
+      context('when linting a file not in a workspacefolder with a mix.exs file', () => {
+        def('textDocument', () => ({
+          languageId: 'elixir',
+          isUntitled: false,
+          uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/sample.ex')),
+          getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
+        }));
+
+        beforeEach(() => {
+          sandbox.stub(utilModule, 'inMixProject').returns(false);
+        });
 
         it('does not execute credo', () => {
           execute();
