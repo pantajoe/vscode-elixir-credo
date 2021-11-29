@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.7.0] - 2021-11-29
+
 ### Added
 
 - Only execute credo for files within mix projects (#34)
