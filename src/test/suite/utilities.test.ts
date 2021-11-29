@@ -71,7 +71,6 @@ describe('Utilities', () => {
     def('otherWorkspacePath', () => path.resolve(__dirname, '../../../src/test/other-fixtures'));
 
     beforeEach(() => {
-      sandbox.stub(fs, 'existsSync').callsFake((file) => file === `${$mainWorkspacePath}${path.sep}mix.exs`);
       sandbox.replaceGetter(vscode.workspace, 'workspaceFolders', () => [
         {
           index: 0,
@@ -88,7 +87,18 @@ describe('Utilities', () => {
 
     context('with a file in an opened workspace', () => {
       context('within the main workspace (a mix project)', () => {
-        def('documentUri', () => vscode.Uri.file(path.resolve($mainWorkspacePath, 'sample.ex')));
+        def('documentUri', () => vscode.Uri.file(path.resolve($mainWorkspacePath, 'src/sample.ex')));
+
+        beforeEach(() => {
+          sandbox
+            .stub(vscode.workspace, 'getWorkspaceFolder')
+            .withArgs($documentUri)
+            .returns({
+              index: 1,
+              name: 'Main Workspace',
+              uri: vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures')),
+            });
+        });
 
         it('returns true', () => {
           expect(isInMixProject()).to.be.true;
@@ -97,6 +107,17 @@ describe('Utilities', () => {
 
       context('within another workspace', () => {
         def('documentUri', () => vscode.Uri.file(path.resolve($otherWorkspacePath, 'other.ex')));
+
+        beforeEach(() => {
+          sandbox
+            .stub(vscode.workspace, 'getWorkspaceFolder')
+            .withArgs($documentUri)
+            .returns({
+              index: 0,
+              name: 'Another workspace',
+              uri: vscode.Uri.file($otherWorkspacePath),
+            });
+        });
 
         it('returns false', () => {
           expect(isInMixProject()).to.be.false;
@@ -132,7 +153,18 @@ describe('Utilities', () => {
     });
 
     context('with a file in an opened workspace', () => {
-      def('documentUri', () => vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures/sample.ex')));
+      def('documentUri', () => vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures/src/sample.ex')));
+
+      beforeEach(() => {
+        sandbox
+          .stub(vscode.workspace, 'getWorkspaceFolder')
+          .withArgs($documentUri)
+          .returns({
+            index: 1,
+            name: 'Main Workspace',
+            uri: vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures')),
+          });
+      });
 
       it("returns the main workspace's directory", () => {
         expect(fetchCurrentPath()).to.equal(path.resolve(__dirname, '../../../src/test/fixtures'));

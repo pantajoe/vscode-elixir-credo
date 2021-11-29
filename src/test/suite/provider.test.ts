@@ -101,7 +101,7 @@ describe('CredoProvider', () => {
         def('textDocument', () => ({
           languageId: 'elixir',
           isUntitled: false,
-          uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/sample.ex')),
+          uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/src/sample.ex')),
           getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
         }));
 
@@ -270,7 +270,7 @@ describe('CredoProvider', () => {
           let executeCredoSpy: SinonSpy<executionModule.CredoExecutionArguments[], cp.ChildProcess[]>;
 
           def('workspaceFilePath', () => path.resolve(__dirname, '../../../src/test/fixtures'));
-          def('fileName', () => `${$workspaceFilePath}/sample.ex`);
+          def('fileName', () => `${$workspaceFilePath}/src/sample.ex`);
           def('documentUri', () => vscode.Uri.file($fileName));
           def('textDocument', () => ({
             languageId: 'elixir',
@@ -499,7 +499,7 @@ describe('CredoProvider', () => {
     const clearAll = () => $credoProvider.clearAll();
 
     def('textDocument', () => ({ uri: vscode.Uri.file(path.resolve(__filename)) }));
-    def('otherDocument', () => ({ uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/sample.ex')) }));
+    def('otherDocument', () => ({ uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/src/sample.ex')) }));
 
     beforeEach(() => {
       sandbox.replaceGetter(vscode.window, 'visibleTextEditors', () => [

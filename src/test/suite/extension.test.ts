@@ -17,7 +17,7 @@ declare let $exampleFilePath: string;
 describe('Extension Tests', () => {
   let sandbox: SinonSandbox;
 
-  def('exampleFilePath', () => path.resolve(__dirname, '../../../src/test/fixtures/sample.ex'));
+  def('exampleFilePath', () => path.resolve(__dirname, '../../../src/test/fixtures/src/sample.ex'));
 
   beforeEach(() => {
     sandbox = createSandbox();
