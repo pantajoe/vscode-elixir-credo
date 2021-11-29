@@ -1,4 +1,4 @@
-name: CI
+name: Continuous Integration
 
 on: [push, pull_request]
 
@@ -7,27 +7,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository 🛎️
+        uses: actions/checkout@v2
 
-      - name: Setup Node
-        uses: actions/setup-node@v1
+      - name: Get Node.js Version
+        id: nvm
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+      - name: Setup Node.js 🏗
+        uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
 
-      - name: Cache node modules
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Yarn Cache 📦
         uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: node_modules
-          key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-npm-deps-
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install NPM Packages 👨🏻‍💻
+        run: yarn install --frozen-lockfile
 
-      - name: Install Yarn
-        run: npm install -g yarn
-
-      - name: Install npm packages
-        run: yarn install
-
-      - name: Run TS Compilation, ESLint, and Tests
-        uses: GabrielBB/xvfb-action@v1.0
+      - name: Run TS Compilation, ESLint, and Tests 👀
+        uses: GabrielBB/xvfb-action@v1.6
         with:
           run: yarn test

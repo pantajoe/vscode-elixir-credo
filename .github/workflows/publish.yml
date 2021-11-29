@@ -1,4 +1,4 @@
-name: Publish VSCode Extension
+name: Publish VS Code Extension
 
 on:
   release:
@@ -9,35 +9,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository 🛎️
+        uses: actions/checkout@v2
 
-      - name: Setup Node
-        uses: actions/setup-node@v1
+      - name: Get Node.js Version
+        id: nvm
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+      - name: Setup Node.js 🏗
+        uses: actions/setup-node@v2.5.0
         with:
-          node-version: 14
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
 
-      - name: Cache node modules
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Yarn Cache 📦
         uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: node_modules
-          key: ${{ runner.os }}-npm-deps-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-npm-deps-
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install NPM Packages 👨🏻‍💻
+        run: yarn install --frozen-lockfile
 
-      - name: Install Yarn
-        run: npm install -g yarn
-
-      - name: Install npm packages
-        run: yarn install
-
-      - name: Install VSCE & OVSX
+      - name: Install VSCE & OVSX 🏗
         run: npm install -g vsce ovsx
 
-      - name: Publish Extension to VS Code Marketplace
+      - name: Publish Extension to VS Code Marketplace 🚀
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
         run: vsce publish -p $VSCE_TOKEN
 
-      - name: Publish Extension to Open VSX Marketplace
+      - name: Publish Extension to Open VSX Marketplace 🚀
         env:
           OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
         run: ovsx publish -p $OVSX_TOKEN --yarn
