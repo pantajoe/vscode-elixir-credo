@@ -39,7 +39,6 @@ describe('Credo Execution Functions', () => {
 
           sandbox.assert.calledWith(logSpy, {
             level: loggerModule.LogLevel.Error,
-            // eslint-disable-next-line max-len
             message:
               'Command `mix credo` returns empty output! Please check your configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
           });
@@ -58,7 +57,6 @@ describe('Credo Execution Functions', () => {
 
           sandbox.assert.calledWith(logSpy, {
             level: loggerModule.LogLevel.Error,
-            // eslint-disable-next-line max-len
             message: 'Error on parsing output (It might be non-JSON output): "No JSON"',
           });
         });
@@ -120,7 +118,6 @@ describe('Credo Execution Functions', () => {
 
           sandbox.assert.calledWith(logSpy, {
             level: loggerModule.LogLevel.Error,
-            // eslint-disable-next-line max-len
             message:
               'Command `mix credo` returns empty output! Please check your configuration. Did you add or modify your dependencies? You might need to run `mix deps.get` or recompile.',
           });
@@ -139,7 +136,6 @@ describe('Credo Execution Functions', () => {
 
           sandbox.assert.calledWith(logSpy, {
             level: loggerModule.LogLevel.Error,
-            // eslint-disable-next-line max-len
             message: 'Error on parsing output (It might be non-JSON output): "No JSON"',
           });
         });
@@ -209,7 +205,6 @@ describe('Credo Execution Functions', () => {
 
         sandbox.assert.calledWith(logSpy, {
           level: loggerModule.LogLevel.Error,
-          // eslint-disable-next-line max-len
           message:
             '`mix` is not executable. Try setting the option in this extension\'s configuration "elixir.credo.executePath" to the path of the mix binary.',
         });
