@@ -4,7 +4,14 @@ import { assert, createSandbox, SinonSandbox, SinonSpy, SinonStub } from 'sinon'
 import * as fs from 'fs';
 import * as path from 'path';
 import * as configurationModule from '../../configuration';
-import { trunc, makeZeroBasedIndex, getCommandArguments, getCommandEnvironment, getCurrentPath } from '../../utilities';
+import {
+  trunc,
+  makeZeroBasedIndex,
+  getCommandArguments,
+  getCommandEnvironment,
+  getCurrentPath,
+  inMixProject,
+} from '../../utilities';
 import * as loggingModule from '../../logger';
 
 const { LogLevel } = loggingModule;
@@ -57,6 +64,76 @@ describe('Utilities', () => {
     });
   });
 
+  context('#inMixProject', () => {
+    const isInMixProject = () => inMixProject($documentUri);
+
+    def('mainWorkspacePath', () => path.resolve(__dirname, '../../../src/test/fixtures'));
+    def('otherWorkspacePath', () => path.resolve(__dirname, '../../../src/test/other-fixtures'));
+
+    beforeEach(() => {
+      sandbox.replaceGetter(vscode.workspace, 'workspaceFolders', () => [
+        {
+          index: 0,
+          name: 'Another workspace',
+          uri: vscode.Uri.file($otherWorkspacePath),
+        },
+        {
+          index: 1,
+          name: 'Main Workspace',
+          uri: vscode.Uri.file($mainWorkspacePath),
+        },
+      ]);
+    });
+
+    context('with a file in an opened workspace', () => {
+      context('within the main workspace (a mix project)', () => {
+        def('documentUri', () => vscode.Uri.file(path.resolve($mainWorkspacePath, 'src/sample.ex')));
+
+        beforeEach(() => {
+          sandbox
+            .stub(vscode.workspace, 'getWorkspaceFolder')
+            .withArgs($documentUri)
+            .returns({
+              index: 1,
+              name: 'Main Workspace',
+              uri: vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures')),
+            });
+        });
+
+        it('returns true', () => {
+          expect(isInMixProject()).to.be.true;
+        });
+      });
+
+      context('within another workspace', () => {
+        def('documentUri', () => vscode.Uri.file(path.resolve($otherWorkspacePath, 'other.ex')));
+
+        beforeEach(() => {
+          sandbox
+            .stub(vscode.workspace, 'getWorkspaceFolder')
+            .withArgs($documentUri)
+            .returns({
+              index: 0,
+              name: 'Another workspace',
+              uri: vscode.Uri.file($otherWorkspacePath),
+            });
+        });
+
+        it('returns false', () => {
+          expect(isInMixProject()).to.be.false;
+        });
+      });
+    });
+
+    context('with a file without a workspace', () => {
+      def('documentUri', () => vscode.Uri.file(path.resolve(__filename)));
+
+      it('returns false', () => {
+        expect(isInMixProject()).to.be.false;
+      });
+    });
+  });
+
   context('#getCurrentPath', () => {
     const fetchCurrentPath = () => getCurrentPath($documentUri);
 
@@ -76,7 +153,18 @@ describe('Utilities', () => {
     });
 
     context('with a file in an opened workspace', () => {
-      def('documentUri', () => vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures/sample.ex')));
+      def('documentUri', () => vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures/src/sample.ex')));
+
+      beforeEach(() => {
+        sandbox
+          .stub(vscode.workspace, 'getWorkspaceFolder')
+          .withArgs($documentUri)
+          .returns({
+            index: 1,
+            name: 'Main Workspace',
+            uri: vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures')),
+          });
+      });
 
       it("returns the main workspace's directory", () => {
         expect(fetchCurrentPath()).to.equal(path.resolve(__dirname, '../../../src/test/fixtures'));

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Only execute credo for files within mix projects (#34)
+
 ### Changed
 
 - **BREAKING CHANGE**: Now required minimum version of VS Code is `1.62.0`

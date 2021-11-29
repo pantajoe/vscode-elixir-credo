@@ -29,6 +29,13 @@ export function isFileUri(uri: vscode.Uri): boolean {
   return uri.scheme === 'file';
 }
 
+export function inMixProject(documentUri: vscode.Uri): boolean {
+  const workspace = vscode.workspace.getWorkspaceFolder(documentUri);
+  if (!workspace) return false;
+
+  return fs.existsSync(path.join(workspace.uri.fsPath, 'mix.exs'));
+}
+
 export function getCurrentPath(documentUri: vscode.Uri): string {
   const { fsPath: documentPath } = documentUri;
 

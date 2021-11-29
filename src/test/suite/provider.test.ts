@@ -8,6 +8,7 @@ import * as taskQueueModule from '../../task-queue';
 import * as configurationModule from '../../configuration';
 import * as executionModule from '../../execution';
 import * as loggerModule from '../../logger';
+import * as utilModule from '../../utilities';
 import { CredoProvider, CredoProviderOptions } from '../../provider';
 import { CredoInformation, CredoOutput } from '../../output';
 
@@ -80,13 +81,33 @@ describe('CredoProvider', () => {
         });
       });
 
-      context('when linting an file not stored locally, i.e., its uri does not use the file scheme', () => {
+      context('when linting a file not stored locally, i.e., its uri does not use the file scheme', () => {
         def('textDocument', () => ({
           languageId: 'elixir',
           isUntitled: false,
           uri: vscode.Uri.parse('https://example.com/path'),
           getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
         }));
+
+        it('does not execute credo', () => {
+          execute();
+
+          expect(taskSpy.called).to.be.false;
+          expect(executeCredoSpy.called).to.be.false;
+        });
+      });
+
+      context('when linting a file not in a workspacefolder with a mix.exs file', () => {
+        def('textDocument', () => ({
+          languageId: 'elixir',
+          isUntitled: false,
+          uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/src/sample.ex')),
+          getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
+        }));
+
+        beforeEach(() => {
+          sandbox.stub(utilModule, 'inMixProject').returns(false);
+        });
 
         it('does not execute credo', () => {
           execute();
@@ -150,6 +171,7 @@ describe('CredoProvider', () => {
             index: 0,
             uri: vscode.Uri.file($workspaceFilePath),
           }));
+        sandbox.stub(utilModule, 'inMixProject').returns(true);
         sandbox.stub(configurationModule, 'getCurrentConfiguration').returns($config);
         execFileStub = sandbox.stub(cp, 'execFile').callsFake((_command, commandArguments, _options, callback) => {
           if (callback) {
@@ -249,7 +271,7 @@ describe('CredoProvider', () => {
           let executeCredoSpy: SinonSpy<executionModule.CredoExecutionArguments[], cp.ChildProcess[]>;
 
           def('workspaceFilePath', () => path.resolve(__dirname, '../../../src/test/fixtures'));
-          def('fileName', () => `${$workspaceFilePath}/sample.ex`);
+          def('fileName', () => `${$workspaceFilePath}/src/sample.ex`);
           def('documentUri', () => vscode.Uri.file($fileName));
           def('textDocument', () => ({
             languageId: 'elixir',
@@ -478,7 +500,7 @@ describe('CredoProvider', () => {
     const clearAll = () => $credoProvider.clearAll();
 
     def('textDocument', () => ({ uri: vscode.Uri.file(path.resolve(__filename)) }));
-    def('otherDocument', () => ({ uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/sample.ex')) }));
+    def('otherDocument', () => ({ uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/src/sample.ex')) }));
 
     beforeEach(() => {
       sandbox.replaceGetter(vscode.window, 'visibleTextEditors', () => [

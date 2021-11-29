@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { TaskQueue, Task } from './task-queue';
 import { createLintDocumentCallback, executeCredo } from './execution';
 import { log, LogLevel } from './logger';
-import { isFileUri, getCurrentPath, getCommandArguments, getCommandEnvironment } from './utilities';
+import { isFileUri, getCurrentPath, getCommandArguments, getCommandEnvironment, inMixProject } from './utilities';
 
 export interface CredoProviderOptions {
   diagnosticCollection: vscode.DiagnosticCollection;
@@ -28,12 +28,12 @@ export class CredoProvider {
   }
 
   public execute({ document, onComplete }: CredoExecutionArgs): void {
-    if (document.languageId !== 'elixir' || document.isUntitled || !isFileUri(document.uri)) {
+    const { languageId, isUntitled, uri } = document;
+    if (languageId !== 'elixir' || isUntitled || !isFileUri(uri) || !inMixProject(uri)) {
       // git diff has elixir-mode. but it is Untitled file.
       return;
     }
 
-    const { uri } = document;
     const currentPath = getCurrentPath(uri);
 
     const task = new Task(uri, (token) => {
