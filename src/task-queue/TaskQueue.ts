@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { log, LogLevel } from '../logger';
 import Task from './Task';
 
 /**
@@ -20,7 +21,6 @@ export default class TaskQueue {
       throw new Error(`Task is already enqueued. (uri: ${task.uri})`);
     }
     this.cancel(task.uri);
-    // eslint-disable-next-line no-param-reassign
     task.isEnqueued = true;
     this.tasks.push(task);
     this.kick();
@@ -42,7 +42,6 @@ export default class TaskQueue {
 
     this.busy = true;
 
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const task: Task | undefined = this.tasks[0];
       if (!task) {
@@ -50,11 +49,9 @@ export default class TaskQueue {
         return;
       }
       try {
-        // eslint-disable-next-line no-await-in-loop
         await task.run();
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error('Error while running credo: ', e.message, e.stack);
+      } catch (err) {
+        log({ message: `Error while running credo: ${(err as Error).message}`, level: LogLevel.Debug });
       }
       this.tasks.shift();
     }

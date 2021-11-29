@@ -165,7 +165,7 @@ export function executeCredo({
     in directory ${options.cwd}`,
     level: LogLevel.Debug,
   });
-  // eslint-disable-next-line max-len
+
   const infoProcess = cp.execFile(
     getCurrentConfiguration().command,
     CREDO_INFO_ARGS,

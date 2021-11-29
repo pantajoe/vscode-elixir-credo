@@ -53,7 +53,6 @@ describe('Parse Credo Output', () => {
           }));
 
           it('marks the entire line', () => {
-            // eslint-disable-next-line max-len
             expect($parsedDiagnostic.message).to.equal(
               'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)',
             );
@@ -80,7 +79,6 @@ describe('Parse Credo Output', () => {
           }));
 
           context('when the trigger occurs in the given line', () => {
-            // eslint-disable-next-line max-len
             def(
               'documentContent',
               () =>
@@ -88,7 +86,6 @@ describe('Parse Credo Output', () => {
             );
 
             it('marks the substring of the line', () => {
-              // eslint-disable-next-line max-len
               expect($parsedDiagnostic.message).to.equal(
                 'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)',
               );
@@ -104,7 +101,6 @@ describe('Parse Credo Output', () => {
             def('documentContent', () => 'defmodule Web.WebhookController do\n  @key get_env(:my_app, :key)\nend\n');
 
             it('marks the entire line', () => {
-              // eslint-disable-next-line max-len
               expect($parsedDiagnostic.message).to.equal(
                 'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)',
               );

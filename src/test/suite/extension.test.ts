@@ -122,7 +122,6 @@ describe('Extension Tests', () => {
     context('when opening an elixir document', () => {
       let eventListenerSpy: SinonSpy<any[], vscode.Disposable>;
       let credoExecutionSpy: SinonSpy<CredoExecutionArgs[], void>;
-      // eslint-disable-next-line arrow-body-style
       const openDocument = (document: vscode.TextDocument) => {
         return vscode.window.showTextDocument(document.uri, { preview: true, preserveFocus: false });
       };
@@ -158,7 +157,6 @@ describe('Extension Tests', () => {
     context('when saving an elixir document', () => {
       let eventListenerSpy: SinonSpy<any[], vscode.Disposable>;
       let credoExecutionSpy: SinonSpy<CredoExecutionArgs[], void>;
-      // eslint-disable-next-line arrow-body-style
       const saveDocument = (document: vscode.TextDocument) => {
         return vscode.window
           .showTextDocument(document.uri, { preview: false, preserveFocus: false })

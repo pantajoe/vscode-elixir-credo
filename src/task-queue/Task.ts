@@ -36,18 +36,20 @@ export default class Task {
         resolve();
       });
     }
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const task = this;
     return new Promise<void>((resolve, _reject) => {
-      this.resolver = () => resolve();
+      task.resolver = () => resolve();
       const token = {
         get isCanceled(): boolean {
-          return this.isCanceled;
+          return task.isCanceled;
         },
 
-        finished: (): void => {
-          this.resolveOnce();
+        finished(): void {
+          task.resolveOnce();
         },
       };
-      this.onCancel = this.body(token);
+      task.onCancel = this.body(token);
     });
   }
 
