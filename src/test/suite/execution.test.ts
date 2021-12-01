@@ -218,7 +218,7 @@ describe('Credo Execution Functions', () => {
         def('error', () => ({ code: 15 }));
 
         it('returns true', () => {
-          expect(report()).to.be.false;
+          expect(report()).to.be.true;
         });
 
         it('logs no message', () => {
@@ -232,7 +232,7 @@ describe('Credo Execution Functions', () => {
         def('error', () => ({ code: 'SIGTERM' }));
 
         it('returns true', () => {
-          expect(report()).to.be.false;
+          expect(report()).to.be.true;
         });
 
         it('logs no message', () => {
@@ -246,7 +246,7 @@ describe('Credo Execution Functions', () => {
         def('error', () => ({ signal: 'SIGTERM' }));
 
         it('returns true', () => {
-          expect(report()).to.be.false;
+          expect(report()).to.be.true;
         });
 
         it('logs no message', () => {
