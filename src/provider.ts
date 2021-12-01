@@ -29,7 +29,7 @@ export class CredoProvider {
 
   public execute({ document, onComplete }: CredoExecutionArgs): void {
     const { languageId, isUntitled, uri } = document;
-    if (languageId !== 'elixir' || isUntitled || !isFileUri(uri) || !inMixProject(uri)) {
+    if (languageId !== 'elixir' || isUntitled || !isFileUri(uri) || !inMixProject(uri) || !document.getText()) {
       // git diff has elixir-mode. but it is Untitled file.
       return;
     }
