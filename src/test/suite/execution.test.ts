@@ -211,6 +211,52 @@ describe('Credo Execution Functions', () => {
       });
     });
 
+    context('with a "SIGTERM" error', () => {
+      def('stderr', () => '');
+
+      context('with a numeric code', () => {
+        def('error', () => ({ code: 15 }));
+
+        it('returns true', () => {
+          expect(report()).to.be.false;
+        });
+
+        it('logs no message', () => {
+          report();
+
+          sandbox.assert.notCalled(logSpy);
+        });
+      });
+
+      context('with a "SIGTERM" code', () => {
+        def('error', () => ({ code: 'SIGTERM' }));
+
+        it('returns true', () => {
+          expect(report()).to.be.false;
+        });
+
+        it('logs no message', () => {
+          report();
+
+          sandbox.assert.notCalled(logSpy);
+        });
+      });
+
+      context('with a "SIGTERM" signal', () => {
+        def('error', () => ({ signal: 'SIGTERM' }));
+
+        it('returns true', () => {
+          expect(report()).to.be.false;
+        });
+
+        it('logs no message', () => {
+          report();
+
+          sandbox.assert.notCalled(logSpy);
+        });
+      });
+    });
+
     context('with any other error', () => {
       def('error', () => ({ code: 127 }));
       def('stderr', () => 'Any error');
