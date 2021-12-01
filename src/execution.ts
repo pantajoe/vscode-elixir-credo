@@ -65,7 +65,7 @@ interface ReportErrorArguments {
 export function reportError({ error, stderr }: ReportErrorArguments): boolean {
   if (error?.signal === 'SIGTERM' || (error as any)?.code === 15 || (error as any)?.code === 'SIGTERM') {
     // do not report SIGTERM errors (happens when running credo processes are killed onDidCloseTextDocument)
-    return false;
+    return true;
   }
 
   const errorOutput = stderr.toString();
