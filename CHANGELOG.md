@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.7.1] - 2021-12-01
+
 ### Fixed
 
 - do not treat `SIGTERM` error as a failure (no warning message) (#42)
