@@ -149,10 +149,10 @@
   dependencies:
     "@sinonjs/fake-timers" "^7.1.0"
 
-"@types/vscode@^1.47.0":
-  version "1.62.0"
-  resolved "https://registry.yarnpkg.com/@types/vscode/-/vscode-1.62.0.tgz#b4d6d192d5aeb75e91d0adef689c3ecef9879da7"
-  integrity sha512-iGlQJ1w5e3qPUryroO6v4lxg3ql1ztdTCwQW3xEwFawdyPLoeUSv48SYfMwc7kQA7h6ThUqflZIjgKAykeF9oA==
+"@types/vscode@^1.67.0":
+  version "1.67.0"
+  resolved "https://registry.yarnpkg.com/@types/vscode/-/vscode-1.67.0.tgz#8eaba41d1591aa02f5d960b7dfae3b16e066f08c"
+  integrity sha512-GH8BDf8cw9AC9080uneJfulhSa7KHSMI2s/CyKePXoGNos9J486w2V4YKoeNUqIEkW4hKoEAWp6/cXTwyGj47g==
 
 "@typescript-eslint/eslint-plugin@^5.6.0":
   version "5.6.0"
