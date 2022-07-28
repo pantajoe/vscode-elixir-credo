@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None.
 
+## [0.7.3] - 2022-07-28
+
+## Added
+
+- now searches for configuration file both in project root and `config/` directory (#81)
+
+## Unrelated changes
+
+- upgraded dependencies
+- use @antfu's eslint configuration
+
 ## [0.7.2] - 2021-12-01
 
 ### Fixed
