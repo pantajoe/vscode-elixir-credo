@@ -262,17 +262,18 @@ describe('Utilities', () => {
 
     context('if more than one configuration file is found', () => {
       let logSpy: SinonSpy<loggingModule.LogArguments[], void>
+      let fsStub: SinonStub<fs.PathLike[], boolean>
 
       beforeEach(() => {
         logSpy = sandbox.spy(loggingModule, 'log')
-        sandbox.stub(fs, 'existsSync').returns(true)
+        fsStub = sandbox.stub(fs, 'existsSync').returns(true)
       })
 
       it('shows a warning message', () => {
         getCommandArguments()
         assert.calledOnceWithExactly(logSpy, {
           message: trunc`Found multiple files
-            (${$mainWorkspacePath}${path.sep}.credo.exs, ${$otherWorkspacePath}${path.sep}.credo.exs).
+            (${$mainWorkspacePath}${path.sep}.credo.exs, ${$mainWorkspacePath}${path.sep}config/.credo.exs, ${$otherWorkspacePath}${path.sep}.credo.exs, ${$otherWorkspacePath}${path.sep}config/.credo.exs).
             I will use ${$mainWorkspacePath}${path.sep}.credo.exs`,
           level: LogLevel.Warning,
         })
@@ -293,6 +294,10 @@ describe('Utilities', () => {
               name: 'other',
               uri: vscode.Uri.file($otherWorkspacePath),
             })
+          fsStub.restore()
+          fsStub = sandbox
+            .stub(fs, 'existsSync')
+            .callsFake((path) => typeof path === 'string' && !path.includes('config'))
         })
 
         it('only finds the configuration file that resides in the same workspace folder as the document', () => {
