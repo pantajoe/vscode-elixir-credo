@@ -1,17 +1,17 @@
-import * as vscode from 'vscode';
-import { expect } from 'chai';
-import { parseCredoIssue, parseCredoOutput } from '../../parser';
-import { CredoIssue } from '../../output';
+import * as vscode from 'vscode'
+import { expect } from 'chai'
+import { parseCredoIssue, parseCredoOutput } from '../../parser'
+import type { CredoIssue } from '../../output'
 
-declare let $credoIssue: CredoIssue;
-declare let $documentContent: string;
-declare let $parsedDiagnostic: vscode.Diagnostic;
+declare let $credoIssue: CredoIssue
+declare let $documentContent: string
+declare let $parsedDiagnostic: vscode.Diagnostic
 
 describe('Parse Credo Output', () => {
   context('#parseCredoIssue', () => {
-    def('parsedDiagnostic', () => parseCredoIssue({ issue: $credoIssue, documentContent: $documentContent }));
+    def('parsedDiagnostic', () => parseCredoIssue({ issue: $credoIssue, documentContent: $documentContent }))
 
-    def('documentContent', () => 'defmodule SampleWeb.Telemetry\nend\n');
+    def('documentContent', () => 'defmodule SampleWeb.Telemetry\nend\n')
     def('credoIssue', () => ({
       category: 'readability',
       check: 'Credo.Check.Readability.ModuleDoc',
@@ -22,23 +22,23 @@ describe('Parse Credo Output', () => {
       message: 'Modules should have a @moduledoc tag.',
       priority: 1,
       trigger: 'SampleWeb.Telemetry',
-    }));
+    }))
 
     it('parses a credo issue correctly into a vscode diagnostic', () => {
       expect($parsedDiagnostic.message).to.equal(
         'Modules should have a @moduledoc tag. (readability:Credo.Check.Readability.ModuleDoc)',
-      );
-      expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information);
-      expect($parsedDiagnostic.range.start.line).to.equal(0);
-      expect($parsedDiagnostic.range.start.character).to.equal(10);
-      expect($parsedDiagnostic.range.end.line).to.equal(0);
-      expect($parsedDiagnostic.range.end.character).to.equal(31);
-    });
+      )
+      expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information)
+      expect($parsedDiagnostic.range.start.line).to.equal(0)
+      expect($parsedDiagnostic.range.start.character).to.equal(10)
+      expect($parsedDiagnostic.range.end.line).to.equal(0)
+      expect($parsedDiagnostic.range.end.character).to.equal(31)
+    })
 
     context('when `column` and `column_end` are null', () => {
       context('when a trigger is given', () => {
         context('when the trigger is anything but a string', () => {
-          def('documentContent', () => 'defmodule Web.WebhookController do\n  @key get_env(:my_app, :key)\nend\n');
+          def('documentContent', () => 'defmodule Web.WebhookController do\n  @key get_env(:my_app, :key)\nend\n')
           def('credoIssue', () => ({
             category: 'warning',
             check: 'Credo.Check.Warning.ApplicationConfigInModuleAttribute',
@@ -50,19 +50,19 @@ describe('Parse Credo Output', () => {
             priority: 11,
             scope: 'Web.WebhookController',
             trigger: ['Application.get_env/2', 'Dep1'],
-          }));
+          }))
 
           it('marks the entire line', () => {
             expect($parsedDiagnostic.message).to.equal(
               'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)',
-            );
-            expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning);
-            expect($parsedDiagnostic.range.start.line).to.equal(1);
-            expect($parsedDiagnostic.range.start.character).to.equal(0);
-            expect($parsedDiagnostic.range.end.line).to.equal(1);
-            expect($parsedDiagnostic.range.end.character).to.equal(29);
-          });
-        });
+            )
+            expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning)
+            expect($parsedDiagnostic.range.start.line).to.equal(1)
+            expect($parsedDiagnostic.range.start.character).to.equal(0)
+            expect($parsedDiagnostic.range.end.line).to.equal(1)
+            expect($parsedDiagnostic.range.end.character).to.equal(29)
+          })
+        })
 
         context('when the trigger is a method', () => {
           def('credoIssue', () => ({
@@ -76,42 +76,42 @@ describe('Parse Credo Output', () => {
             priority: 11,
             scope: 'Web.WebhookController',
             trigger: 'Application.get_env/2',
-          }));
+          }))
 
           context('when the trigger occurs in the given line', () => {
             def(
               'documentContent',
               () =>
                 'defmodule Web.WebhookController do\n  @key Application.get_env(:my_app, :webhook_signing_key)\nend\n',
-            );
+            )
 
             it('marks the substring of the line', () => {
               expect($parsedDiagnostic.message).to.equal(
                 'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)',
-              );
-              expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning);
-              expect($parsedDiagnostic.range.start.line).to.equal(1);
-              expect($parsedDiagnostic.range.start.character).to.equal(7);
-              expect($parsedDiagnostic.range.end.line).to.equal(1);
-              expect($parsedDiagnostic.range.end.character).to.equal(26);
-            });
-          });
+              )
+              expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning)
+              expect($parsedDiagnostic.range.start.line).to.equal(1)
+              expect($parsedDiagnostic.range.start.character).to.equal(7)
+              expect($parsedDiagnostic.range.end.line).to.equal(1)
+              expect($parsedDiagnostic.range.end.character).to.equal(26)
+            })
+          })
 
           context('when the trigger occurs in the given line', () => {
-            def('documentContent', () => 'defmodule Web.WebhookController do\n  @key get_env(:my_app, :key)\nend\n');
+            def('documentContent', () => 'defmodule Web.WebhookController do\n  @key get_env(:my_app, :key)\nend\n')
 
             it('marks the entire line', () => {
               expect($parsedDiagnostic.message).to.equal(
                 'Module attribute @key makes use of unsafe Application configuration call Application.get_env/2 (warning:Credo.Check.Warning.ApplicationConfigInModuleAttribute)',
-              );
-              expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning);
-              expect($parsedDiagnostic.range.start.line).to.equal(1);
-              expect($parsedDiagnostic.range.start.character).to.equal(0);
-              expect($parsedDiagnostic.range.end.line).to.equal(1);
-              expect($parsedDiagnostic.range.end.character).to.equal(29);
-            });
-          });
-        });
+              )
+              expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Warning)
+              expect($parsedDiagnostic.range.start.line).to.equal(1)
+              expect($parsedDiagnostic.range.start.character).to.equal(0)
+              expect($parsedDiagnostic.range.end.line).to.equal(1)
+              expect($parsedDiagnostic.range.end.character).to.equal(29)
+            })
+          })
+        })
 
         context('when the trigger is something else', () => {
           def('credoIssue', () => ({
@@ -124,39 +124,39 @@ describe('Parse Credo Output', () => {
             message: 'Found a TODO tag in a comment: # TODO: any.',
             priority: 2,
             trigger: '# TODO: any',
-          }));
+          }))
 
           context('when the trigger occurs in the given line', () => {
-            def('documentContent', () => 'defmodule TestModule do\n  # TODO: any\nend\n');
+            def('documentContent', () => 'defmodule TestModule do\n  # TODO: any\nend\n')
 
             it('marks the substring of the line', () => {
               expect($parsedDiagnostic.message).to.equal(
                 'Found a TODO tag in a comment: # TODO: any. (design:Credo.Check.Design.TagTODO)',
-              );
-              expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information);
-              expect($parsedDiagnostic.range.start.line).to.equal(1);
-              expect($parsedDiagnostic.range.start.character).to.equal(2);
-              expect($parsedDiagnostic.range.end.line).to.equal(1);
-              expect($parsedDiagnostic.range.end.character).to.equal(13);
-            });
-          });
+              )
+              expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information)
+              expect($parsedDiagnostic.range.start.line).to.equal(1)
+              expect($parsedDiagnostic.range.start.character).to.equal(2)
+              expect($parsedDiagnostic.range.end.line).to.equal(1)
+              expect($parsedDiagnostic.range.end.character).to.equal(13)
+            })
+          })
 
           context('when the trigger does not occur in the given line', () => {
-            def('documentContent', () => 'defmodule TestModule do\n  # TODO: nothing\nend\n');
+            def('documentContent', () => 'defmodule TestModule do\n  # TODO: nothing\nend\n')
 
             it('marks the entire line', () => {
               expect($parsedDiagnostic.message).to.equal(
                 'Found a TODO tag in a comment: # TODO: any. (design:Credo.Check.Design.TagTODO)',
-              );
-              expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information);
-              expect($parsedDiagnostic.range.start.line).to.equal(1);
-              expect($parsedDiagnostic.range.start.character).to.equal(0);
-              expect($parsedDiagnostic.range.end.line).to.equal(1);
-              expect($parsedDiagnostic.range.end.character).to.equal(17);
-            });
-          });
-        });
-      });
+              )
+              expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information)
+              expect($parsedDiagnostic.range.start.line).to.equal(1)
+              expect($parsedDiagnostic.range.start.character).to.equal(0)
+              expect($parsedDiagnostic.range.end.line).to.equal(1)
+              expect($parsedDiagnostic.range.end.character).to.equal(17)
+            })
+          })
+        })
+      })
 
       context('when no trigger is given', () => {
         def('credoIssue', () => ({
@@ -169,22 +169,22 @@ describe('Parse Credo Output', () => {
           message: 'Found a TODO tag in a comment: # TODO: any.',
           priority: 2,
           trigger: null,
-        }));
-        def('documentContent', () => 'defmodule TestModule do\n  # TODO: any\nend\n');
+        }))
+        def('documentContent', () => 'defmodule TestModule do\n  # TODO: any\nend\n')
 
         it('marks the entire line', () => {
           expect($parsedDiagnostic.message).to.equal(
             'Found a TODO tag in a comment: # TODO: any. (design:Credo.Check.Design.TagTODO)',
-          );
-          expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information);
-          expect($parsedDiagnostic.range.start.line).to.equal(1);
-          expect($parsedDiagnostic.range.start.character).to.equal(0);
-          expect($parsedDiagnostic.range.end.line).to.equal(1);
-          expect($parsedDiagnostic.range.end.character).to.equal(13);
-        });
-      });
-    });
-  });
+          )
+          expect($parsedDiagnostic.severity).to.equal(vscode.DiagnosticSeverity.Information)
+          expect($parsedDiagnostic.range.start.line).to.equal(1)
+          expect($parsedDiagnostic.range.start.character).to.equal(0)
+          expect($parsedDiagnostic.range.end.line).to.equal(1)
+          expect($parsedDiagnostic.range.end.character).to.equal(13)
+        })
+      })
+    })
+  })
 
   context('#parseCredoOutput', () => {
     it('parses the credo output to a vscode diagnostic array', () => {
@@ -216,9 +216,9 @@ describe('Parse Credo Output', () => {
           ],
         },
         document: { getText: () => '' } as vscode.TextDocument,
-      });
+      })
 
-      expect(parsedCollection.length).to.equal(2);
-    });
-  });
-});
+      expect(parsedCollection.length).to.equal(2)
+    })
+  })
+})

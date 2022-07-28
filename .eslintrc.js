@@ -1,26 +1,65 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: 'tsconfig.json',
-    sourceType: 'module',
-  },
-  plugins: ['@typescript-eslint/eslint-plugin'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
-  root: true,
-  env: {
-    node: true,
-  },
-  ignorePatterns: ['.eslintrc.js'],
+  extends: ['@antfu', 'plugin:prettier/recommended'],
   rules: {
-    '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-inferrable-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
-    'no-console': ['warn', { 'allow': ['warn', 'error'] }],
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+      },
+    ],
+    '@typescript-eslint/brace-style': [
+      'error',
+      '1tbs',
+      {
+        allowSingleLine: true,
+      },
+    ],
+    '@typescript-eslint/indent': 'off',
+    'arrow-parens': ['error', 'always'],
+    'antfu/if-newline': 'off',
+    'quotes': [
+      'error',
+      'single',
+      {
+        avoidEscape: true,
+      },
+    ],
+    'max-len': [
+      'error',
+      {
+        code: 120,
+        ignoreUrls: true,
+        ignoreStrings: true,
+        ignoreTemplateLiterals: true,
+        ignoreRegExpLiterals: true,
+      },
+    ],
+    'jsx-quotes': ['error', 'prefer-double'],
+    'react/prop-types': 'off',
+    'react/self-closing-comp': [
+      'error',
+      {
+        component: true,
+        html: true,
+      },
+    ],
+    'import/no-unresolved': [
+      'error',
+      {
+        ignore: ['vscode'],
+      },
+    ],
+    'no-restricted-imports': [
+      'error',
+      {
+        paths: [
+          {
+            name: '.',
+            message:
+              'Do not import from barrel files (index.{ts,js}) from within the same directory to avoid circular dependencies.',
+          },
+        ],
+      },
+    ],
   },
-};
+}

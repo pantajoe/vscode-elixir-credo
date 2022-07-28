@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
-import { log, LogLevel } from '../logger';
-import Task from './Task';
+import type * as vscode from 'vscode'
+import { LogLevel, log } from '../logger'
+import type Task from './Task'
 
 /**
  * Provides single-threaded task queue which runs single asynchronous
@@ -8,52 +8,52 @@ import Task from './Task';
  * processes to prevent from running out machine resource.
  */
 export default class TaskQueue {
-  private tasks: Task[] = [];
+  private tasks: Task[] = []
 
-  private busy: boolean = false;
+  private busy = false
 
   public get length(): number {
-    return this.tasks.length;
+    return this.tasks.length
   }
 
   public enqueue(task: Task): void {
     if (task.isEnqueued) {
-      throw new Error(`Task is already enqueued. (uri: ${task.uri})`);
+      throw new Error(`Task is already enqueued. (uri: ${task.uri})`)
     }
-    this.cancel(task.uri);
-    task.isEnqueued = true;
-    this.tasks.push(task);
-    this.kick();
+    this.cancel(task.uri)
+    task.isEnqueued = true
+    this.tasks.push(task)
+    this.kick()
   }
 
   public cancel(uri: vscode.Uri): void {
-    const uriString = uri.toString(true);
+    const uriString = uri.toString(true)
     this.tasks.forEach((task) => {
       if (task.uri.toString(true) === uriString) {
-        task.cancel();
+        task.cancel()
       }
-    });
+    })
   }
 
   private async kick(): Promise<void> {
     if (this.busy) {
-      return;
+      return
     }
 
-    this.busy = true;
+    this.busy = true
 
     while (true) {
-      const task: Task | undefined = this.tasks[0];
+      const task: Task | undefined = this.tasks[0]
       if (!task) {
-        this.busy = false;
-        return;
+        this.busy = false
+        return
       }
       try {
-        await task.run();
+        await task.run()
       } catch (err) {
-        log({ message: `Error while running credo: ${(err as Error).message}`, level: LogLevel.Debug });
+        log({ message: `Error while running credo: ${(err as Error).message}`, level: LogLevel.Debug })
       }
-      this.tasks.shift();
+      this.tasks.shift()
     }
   }
 }

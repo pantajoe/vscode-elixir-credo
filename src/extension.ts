@@ -1,40 +1,39 @@
 // this extension's structure is heavily inspired by https://github.com/misogi/vscode-ruby-rubocop
 
-import * as vscode from 'vscode';
-import { CredoProvider } from './provider';
-import { reloadConfiguration } from './configuration';
-import { log, LogLevel } from './logger';
+import * as vscode from 'vscode'
+import { CredoProvider } from './provider'
+import { reloadConfiguration } from './configuration'
+import { LogLevel, log } from './logger'
 
 export function activate(context: vscode.ExtensionContext) {
-  const { workspace } = vscode;
-  const diagnosticCollection = vscode.languages.createDiagnosticCollection('elixir');
-  context.subscriptions.push(diagnosticCollection);
+  const { workspace } = vscode
+  const diagnosticCollection = vscode.languages.createDiagnosticCollection('elixir')
+  context.subscriptions.push(diagnosticCollection)
 
-  const credo = new CredoProvider({ diagnosticCollection });
+  const credo = new CredoProvider({ diagnosticCollection })
 
   workspace.onDidChangeConfiguration(() => {
-    log({ message: 'Extension configuration has changed. Refreshing configuration ...', level: LogLevel.Debug });
-    reloadConfiguration();
-  });
+    log({ message: 'Extension configuration has changed. Refreshing configuration ...', level: LogLevel.Debug })
+    reloadConfiguration()
+  })
 
   workspace.textDocuments.forEach((document: vscode.TextDocument) => {
-    credo.execute({ document });
-  });
+    credo.execute({ document })
+  })
 
   workspace.onDidOpenTextDocument((document: vscode.TextDocument) => {
-    credo.execute({ document });
-  });
+    credo.execute({ document })
+  })
 
   workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-    credo.execute({ document });
-  });
+    credo.execute({ document })
+  })
 
   workspace.onDidCloseTextDocument((document: vscode.TextDocument) => {
-    credo.clear({ document });
-  });
+    credo.clear({ document })
+  })
 
-  log({ message: 'Credo (Elixir Linter) initiated successfully.', level: LogLevel.Info });
+  log({ message: 'Credo (Elixir Linter) initiated successfully.', level: LogLevel.Info })
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 export function deactivate() {}
