@@ -45,7 +45,7 @@
         "properties": {
           "elixir.credo.configurationFile": {
             "title": "Configuration File",
-            "markdownDescription": "Configures which configuration file Credo should use. Default is `.credo.exs`.",
+            "markdownDescription": "Configures which configuration file Credo should use. Default is `.credo.exs`. The extension will first look into the project root, then into the `config/` folder",
             "type": "string",
             "default": ".credo.exs",
             "scope": "resource"

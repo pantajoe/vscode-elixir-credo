@@ -42,16 +42,20 @@ export function getCurrentPath(documentUri: vscode.Uri): string {
   return vscode.workspace.getWorkspaceFolder(documentUri)?.uri?.fsPath || path.dirname(documentPath)
 }
 
-export function getCommandArguments(document?: vscode.TextDocument): string[] {
-  const commandArguments = [...DEFAULT_COMMAND_ARGUMENTS]
+export const getCredoConfigFilePath = (documentUri?: vscode.Uri, opts?: { silent?: boolean }): string | null => {
+  const { silent = false } = opts ?? {}
+
   const extensionConfig = getCurrentConfiguration()
   const configurationFile = extensionConfig.configurationFile || DEFAULT_CONFIG_FILE
 
-  const currentWorkspaceFolder = document?.uri ? vscode.workspace.getWorkspaceFolder(document.uri) : undefined
+  const currentWorkspaceFolder = documentUri ? vscode.workspace.getWorkspaceFolder(documentUri) : undefined
   const currentWorkspaces = currentWorkspaceFolder ? [currentWorkspaceFolder] : vscode.workspace.workspaceFolders ?? []
 
   const found = currentWorkspaces
-    .map((ws: vscode.WorkspaceFolder) => path.join(ws.uri.fsPath, configurationFile))
+    .flatMap((ws: vscode.WorkspaceFolder) => [
+      path.join(ws.uri.fsPath, configurationFile),
+      path.join(ws.uri.fsPath, 'config', configurationFile),
+    ])
     .filter((fullPath: string) => fs.existsSync(fullPath))
 
   // add unchanged value of `configurationFile` in case it is an absolute path
@@ -60,13 +64,22 @@ export function getCommandArguments(document?: vscode.TextDocument): string[] {
   }
 
   if (found.length === 0) {
-    log({ message: `${configurationFile} file does not exist. Ignoring...`, level: LogLevel.Warning })
+    if (!silent) log({ message: `${configurationFile} file does not exist. Ignoring...`, level: LogLevel.Warning })
+    return null
   } else {
-    if (found.length > 1) {
+    if (found.length > 1 && !silent) {
       log({ message: `Found multiple files (${found.join(', ')}). I will use ${found[0]}`, level: LogLevel.Warning })
     }
-    commandArguments.push('--config-file', found[0])
+    return found[0]
   }
+}
+
+export function getCommandArguments(document?: vscode.TextDocument): string[] {
+  const commandArguments = [...DEFAULT_COMMAND_ARGUMENTS]
+  const extensionConfig = getCurrentConfiguration()
+
+  const configFilePath = getCredoConfigFilePath(document?.uri)
+  if (configFilePath) commandArguments.push('--config-file', configFilePath)
 
   if (extensionConfig.credoConfiguration) {
     commandArguments.push('--config-name', extensionConfig.credoConfiguration)
