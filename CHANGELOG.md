@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None.
 
+## [0.8.2] - 2022-07-29
+
+### Unrelated changes
+
+- reverted "adapted `tsconfig.json` to allow synthetic default imports and enable `esModuleInterop` flag"
+
+### Changed
+
+- default merge base for Credo's diff mode is now `main` instead of `HEAD`
+- correctly uses mix project folder instead of workspace folder (#163)
+
 ## [0.8.1] - 2022-07-29
 
 ### Fixed
