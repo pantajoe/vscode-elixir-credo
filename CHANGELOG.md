@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.8.0] - 2022-07-29
+
 ### Added
 
 - added Credo's [diff mode](https://hexdocs.pm/credo/diff_command.html#from-git-merge-base) against a merge base (#104)
