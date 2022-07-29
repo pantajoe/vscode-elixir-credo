@@ -16,6 +16,7 @@ for the programming language [Elixir](https://elixir-lang.org).
 * Specify a custom configuration file for Credo
 * Specify a custom configuration for Credo
 * Specify a custom execute path for the `mix` binary
+* Specify wheterh you want to use Credo's [diff mode](https://hexdocs.pm/credo/diff_command.html#from-git-merge-base)
 
 ![Demo](./images/demo.gif)
 
@@ -37,6 +38,8 @@ This extension contributes the following settings:
 * `elixir.credo.ignoreWarningMessages`: ignore warning messages (concerning finding the configuration file)
 * `elixir.credo.lintEverything`: lint any elixir file (even if excluded in the Credo configuration file)
 * `elixir.credo.enableDebug`: toggle extensive logging to extension's output channel
+* `elixir.credo.diffMode.enabled`: enable Credo's diff mode
+* `elixir.credo.diffMode.mergeBase`: specify the merge base for the diff mode
 
 ### Known Issues
 
@@ -81,4 +84,4 @@ When contributing, please refer to [the Contribution Guide](/CONTRIBUTING.md)
 
 This software is released under the [MIT License](/LICENSE).
 
-&copy; 2020-2021 Joe Pantazidis
+&copy; 2020-2022 Joe Pantazidis
