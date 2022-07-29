@@ -1,4 +1,4 @@
-import type * as vscode from 'vscode'
+import type vscode from 'vscode'
 import { LogLevel, log } from '../logger'
 import type Task from './Task'
 

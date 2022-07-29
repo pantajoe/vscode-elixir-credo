@@ -1,4 +1,4 @@
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 import { Task, TaskQueue } from './task-queue'
 import { createLintDocumentCallback, executeCredo } from './execution'
 import { LogLevel, log } from './logger'

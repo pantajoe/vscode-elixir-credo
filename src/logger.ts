@@ -1,4 +1,4 @@
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 import { getCurrentConfiguration } from './configuration'
 
 export enum LogLevel {
