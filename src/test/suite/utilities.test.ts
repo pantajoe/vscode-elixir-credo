@@ -197,6 +197,10 @@ describe('Utilities', () => {
         ignoreWarningMessages: false,
         lintEverything: false,
         enableDebug: false,
+        diffMode: {
+          enabled: false,
+          mergeBase: 'HEAD',
+        },
       }),
     )
 
@@ -356,11 +360,51 @@ describe('Utilities', () => {
           ignoreWarningMessages: false,
           lintEverything: false,
           enableDebug: false,
+          diffMode: {
+            enabled: false,
+            mergeBase: 'HEAD',
+          },
         }),
       )
 
       it('includes `--strict-mode`', () => {
         expect(getCommandArguments()).to.include('--strict')
+      })
+    })
+
+    context('with diff mode enabled', () => {
+      def(
+        'config',
+        (): configurationModule.CredoConfiguration => ({
+          command: 'mix',
+          configurationFile: '.credo.exs',
+          credoConfiguration: 'default',
+          checksWithTag: [],
+          checksWithoutTag: [],
+          strictMode: true,
+          ignoreWarningMessages: false,
+          lintEverything: false,
+          enableDebug: false,
+          diffMode: {
+            enabled: true,
+            mergeBase: 'main',
+          },
+        }),
+      )
+
+      it('supplies the diff command with --from-git-merge-base', () => {
+        assert.match(getCommandArguments(), [
+          'credo',
+          'diff',
+          '--format',
+          'json',
+          '--read-from-stdin',
+          '--config-name',
+          'default',
+          '--strict',
+          '--from-git-merge-base',
+          'main',
+        ])
       })
     })
 
@@ -379,6 +423,10 @@ describe('Utilities', () => {
           ignoreWarningMessages: false,
           lintEverything: false,
           enableDebug: false,
+          diffMode: {
+            enabled: false,
+            mergeBase: 'HEAD',
+          },
         }),
       )
 

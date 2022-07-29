@@ -83,6 +83,10 @@ describe('Configuration', () => {
           ignoreWarningMessages: false,
           lintEverything: false,
           enableDebug: false,
+          diffMode: {
+            enabled: false,
+            mergeBase: 'HEAD',
+          },
         })
       })
 
@@ -119,6 +123,10 @@ describe('Configuration', () => {
           ignoreWarningMessages: false,
           lintEverything: false,
           enableDebug: false,
+          diffMode: {
+            enabled: false,
+            mergeBase: 'HEAD',
+          },
         }
         fetchConfigStub = sandbox.stub(configurationModule, 'fetchConfig').returns(initialConfig)
         reloadConfig()

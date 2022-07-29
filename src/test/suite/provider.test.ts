@@ -12,7 +12,7 @@ import * as loggerModule from '../../logger'
 import * as utilModule from '../../utilities'
 import type { CredoProviderOptions } from '../../provider'
 import { CredoProvider } from '../../provider'
-import type { CredoInformation, CredoOutput } from '../../output'
+import type { CredoDiffOutput, CredoInformation, CredoOutput } from '../../output'
 
 declare let $config: configurationModule.CredoConfiguration
 declare let $diagnosticCollection: vscode.DiagnosticCollection
@@ -23,7 +23,7 @@ declare let $fileName: string
 declare let $documentUri: vscode.Uri
 declare let $textDocument: vscode.TextDocument
 declare let $otherDocument: vscode.TextDocument
-declare let $credoOutput: CredoOutput
+declare let $credoOutput: CredoOutput | CredoDiffOutput
 declare let $credoInfoOutput: CredoInformation
 
 describe('CredoProvider', () => {
@@ -201,6 +201,10 @@ describe('CredoProvider', () => {
             ignoreWarningMessages: false,
             lintEverything: true,
             enableDebug: false,
+            diffMode: {
+              enabled: false,
+              mergeBase: 'HEAD',
+            },
           }),
         )
 
@@ -268,6 +272,97 @@ describe('CredoProvider', () => {
           ).to.be.false
         })
 
+        context('with diff mode enabled', () => {
+          def('config', () => ({
+            command: 'mix',
+            configurationFile: '.credo.exs',
+            credoConfiguration: 'default',
+            checksWithTag: [],
+            checksWithoutTag: [],
+            strictMode: false,
+            ignoreWarningMessages: false,
+            lintEverything: true,
+            enableDebug: false,
+            diffMode: {
+              enabled: true,
+              mergeBase: 'main',
+            },
+          }))
+          def('credoOutput', () => ({
+            diff: {
+              old: [],
+              fixed: [],
+              new: [
+                {
+                  category: 'readability',
+                  check: 'Credo.Check.Readability.ModuleDoc',
+                  column: 11,
+                  column_end: 32,
+                  filename: 'lib/sample_web/telemetry.ex',
+                  line_no: 1,
+                  message: 'Modules should have a @moduledoc tag.',
+                  priority: 1,
+                  trigger: 'SampleWeb.Telemetry',
+                },
+              ],
+            },
+          }))
+
+          it('correctly sets a diagnostic collection for the current document', () => {
+            execute()
+
+            sinonAssert.calledWith(setDiagnosticCollectionSpy, $documentUri, [
+              new vscode.Diagnostic(
+                new vscode.Range(0, 10, 0, 31),
+                'Modules should have a @moduledoc tag. (readability:Credo.Check.Readability.ModuleDoc)',
+                vscode.DiagnosticSeverity.Information,
+              ),
+            ])
+            expect(setDiagnosticCollectionSpy.calledOnce).to.true
+          })
+
+          it('logs an info message when setting diagnostics', () => {
+            execute()
+
+            sinonAssert.calledWith(logSpy, {
+              message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
+              level: loggerModule.LogLevel.Debug,
+            })
+          })
+
+          it('executes credo', () => {
+            execute()
+
+            sinonAssert.calledWith(
+              execFileStub,
+              'mix',
+              [
+                'credo',
+                'diff',
+                '--format',
+                'json',
+                '--read-from-stdin',
+                '--config-name',
+                'default',
+                '--from-git-merge-base',
+                'main',
+              ],
+              match.any,
+              match.any,
+            )
+          })
+
+          it('logs that credo is being executed', () => {
+            execute()
+
+            sinonAssert.calledWith(logSpy, {
+              message:
+                'Executing credo command `mix credo diff --format json --read-from-stdin --config-name default --from-git-merge-base main` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
+              level: loggerModule.LogLevel.Debug,
+            })
+          })
+        })
+
         context('with multiple opened workspaces', () => {
           let executeCredoSpy: SinonSpy<executionModule.CredoExecutionArguments[], cp.ChildProcess[]>
 
@@ -322,6 +417,10 @@ describe('CredoProvider', () => {
             ignoreWarningMessages: false,
             lintEverything: false,
             enableDebug: false,
+            diffMode: {
+              enabled: false,
+              mergeBase: 'HEAD',
+            },
           }),
         )
 

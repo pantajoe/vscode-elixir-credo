@@ -1,14 +1,14 @@
 import * as cp from 'child_process'
 import * as path from 'path'
 import * as vscode from 'vscode'
-import type { CredoCommandOutput, CredoInformation, CredoOutput } from './output'
+import type { CredoCommandOutput, CredoDiffOutput, CredoInformation, CredoOutput } from './output'
 import type { TaskToken } from './task-queue'
 import { parseCredoOutput } from './parser'
 import { LogLevel, log } from './logger'
 import { getCurrentConfiguration } from './configuration'
 import { trunc } from './utilities'
 
-const CREDO_INFO_ARGS = ['credo', 'info', '--format', 'json', '--verbose']
+const CredoInfoCommand = ['credo', 'info', '--format', 'json', '--verbose']
 
 type LintDocumentCallback = (error: cp.ExecException | null, stdout: string | Buffer, stderr: string | Buffer) => void
 
@@ -112,7 +112,7 @@ export function createLintDocumentCallback({
 
     diagnosticCollection.delete(uri)
 
-    const output = parseOutput<CredoOutput>(stdout)
+    const output = parseOutput<CredoOutput | CredoDiffOutput>(stdout)
     if (!output) return
 
     log({ message: `Setting linter issues for document ${uri.fsPath}.`, level: LogLevel.Debug })
@@ -166,14 +166,14 @@ export function executeCredo({
 
   log({
     message: trunc`Retreiving credo information: Executing credo command
-    \`${[getCurrentConfiguration().command, ...CREDO_INFO_ARGS].join(' ')}\` for ${document.uri.fsPath}
+    \`${[getCurrentConfiguration().command, ...CredoInfoCommand].join(' ')}\` for ${document.uri.fsPath}
     in directory ${options.cwd}`,
     level: LogLevel.Debug,
   })
 
   const infoProcess = cp.execFile(
     getCurrentConfiguration().command,
-    CREDO_INFO_ARGS,
+    CredoInfoCommand,
     options,
     (error, stdout, stderr) => {
       if (reportError({ error, stderr })) return

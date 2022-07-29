@@ -110,6 +110,21 @@
             "description": "Enable extensive logging to the output channel",
             "type": "boolean",
             "default": false
+          },
+          "elixir.credo.diffMode.enabled": {
+            "title": "Enable Credo Diff Mode",
+            "markdownDescription": "Enable Credo's [diff mode](https://hexdocs.pm/credo/diff_command.html) against a [merge base](https://hexdocs.pm/credo/diff_command.html#from-git-merge-base).\n\nYou can specify the merge base in the setting `#elixir.credo.diffMode.mergeBase#`",
+            "type": "boolean",
+            "default": false,
+            "scope": "resource"
+          },
+          "elixir.credo.diffMode.mergeBase": {
+            "title": "Merge Base for Credo Diff Mode",
+            "markdownDescription": "Change the [merge base](https://hexdocs.pm/credo/diff_command.html#from-git-merge-base) for Credo's diff mode (e.g., `main`).",
+            "type": "string",
+            "if": "config.elixir.credo.diffMode.enabled",
+            "default": "HEAD",
+            "scope": "resource"
           }
         }
       }
