@@ -64,7 +64,7 @@ export function fetchConfig(): CredoConfiguration {
     enableDebug: conf.get('enableDebug', false),
     diffMode: {
       enabled: conf.get('diffMode.enabled', false),
-      mergeBase: conf.get('diffMode.mergeBase', 'HEAD'),
+      mergeBase: conf.get('diffMode.mergeBase', 'main'),
     },
   }
 }

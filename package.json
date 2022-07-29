@@ -123,7 +123,7 @@
             "markdownDescription": "Change the [merge base](https://hexdocs.pm/credo/diff_command.html#from-git-merge-base) for Credo's diff mode (e.g., `main`).",
             "type": "string",
             "if": "config.elixir.credo.diffMode.enabled",
-            "default": "HEAD",
+            "default": "main",
             "scope": "resource"
           }
         }

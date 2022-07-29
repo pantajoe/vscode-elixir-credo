@@ -35,7 +35,7 @@ describe('Loggging', () => {
       enableDebug: $enableDebug,
       diffMode: {
         enabled: false,
-        mergeBase: 'HEAD',
+        mergeBase: 'main',
       },
     }),
   )

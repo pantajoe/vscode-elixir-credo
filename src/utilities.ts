@@ -129,7 +129,7 @@ export function getCommandArguments(documentUri?: vscode.Uri): string[] {
   }
 
   if (extensionConfig.diffMode.enabled) {
-    commandArguments.push('--from-git-merge-base', extensionConfig.diffMode.mergeBase || 'HEAD')
+    commandArguments.push('--from-git-merge-base', extensionConfig.diffMode.mergeBase || 'main')
   }
 
   const commandPrefix = extensionConfig.diffMode.enabled ? [DefaultCommand, DiffCommand] : [DefaultCommand]

@@ -85,7 +85,7 @@ describe('Configuration', () => {
           enableDebug: false,
           diffMode: {
             enabled: false,
-            mergeBase: 'HEAD',
+            mergeBase: 'main',
           },
         })
       })
@@ -125,7 +125,7 @@ describe('Configuration', () => {
           enableDebug: false,
           diffMode: {
             enabled: false,
-            mergeBase: 'HEAD',
+            mergeBase: 'main',
           },
         }
         fetchConfigStub = sandbox.stub(configurationModule, 'fetchConfig').returns(initialConfig)

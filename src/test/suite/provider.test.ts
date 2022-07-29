@@ -203,7 +203,7 @@ describe('CredoProvider', () => {
             enableDebug: false,
             diffMode: {
               enabled: false,
-              mergeBase: 'HEAD',
+              mergeBase: 'main',
             },
           }),
         )
@@ -419,7 +419,7 @@ describe('CredoProvider', () => {
             enableDebug: false,
             diffMode: {
               enabled: false,
-              mergeBase: 'HEAD',
+              mergeBase: 'main',
             },
           }),
         )

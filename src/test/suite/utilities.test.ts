@@ -227,7 +227,7 @@ describe('Utilities', () => {
         enableDebug: false,
         diffMode: {
           enabled: false,
-          mergeBase: 'HEAD',
+          mergeBase: 'main',
         },
       }),
     )
@@ -395,7 +395,7 @@ describe('Utilities', () => {
           enableDebug: false,
           diffMode: {
             enabled: false,
-            mergeBase: 'HEAD',
+            mergeBase: 'main',
           },
         }),
       )
@@ -458,7 +458,7 @@ describe('Utilities', () => {
           enableDebug: false,
           diffMode: {
             enabled: false,
-            mergeBase: 'HEAD',
+            mergeBase: 'main',
           },
         }),
       )
