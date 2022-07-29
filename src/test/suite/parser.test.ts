@@ -1,4 +1,4 @@
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { expect } from 'chai'
 import { parseCredoIssue, parseCredoOutput } from '../../parser'
 import type { CredoIssue } from '../../output'

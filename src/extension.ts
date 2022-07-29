@@ -1,6 +1,6 @@
 // this extension's structure is heavily inspired by https://github.com/misogi/vscode-ruby-rubocop
 
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { CredoProvider } from './provider'
 import { reloadConfiguration } from './configuration'
 import { LogLevel, log } from './logger'

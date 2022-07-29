@@ -1,7 +1,7 @@
-import fs from 'fs'
-import path from 'path'
-import os from 'os'
-import vscode from 'vscode'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as os from 'os'
+import * as vscode from 'vscode'
 
 const MixCommand = {
   unix: 'mix',

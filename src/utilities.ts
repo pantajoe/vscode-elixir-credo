@@ -1,6 +1,6 @@
-import path from 'path'
-import fs from 'fs'
-import vscode from 'vscode'
+import * as path from 'path'
+import * as fs from 'fs'
+import * as vscode from 'vscode'
 import { getCurrentConfiguration } from './configuration'
 import { LogLevel, log } from './logger'
 

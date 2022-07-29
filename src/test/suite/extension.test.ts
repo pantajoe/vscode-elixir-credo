@@ -1,5 +1,5 @@
-import path from 'path'
-import vscode from 'vscode'
+import * as path from 'path'
+import * as vscode from 'vscode'
 import type { SinonSandbox, SinonSpy, SinonStub } from 'sinon'
 import { createSandbox, match } from 'sinon'
 import { expect } from 'chai'

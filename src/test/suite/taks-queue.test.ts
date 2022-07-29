@@ -1,4 +1,4 @@
-import vscode from 'vscode'
+import * as vscode from 'vscode'
 import { expect } from 'chai'
 import type { TaskToken } from '../../task-queue'
 import { Task, TaskQueue } from '../../task-queue'
