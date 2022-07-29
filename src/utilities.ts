@@ -59,7 +59,7 @@ export function inMixProject(documentUri: vscode.Uri): boolean {
   return !!mixProjectPath
 }
 
-export function getCurrentPath(documentUri: vscode.Uri): string {
+export function getProjectFolder(documentUri: vscode.Uri): string {
   const { fsPath: documentPath } = documentUri
   const workspace = vscode.workspace.getWorkspaceFolder(documentUri)
 
@@ -79,20 +79,17 @@ export const getCredoConfigFilePath = (documentUri?: vscode.Uri, opts?: { silent
   const extensionConfig = getCurrentConfiguration()
   const configurationFile = extensionConfig.configurationFile || DefaultConfigFile
 
-  const currentWorkspaceFolder = documentUri ? vscode.workspace.getWorkspaceFolder(documentUri) : undefined
-  const currentWorkspaces = currentWorkspaceFolder ? [currentWorkspaceFolder] : vscode.workspace.workspaceFolders ?? []
-
-  const found = currentWorkspaces
-    .flatMap((ws: vscode.WorkspaceFolder) => [
-      path.join(ws.uri.fsPath, configurationFile),
-      path.join(ws.uri.fsPath, 'config', configurationFile),
-    ])
-    .filter((fullPath: string) => fs.existsSync(fullPath))
-
   // add unchanged value of `configurationFile` in case it is an absolute path
-  if (path.isAbsolute(configurationFile) && !found.includes(configurationFile) && fs.existsSync(configurationFile)) {
-    found.push(configurationFile)
-  }
+  if (path.isAbsolute(configurationFile) && fs.existsSync(configurationFile)) return configurationFile
+
+  let projectFolder = documentUri ? getProjectFolder(documentUri) : undefined
+  if (!projectFolder && documentUri) projectFolder = vscode.workspace.getWorkspaceFolder(documentUri)?.uri.fsPath
+
+  const found = projectFolder
+    ? [path.join(projectFolder, configurationFile), path.join(projectFolder, 'config', configurationFile)].filter(
+        (fullPath: string) => fs.existsSync(fullPath),
+      )
+    : []
 
   if (found.length === 0) {
     if (!silent) log({ message: `${configurationFile} file does not exist. Ignoring...`, level: LogLevel.Warning })
@@ -101,15 +98,16 @@ export const getCredoConfigFilePath = (documentUri?: vscode.Uri, opts?: { silent
     if (found.length > 1 && !silent) {
       log({ message: `Found multiple files (${found.join(', ')}). I will use ${found[0]}`, level: LogLevel.Warning })
     }
-    return found[0]
+
+    return found[0].replace(`${projectFolder}${path.sep}`, '')
   }
 }
 
-export function getCommandArguments(document?: vscode.TextDocument): string[] {
+export function getCommandArguments(documentUri?: vscode.Uri): string[] {
   const commandArguments = [...DefaultCommandArguments]
   const extensionConfig = getCurrentConfiguration()
 
-  const configFilePath = getCredoConfigFilePath(document?.uri)
+  const configFilePath = getCredoConfigFilePath(documentUri)
   if (configFilePath) commandArguments.push('--config-file', configFilePath)
 
   if (extensionConfig.credoConfiguration) {

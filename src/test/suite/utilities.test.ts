@@ -9,7 +9,7 @@ import {
   findUp,
   getCommandArguments,
   getCommandEnvironment,
-  getCurrentPath,
+  getProjectFolder,
   inMixProject,
   makeZeroBasedIndex,
   trunc,
@@ -163,8 +163,8 @@ describe('Utilities', () => {
     })
   })
 
-  context('#getCurrentPath', () => {
-    const fetchCurrentPath = () => getCurrentPath($documentUri)
+  context('#getProjectFolder', () => {
+    const fetchCurrentPath = () => getProjectFolder($documentUri)
 
     beforeEach(() => {
       sandbox.replaceGetter(vscode.workspace, 'workspaceFolders', () => [
@@ -254,17 +254,20 @@ describe('Utilities', () => {
 
     context('if only one configuration file is found', () => {
       beforeEach(() => {
-        sandbox.stub(fs, 'existsSync').callsFake((file) => file === `${$mainWorkspacePath}${path.sep}.credo.exs`)
+        sandbox.stub(fs, 'existsSync').callsFake((file) => {
+          return file === `${$mainWorkspacePath}${path.sep}.credo.exs`
+        })
       })
 
       it('successfully adds the config file to the CLI arguments', () => {
-        assert.match(getCommandArguments(), [
+        const cmdArgs = getCommandArguments(vscode.Uri.file(`${$mainWorkspacePath}${path.sep}.credo.exs`))
+        assert.match(cmdArgs, [
           'credo',
           '--format',
           'json',
           '--read-from-stdin',
           '--config-file',
-          `${$mainWorkspacePath}${path.sep}.credo.exs`,
+          '.credo.exs',
           '--config-name',
           'default',
         ])
@@ -302,10 +305,11 @@ describe('Utilities', () => {
       })
 
       it('shows a warning message', () => {
-        getCommandArguments()
+        getCommandArguments(vscode.Uri.file(`${$mainWorkspacePath}${path.sep}.credo.exs`))
+
         assert.calledOnceWithExactly(logSpy, {
           message: trunc`Found multiple files
-            (${$mainWorkspacePath}${path.sep}.credo.exs, ${$mainWorkspacePath}${path.sep}config/.credo.exs, ${$otherWorkspacePath}${path.sep}.credo.exs, ${$otherWorkspacePath}${path.sep}config/.credo.exs).
+            (${$mainWorkspacePath}${path.sep}.credo.exs, ${$mainWorkspacePath}${path.sep}config/.credo.exs).
             I will use ${$mainWorkspacePath}${path.sep}.credo.exs`,
           level: LogLevel.Warning,
         })
@@ -333,7 +337,8 @@ describe('Utilities', () => {
         })
 
         it('only finds the configuration file that resides in the same workspace folder as the document', () => {
-          expect(getCommandArguments(textDocument)).to.include(`${$otherWorkspacePath}${path.sep}.credo.exs`)
+          const cmdArgs = getCommandArguments(textDocument.uri)
+          expect(cmdArgs).to.include('.credo.exs')
           assert.notCalled(logSpy)
         })
       })

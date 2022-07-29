@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import { Task, TaskQueue } from './task-queue'
 import { createLintDocumentCallback, executeCredo } from './execution'
 import { LogLevel, log } from './logger'
-import { getCommandArguments, getCommandEnvironment, getCurrentPath, inMixProject, isFileUri } from './utilities'
+import { getCommandArguments, getCommandEnvironment, getProjectFolder, inMixProject, isFileUri } from './utilities'
 
 export interface CredoProviderOptions {
   diagnosticCollection: vscode.DiagnosticCollection
@@ -34,11 +34,11 @@ export class CredoProvider {
       return
     }
 
-    const currentPath = getCurrentPath(uri)
+    const currentPath = getProjectFolder(uri)
 
     const task = new Task(uri, (token) => {
       const processes = executeCredo({
-        cmdArgs: getCommandArguments(document),
+        cmdArgs: getCommandArguments(document.uri),
         document,
         options: {
           cwd: currentPath,

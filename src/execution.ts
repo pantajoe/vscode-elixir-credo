@@ -1,12 +1,12 @@
 import * as cp from 'child_process'
 import * as path from 'path'
-import * as vscode from 'vscode'
+import type * as vscode from 'vscode'
 import type { CredoCommandOutput, CredoDiffOutput, CredoInformation, CredoOutput } from './output'
 import type { TaskToken } from './task-queue'
 import { parseCredoOutput } from './parser'
 import { LogLevel, log } from './logger'
 import { getCurrentConfiguration } from './configuration'
-import { trunc } from './utilities'
+import { getProjectFolder, trunc } from './utilities'
 
 const CredoInfoCommand = ['credo', 'info', '--format', 'json', '--verbose']
 
@@ -159,9 +159,9 @@ export function executeCredo({
   }
 
   const processes = []
-  const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri)
-  const relativeDocumentPath = workspaceFolder
-    ? document.fileName.replace(`${workspaceFolder.uri.fsPath}${path.sep}`, '')
+  const projectFolder = getProjectFolder(document.uri)
+  const relativeDocumentPath = projectFolder
+    ? document.fileName.replace(`${projectFolder}${path.sep}`, '')
     : document.fileName
 
   log({
