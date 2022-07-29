@@ -201,6 +201,10 @@ describe('CredoProvider', () => {
             ignoreWarningMessages: false,
             lintEverything: true,
             enableDebug: false,
+            diffMode: {
+              enabled: false,
+              mergeBase: 'HEAD',
+            },
           }),
         )
 
@@ -322,6 +326,10 @@ describe('CredoProvider', () => {
             ignoreWarningMessages: false,
             lintEverything: false,
             enableDebug: false,
+            diffMode: {
+              enabled: false,
+              mergeBase: 'HEAD',
+            },
           }),
         )
 

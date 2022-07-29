@@ -4,8 +4,10 @@ import * as vscode from 'vscode'
 import { getCurrentConfiguration } from './configuration'
 import { LogLevel, log } from './logger'
 
-const DEFAULT_CONFIG_FILE = '.credo.exs'
-const DEFAULT_COMMAND_ARGUMENTS = ['credo', '--format', 'json', '--read-from-stdin']
+export const DefaultConfigFile = '.credo.exs'
+export const DefaultCommand = 'credo'
+export const DiffCommand = 'diff'
+export const DefaultCommandArguments = ['--format', 'json', '--read-from-stdin']
 
 export function makeZeroBasedIndex(index: number | undefined | null): number {
   if (index) {
@@ -46,7 +48,7 @@ export const getCredoConfigFilePath = (documentUri?: vscode.Uri, opts?: { silent
   const { silent = false } = opts ?? {}
 
   const extensionConfig = getCurrentConfiguration()
-  const configurationFile = extensionConfig.configurationFile || DEFAULT_CONFIG_FILE
+  const configurationFile = extensionConfig.configurationFile || DefaultConfigFile
 
   const currentWorkspaceFolder = documentUri ? vscode.workspace.getWorkspaceFolder(documentUri) : undefined
   const currentWorkspaces = currentWorkspaceFolder ? [currentWorkspaceFolder] : vscode.workspace.workspaceFolders ?? []
@@ -75,7 +77,7 @@ export const getCredoConfigFilePath = (documentUri?: vscode.Uri, opts?: { silent
 }
 
 export function getCommandArguments(document?: vscode.TextDocument): string[] {
-  const commandArguments = [...DEFAULT_COMMAND_ARGUMENTS]
+  const commandArguments = [...DefaultCommandArguments]
   const extensionConfig = getCurrentConfiguration()
 
   const configFilePath = getCredoConfigFilePath(document?.uri)
@@ -99,7 +101,13 @@ export function getCommandArguments(document?: vscode.TextDocument): string[] {
     commandArguments.push('--strict')
   }
 
-  return commandArguments
+  if (extensionConfig.diffMode.enabled) {
+    commandArguments.push('--from-git-merge-base', extensionConfig.diffMode.mergeBase || 'HEAD')
+  }
+
+  const commandPrefix = extensionConfig.diffMode.enabled ? [DefaultCommand, DiffCommand] : [DefaultCommand]
+
+  return [...commandPrefix, ...commandArguments]
 }
 
 export function getCommandEnvironment(): NodeJS.ProcessEnv {

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
-import type { CredoIssue, CredoOutput, CredoSeverity } from './output'
+import type { CredoDiffOutput, CredoIssue, CredoOutput, CredoSeverity } from './output'
+import { isDiffOutput } from './output'
 import { makeZeroBasedIndex } from './utilities'
 
 function parseSeverity(credoSeverity: CredoSeverity): vscode.DiagnosticSeverity {
@@ -66,9 +67,10 @@ export function parseCredoOutput({
   credoOutput,
   document,
 }: {
-  credoOutput: CredoOutput
+  credoOutput: CredoOutput | CredoDiffOutput
   document: vscode.TextDocument
 }): vscode.Diagnostic[] {
   const documentContent = document.getText()
-  return credoOutput.issues.map((issue: CredoIssue) => parseCredoIssue({ issue, documentContent }))
+  const issues = isDiffOutput(credoOutput) ? credoOutput.diff.new : credoOutput.issues
+  return issues.map((issue: CredoIssue) => parseCredoIssue({ issue, documentContent }))
 }

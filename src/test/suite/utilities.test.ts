@@ -197,6 +197,10 @@ describe('Utilities', () => {
         ignoreWarningMessages: false,
         lintEverything: false,
         enableDebug: false,
+        diffMode: {
+          enabled: false,
+          mergeBase: 'HEAD',
+        },
       }),
     )
 
@@ -356,6 +360,10 @@ describe('Utilities', () => {
           ignoreWarningMessages: false,
           lintEverything: false,
           enableDebug: false,
+          diffMode: {
+            enabled: false,
+            mergeBase: 'HEAD',
+          },
         }),
       )
 
@@ -379,6 +387,10 @@ describe('Utilities', () => {
           ignoreWarningMessages: false,
           lintEverything: false,
           enableDebug: false,
+          diffMode: {
+            enabled: false,
+            mergeBase: 'HEAD',
+          },
         }),
       )
 

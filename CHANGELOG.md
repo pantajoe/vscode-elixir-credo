@@ -7,15 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None.
+### Added
+
+- added Credo's [diff mode](https://hexdocs.pm/credo/diff_command.html#from-git-merge-base) against a merge base (#104)
+  - enable with setting `elixir.credo.diffMode.enabled`
+  - change the default merge base `"HEAD"` by using the setting `elixir.credo.diffMode.mergeBase`
 
 ## [0.7.3] - 2022-07-28
 
-## Added
+### Added
 
 - now searches for configuration file both in project root and `config/` directory (#81)
 
-## Unrelated changes
+### Unrelated changes
 
 - upgraded dependencies
 - use @antfu's eslint configuration

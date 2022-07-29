@@ -16,6 +16,14 @@ export interface CredoOutput {
   issues: CredoIssue[]
 }
 
+export interface CredoDiffOutput {
+  diff: {
+    fixed: CredoIssue[]
+    new: CredoIssue[]
+    old: CredoIssue[]
+  }
+}
+
 export interface CredoInformation {
   config: {
     checks: string[]
@@ -28,4 +36,8 @@ export interface CredoInformation {
   }
 }
 
-export type CredoCommandOutput = CredoInformation | CredoOutput
+export type CredoCommandOutput = CredoInformation | CredoOutput | CredoDiffOutput
+
+export const isDiffOutput = (output: CredoOutput | CredoDiffOutput): output is CredoDiffOutput => {
+  return 'diff' in output
+}

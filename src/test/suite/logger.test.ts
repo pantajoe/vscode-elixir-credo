@@ -33,6 +33,10 @@ describe('Loggging', () => {
       ignoreWarningMessages: $ignoreWarningMessages,
       lintEverything: false,
       enableDebug: $enableDebug,
+      diffMode: {
+        enabled: false,
+        mergeBase: 'HEAD',
+      },
     }),
   )
 

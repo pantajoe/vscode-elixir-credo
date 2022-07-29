@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as os from 'os'
 import * as vscode from 'vscode'
 
-const MIX_COMMAND = {
+const MixCommand = {
   unix: 'mix',
   win32: 'mix.bat',
 }
@@ -18,6 +18,10 @@ export interface CredoConfiguration {
   enableDebug: boolean
   checksWithTag: string[]
   checksWithoutTag: string[]
+  diffMode: {
+    enabled: boolean
+    mergeBase: string
+  }
 }
 
 export function autodetectExecutePath(): string {
@@ -36,7 +40,7 @@ export function autodetectExecutePath(): string {
 
   pathParts.forEach((pathPart) => {
     const binPath =
-      os.platform() === 'win32' ? path.join(pathPart, MIX_COMMAND.win32) : path.join(pathPart, MIX_COMMAND.unix)
+      os.platform() === 'win32' ? path.join(pathPart, MixCommand.win32) : path.join(pathPart, MixCommand.unix)
 
     if (fs.existsSync(binPath)) executePath = pathPart + path.sep
   })
@@ -46,7 +50,7 @@ export function autodetectExecutePath(): string {
 
 export function fetchConfig(): CredoConfiguration {
   const conf = vscode.workspace.getConfiguration('elixir.credo')
-  const mixCommand = os.platform() === 'win32' ? MIX_COMMAND.win32 : MIX_COMMAND.unix
+  const mixCommand = os.platform() === 'win32' ? MixCommand.win32 : MixCommand.unix
 
   return {
     command: `${autodetectExecutePath()}${mixCommand}`,
@@ -58,6 +62,10 @@ export function fetchConfig(): CredoConfiguration {
     ignoreWarningMessages: conf.get('ignoreWarningMessages', false),
     lintEverything: conf.get('lintEverything', false),
     enableDebug: conf.get('enableDebug', false),
+    diffMode: {
+      enabled: conf.get('diffMode.enabled', false),
+      mergeBase: conf.get('diffMode.mergeBase', 'HEAD'),
+    },
   }
 }
 
