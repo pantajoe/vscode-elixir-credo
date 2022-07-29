@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [0.8.1] - 2022-07-29
+
 ### Fixed
 
 - now looks up mix project folder recursively starting from the opened document (#163)
