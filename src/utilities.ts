@@ -1,6 +1,6 @@
-import * as path from 'path'
-import * as fs from 'fs'
-import * as vscode from 'vscode'
+import path from 'path'
+import fs from 'fs'
+import vscode from 'vscode'
 import { getCurrentConfiguration } from './configuration'
 import { LogLevel, log } from './logger'
 
@@ -31,17 +31,46 @@ export function isFileUri(uri: vscode.Uri): boolean {
   return uri.scheme === 'file'
 }
 
+/**
+ * Search for a directory (upward recursively) that contains a certain file.
+ *
+ * @param name filename to search for in directories
+ * @param opts specify start and stop of upward recursive directory search
+ */
+export function findUp(name: string, opts: { startAt: string; stopAt?: string }): string | undefined {
+  const { startAt: dir, stopAt } = opts
+
+  const filePath = path.join(dir, name)
+  if (fs.existsSync(filePath)) return dir
+  if (dir === stopAt) return undefined
+
+  return findUp(name, { startAt: path.dirname(dir), stopAt })
+}
+
 export function inMixProject(documentUri: vscode.Uri): boolean {
   const workspace = vscode.workspace.getWorkspaceFolder(documentUri)
   if (!workspace) return false
 
-  return fs.existsSync(path.join(workspace.uri.fsPath, 'mix.exs'))
+  const mixProjectPath = findUp('mix.exs', {
+    startAt: path.dirname(documentUri.fsPath),
+    stopAt: workspace.uri.fsPath,
+  })
+
+  return !!mixProjectPath
 }
 
 export function getCurrentPath(documentUri: vscode.Uri): string {
   const { fsPath: documentPath } = documentUri
+  const workspace = vscode.workspace.getWorkspaceFolder(documentUri)
 
-  return vscode.workspace.getWorkspaceFolder(documentUri)?.uri?.fsPath || path.dirname(documentPath)
+  const mixProjectPath = workspace
+    ? findUp('mix.exs', {
+        startAt: path.dirname(documentUri.fsPath),
+        stopAt: workspace.uri.fsPath,
+      })
+    : undefined
+
+  return mixProjectPath || workspace?.uri.fsPath || path.dirname(documentPath)
 }
 
 export const getCredoConfigFilePath = (documentUri?: vscode.Uri, opts?: { silent?: boolean }): string | null => {

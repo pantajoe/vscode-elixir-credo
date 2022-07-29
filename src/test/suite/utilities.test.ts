@@ -1,11 +1,12 @@
-import * as fs from 'fs'
-import * as path from 'path'
-import * as vscode from 'vscode'
+import fs from 'fs'
+import path from 'path'
+import vscode from 'vscode'
 import { expect } from 'chai'
 import type { SinonSandbox, SinonSpy, SinonStub } from 'sinon'
 import { assert, createSandbox } from 'sinon'
 import * as configurationModule from '../../configuration'
 import {
+  findUp,
   getCommandArguments,
   getCommandEnvironment,
   getCurrentPath,
@@ -34,6 +35,33 @@ describe('Utilities', () => {
 
   afterEach(() => {
     sandbox.restore()
+  })
+
+  context('#findUp', () => {
+    const subject = () => {
+      return findUp('mix.exs', {
+        startAt: path.dirname($documentUri.fsPath),
+        stopAt: $mainWorkspacePath,
+      })
+    }
+
+    context('with a file within a mix project', () => {
+      def('mainWorkspacePath', () => path.resolve(__dirname, '../../../src/test'))
+      def('documentUri', () => vscode.Uri.file(path.resolve($mainWorkspacePath, 'fixtures/src/sample.ex')))
+
+      it('should return the path to the mix.exs file', () => {
+        expect(subject()).to.equal(path.join($mainWorkspacePath, 'fixtures'))
+      })
+    })
+
+    context('with a file outside of a mix project', () => {
+      def('mainWorkspacePath', () => path.resolve(__dirname, '../../../src/test'))
+      def('documentUri', () => vscode.Uri.file(path.resolve($mainWorkspacePath, 'other-fixtures/other.ex')))
+
+      it('should return undefined', () => {
+        expect(subject()).to.be.undefined
+      })
+    })
   })
 
   context('#makeZeroBasedIndex', () => {

@@ -1,4 +1,4 @@
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 import type { CredoDiffOutput, CredoIssue, CredoOutput, CredoSeverity } from './output'
 import { isDiffOutput } from './output'
 import { makeZeroBasedIndex } from './utilities'

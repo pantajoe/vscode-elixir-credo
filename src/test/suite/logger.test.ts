@@ -1,4 +1,4 @@
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 import type { SinonSandbox, SinonSpy } from 'sinon'
 import { createSandbox } from 'sinon'
 import * as configurationModule from '../../configuration'

@@ -1,4 +1,4 @@
-import type * as cp from 'child_process'
+import type cp from 'child_process'
 import { expect } from 'chai'
 import { def } from 'bdd-lazy-var/global'
 import type { SinonSandbox, SinonSpy } from 'sinon'

@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None.
+### Fixed
+
+- now looks up mix project folder recursively starting from the opened document (#163)
+
+### Unrelated changes
+
+- adapted `tsconfig.json` to allow synthetic default imports and enable `esModuleInterop` flag
 
 ## [0.8.0] - 2022-07-29
 
