@@ -467,10 +467,10 @@
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
   integrity sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==
 
-"@types/vscode@^1.69.0":
-  version "1.69.0"
-  resolved "https://registry.yarnpkg.com/@types/vscode/-/vscode-1.69.0.tgz#a472011af392fbcf82cbb82f60b4c239c21b921c"
-  integrity sha512-RlzDAnGqUoo9wS6d4tthNyAdZLxOIddLiX3djMoWk29jFfSA1yJbIwr0epBYqqYarWB6s2Z+4VaZCQ80Jaa3kA==
+"@types/vscode@^1.69.1":
+  version "1.69.1"
+  resolved "https://registry.yarnpkg.com/@types/vscode/-/vscode-1.69.1.tgz#fe02a9448510f480a20257e37c05301d63172806"
+  integrity sha512-YZ77g3u9S9Xw3dwAgRgNAwnKNS3nPlhSu3XKOIYQzCcItUrZovfJUlf/29wjON2VZvHGuYQnhKuJUP15ccpVIQ==
 
 "@typescript-eslint/eslint-plugin@^5.26.0", "@typescript-eslint/eslint-plugin@^5.31.0":
   version "5.31.0"
