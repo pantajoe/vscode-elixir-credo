@@ -146,7 +146,7 @@
     "@commitlint/cli": "^17.2.0",
     "@commitlint/config-conventional": "^17.2.0",
     "@types/chai": "^4.3.4",
-    "@types/glob": "^7.1.1",
+    "@types/glob": "^8.0.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^16.0.0",
     "@types/sinon": "^10.0.6",
