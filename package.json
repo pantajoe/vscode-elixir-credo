@@ -144,7 +144,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^0.25.2",
     "@commitlint/cli": "^17.2.0",
-    "@commitlint/config-conventional": "^17.0.3",
+    "@commitlint/config-conventional": "^17.2.0",
     "@types/chai": "^4.3.4",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^9.1.1",
