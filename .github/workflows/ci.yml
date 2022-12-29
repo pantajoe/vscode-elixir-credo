@@ -33,6 +33,4 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run TS Compilation, ESLint, and Tests 👀
-        uses: GabrielBB/xvfb-action@v1.6
-        with:
-          run: yarn test
+        run: xvfb-run -a yarn test
