@@ -34,15 +34,6 @@ module.exports = {
         ignoreRegExpLiterals: true,
       },
     ],
-    'jsx-quotes': ['error', 'prefer-double'],
-    'react/prop-types': 'off',
-    'react/self-closing-comp': [
-      'error',
-      {
-        component: true,
-        html: true,
-      },
-    ],
     'import/no-unresolved': [
       'error',
       {
