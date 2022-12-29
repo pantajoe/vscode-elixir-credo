@@ -1,6 +1,6 @@
 # VS Code Credo (Elixir Linter)
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pantajoe/vscode-elixir-credo/CI?style=for-the-badge)](https://github.com/pantajoe/vscode-elixir-credo/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pantajoe/vscode-elixir-credo/ci.yml?branch=main&style=for-the-badge)](https://github.com/pantajoe/vscode-elixir-credo/actions)
 [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/pantajoe.vscode-elixir-credo?label=VS%20Code%20Downloads&style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=pantajoe.vscode-elixir-credo)
 [![Open VSX Downloads](https://img.shields.io/open-vsx/dt/pantajoe/vscode-elixir-credo?label=Open%20VSX%20Downloads&style=for-the-badge)](https://open-vsx.org/extension/pantajoe/vscode-elixir-credo)
 [![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](http://opensource.org/licenses/MIT)
