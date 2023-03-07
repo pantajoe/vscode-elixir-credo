@@ -157,7 +157,7 @@
     "bdd-lazy-var": "^2.6.1",
     "chai": "^4.3.7",
     "eslint": "^8.30.0",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-prettier": "^4.0.0",
     "glob": "^8.0.3",
     "husky": "^8.0.2",
