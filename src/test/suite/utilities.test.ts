@@ -223,6 +223,7 @@ describe('Utilities', () => {
         checksWithoutTag: [],
         strictMode: false,
         ignoreWarningMessages: false,
+        ignoreErrorMessages: false,
         lintEverything: false,
         enableDebug: false,
         diffMode: {
@@ -391,6 +392,7 @@ describe('Utilities', () => {
           checksWithoutTag: [],
           strictMode: true,
           ignoreWarningMessages: false,
+          ignoreErrorMessages: false,
           lintEverything: false,
           enableDebug: false,
           diffMode: {
@@ -416,6 +418,7 @@ describe('Utilities', () => {
           checksWithoutTag: [],
           strictMode: true,
           ignoreWarningMessages: false,
+          ignoreErrorMessages: false,
           lintEverything: false,
           enableDebug: false,
           diffMode: {
@@ -454,6 +457,7 @@ describe('Utilities', () => {
           checksWithoutTag: $checksWithoutTag,
           strictMode: false,
           ignoreWarningMessages: false,
+          ignoreErrorMessages: false,
           lintEverything: false,
           enableDebug: false,
           diffMode: {

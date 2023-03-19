@@ -8,6 +8,7 @@ declare let $message: string
 declare let $logLevel: LogLevel
 declare let $config: configurationModule.CredoConfiguration
 declare let $ignoreWarningMessages: boolean
+declare let $ignoreErrorMessages: boolean
 declare let $enableDebug: boolean
 
 describe('Loggging', () => {
@@ -20,6 +21,7 @@ describe('Loggging', () => {
 
   def('message', () => 'Sample message')
   def('ignoreWarningMessages', () => false)
+  def('ignoreErrorMessages', () => false)
   def('enableDebug', () => false)
   def(
     'config',
@@ -31,6 +33,7 @@ describe('Loggging', () => {
       checksWithoutTag: [],
       strictMode: false,
       ignoreWarningMessages: $ignoreWarningMessages,
+      ignoreErrorMessages: $ignoreErrorMessages,
       lintEverything: false,
       enableDebug: $enableDebug,
       diffMode: {
@@ -174,6 +177,22 @@ describe('Loggging', () => {
         logMessage()
 
         sandbox.assert.calledOnceWithExactly(vscodeMessageSpy, 'Sample message')
+      })
+    })
+
+    context('when ignoring error messages', () => {
+      def('ignoreErrorMessages', () => true)
+
+      it('logs the message to the output channel', () => {
+        logMessage()
+
+        sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n')
+      })
+
+      it('does not show an error popup', () => {
+        logMessage()
+
+        sandbox.assert.notCalled(vscodeMessageSpy)
       })
     })
   })

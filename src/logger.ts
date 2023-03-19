@@ -20,7 +20,7 @@ function logToOutputChannel(message: string): void {
 }
 
 export function log({ message, level = LogLevel.Error }: LogArguments) {
-  const { ignoreWarningMessages, enableDebug } = getCurrentConfiguration()
+  const { ignoreWarningMessages, ignoreErrorMessages, enableDebug } = getCurrentConfiguration()
 
   switch (level) {
     case LogLevel.Debug:
@@ -35,7 +35,7 @@ export function log({ message, level = LogLevel.Error }: LogArguments) {
       break
     case LogLevel.Error:
       logToOutputChannel(message)
-      vscode.window.showErrorMessage(message)
+      !ignoreErrorMessages && vscode.window.showErrorMessage(message)
       break
     default:
       break
