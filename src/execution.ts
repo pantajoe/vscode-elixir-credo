@@ -45,9 +45,14 @@ export function parseOutput<T extends CredoCommandOutput>(stdout: string | Buffe
 
     return JSON.parse(extractedJSON)
   } catch (e) {
-    if (e instanceof SyntaxError) {
+    const outputLog = output.replace(/[\r\n \t]/g, ' ')
+
+    // It's probably safe to ignore SIGTERM errors: https://en.wikipedia.org/wiki/Signal_(IPC)#SIGTERM
+    const isSIGTERM = outputLog.includes('SIGTERM')
+
+    if (e instanceof SyntaxError && !isSIGTERM) {
       log({
-        message: `Error on parsing output (It might be non-JSON output): "${output.replace(/[\r\n \t]/g, ' ')}"`,
+        message: `Error on parsing output (It might be non-JSON output): "${outputLog}"`,
         level: LogLevel.Error,
       })
     }
