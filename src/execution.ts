@@ -115,12 +115,13 @@ export function createLintDocumentCallback({
     const output = parseOutput<CredoOutput | CredoDiffOutput>(stdout)
     if (!output) return
 
-    log({ message: `Setting linter issues for document ${uri.fsPath}.`, level: LogLevel.Debug })
-    diagnosticCollection.set(uri, parseCredoOutput({ credoOutput: output, document }))
+    const diagnostics = parseCredoOutput({ credoOutput: output, document })
+    log({ message: `Setting ${diagnostics.length} linter issues for document ${uri.fsPath}.`, level: LogLevel.Debug })
+    diagnosticCollection.set(uri, diagnostics)
 
     token.finished()
 
-    if (onComplete) onComplete()
+    onComplete?.()
   }
 }
 
