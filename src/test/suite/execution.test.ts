@@ -86,6 +86,20 @@ describe('Credo Execution Functions', () => {
         })
       })
 
+      context('with SIGTERM output', () => {
+        def('output', () => '[notice] SIGTERM received - shutting down')
+
+        it('returns null', () => {
+          expect(parse()).to.be.null
+        })
+
+        it('does not log anything', () => {
+          parse()
+
+          expect(logSpy.notCalled).to.be.true
+        })
+      })
+
       context('with valid JSON output', () => {
         def(
           'output',
@@ -162,6 +176,20 @@ describe('Credo Execution Functions', () => {
             level: loggerModule.LogLevel.Error,
             message: 'Error on parsing output (It might be non-JSON output): "No JSON"',
           })
+        })
+      })
+
+      context('with SIGTERM output', () => {
+        def('output', () => '[notice] SIGTERM received - shutting down')
+
+        it('returns null', () => {
+          expect(parse()).to.be.null
+        })
+
+        it('does not log anything', () => {
+          parse()
+
+          expect(logSpy.notCalled).to.be.true
         })
       })
 
