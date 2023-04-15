@@ -1,5 +1,6 @@
-import * as cp from 'child_process'
-import * as path from 'path'
+import type { Buffer } from 'node:buffer'
+import * as cp from 'node:child_process'
+import * as path from 'node:path'
 import type * as vscode from 'vscode'
 import type { CredoCommandOutput, CredoDiffOutput, CredoInformation, CredoOutput } from './output'
 import type { TaskToken } from './task-queue'

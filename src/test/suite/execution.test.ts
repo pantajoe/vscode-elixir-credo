@@ -1,4 +1,5 @@
-import type * as cp from 'child_process'
+import type { Buffer } from 'node:buffer'
+import type * as cp from 'node:child_process'
 import { expect } from 'chai'
 import { def } from 'bdd-lazy-var/global'
 import type { SinonSandbox, SinonSpy } from 'sinon'
@@ -6,18 +7,40 @@ import { createSandbox } from 'sinon'
 import type { CredoInformation, CredoOutput } from '../../output'
 import { parseOutput, reportError } from '../../execution'
 import * as loggerModule from '../../logger'
+import * as configurationModule from '../../configuration'
 
 declare let $output: string
 declare let $error: cp.ExecException | null
 declare let $stderr: string | Buffer
+declare let $config: configurationModule.CredoConfiguration
 
 describe('Credo Execution Functions', () => {
   let sandbox: SinonSandbox
   let logSpy: SinonSpy<loggerModule.LogArguments[], void>
 
+  def(
+    'config',
+    (): configurationModule.CredoConfiguration => ({
+      command: 'mix',
+      configurationFile: '.credo.exs',
+      credoConfiguration: 'default',
+      checksWithTag: [],
+      checksWithoutTag: [],
+      strictMode: false,
+      ignoreWarningMessages: false,
+      lintEverything: false,
+      enableDebug: false,
+      diffMode: {
+        enabled: false,
+        mergeBase: 'main',
+      },
+    }),
+  )
+
   beforeEach(() => {
     sandbox = createSandbox()
     logSpy = sandbox.spy(loggerModule, 'log')
+    sandbox.stub(configurationModule, 'getCurrentConfiguration').returns($config)
   })
 
   afterEach(() => {

@@ -1,5 +1,5 @@
-import * as path from 'path'
-import * as fs from 'fs'
+import * as path from 'node:path'
+import * as fs from 'node:fs'
 import * as vscode from 'vscode'
 import { getCurrentConfiguration } from './configuration'
 import { LogLevel, log } from './logger'
@@ -73,7 +73,7 @@ export function getProjectFolder(documentUri: vscode.Uri): string {
   return mixProjectPath || workspace?.uri.fsPath || path.dirname(documentPath)
 }
 
-export const getCredoConfigFilePath = (documentUri?: vscode.Uri, opts?: { silent?: boolean }): string | null => {
+export function getCredoConfigFilePath(documentUri?: vscode.Uri, opts?: { silent?: boolean }): string | null {
   const { silent = false } = opts ?? {}
 
   const extensionConfig = getCurrentConfiguration()

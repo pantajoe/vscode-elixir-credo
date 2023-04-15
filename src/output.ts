@@ -38,6 +38,6 @@ export interface CredoInformation {
 
 export type CredoCommandOutput = CredoInformation | CredoOutput | CredoDiffOutput
 
-export const isDiffOutput = (output: CredoOutput | CredoDiffOutput): output is CredoDiffOutput => {
+export function isDiffOutput(output: CredoOutput | CredoDiffOutput): output is CredoDiffOutput {
   return 'diff' in output
 }

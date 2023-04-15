@@ -1,4 +1,4 @@
-import * as path from 'path'
+import * as path from 'node:path'
 import * as vscode from 'vscode'
 import type { SinonSandbox, SinonSpy, SinonStub } from 'sinon'
 import { createSandbox, match } from 'sinon'
