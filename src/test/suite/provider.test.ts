@@ -225,7 +225,7 @@ describe('CredoProvider', () => {
           execute()
 
           sinonAssert.calledWith(logSpy, {
-            message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
+            message: 'Setting 1 linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
             level: loggerModule.LogLevel.Debug,
           })
         })
@@ -325,7 +325,7 @@ describe('CredoProvider', () => {
             execute()
 
             sinonAssert.calledWith(logSpy, {
-              message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
+              message: 'Setting 1 linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
               level: loggerModule.LogLevel.Debug,
             })
           })
@@ -442,7 +442,7 @@ describe('CredoProvider', () => {
             execute()
 
             sinonAssert.calledWith(logSpy, {
-              message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
+              message: 'Setting 1 linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
               level: loggerModule.LogLevel.Debug,
             })
           })
@@ -506,7 +506,7 @@ describe('CredoProvider', () => {
             execute()
 
             sinonAssert.calledWith(logSpy, {
-              message: 'Setting linter issues for document /Users/bot/sample/lib/sample_web/telemetry_test.ex.',
+              message: 'Setting 0 linter issues for document /Users/bot/sample/lib/sample_web/telemetry_test.ex.',
               level: loggerModule.LogLevel.Debug,
             })
           })
