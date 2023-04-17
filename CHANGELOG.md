@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 None.
 
+## [0.8.3] - 2023-04-17
+
+### Added
+
+- Ignore `SIGTERM` errors from credo and don't show an error message (#379, credit to @wceolin)
+- Added diagnostic count to debug logs whenever a new linting run is triggered (#380)
+
+### Fixed
+
+- Upgraded all dependencies
+
 ## [0.8.2] - 2022-07-29
 
 ### Unrelated changes
