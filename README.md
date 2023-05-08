@@ -36,6 +36,7 @@ This extension contributes the following settings:
 * `elixir.credo.checksWithTag`: specify tags of those checks which should be used in VS Code (all other checks will be ignored)
 * `elixir.credo.checksWithoutTag`: specify tags of checks which should be ignored in VS Code
 * `elixir.credo.ignoreWarningMessages`: ignore warning messages (concerning finding the configuration file)
+* `elixir.credo.ignoreErrorMessages`: ignore error messages
 * `elixir.credo.lintEverything`: lint any elixir file (even if excluded in the Credo configuration file)
 * `elixir.credo.enableDebug`: toggle extensive logging to extension's output channel
 * `elixir.credo.diffMode.enabled`: enable Credo's diff mode

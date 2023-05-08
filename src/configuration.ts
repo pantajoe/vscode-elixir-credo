@@ -14,6 +14,7 @@ export interface CredoConfiguration {
   credoConfiguration: string | 'default'
   strictMode: boolean
   ignoreWarningMessages: boolean
+  ignoreErrorMessages: boolean
   lintEverything: boolean
   enableDebug: boolean
   checksWithTag: string[]
@@ -60,6 +61,7 @@ export function fetchConfig(): CredoConfiguration {
     checksWithTag: conf.get('checksWithTag', []),
     checksWithoutTag: conf.get('checksWithoutTag', []),
     ignoreWarningMessages: conf.get('ignoreWarningMessages', false),
+    ignoreErrorMessages: conf.get('ignoreErrorMessages', false),
     lintEverything: conf.get('lintEverything', false),
     enableDebug: conf.get('enableDebug', false),
     diffMode: {

@@ -81,6 +81,7 @@ describe('Configuration', () => {
           checksWithoutTag: [],
           strictMode: false,
           ignoreWarningMessages: false,
+          ignoreErrorMessages: false,
           lintEverything: false,
           enableDebug: false,
           diffMode: {
@@ -98,6 +99,7 @@ describe('Configuration', () => {
           credoConfiguration,
           strictMode,
           ignoreWarningMessages,
+          ignoreErrorMessages,
           lintEverything,
           enableDebug,
         } = configurationModule.getCurrentConfiguration()
@@ -106,6 +108,7 @@ describe('Configuration', () => {
         expect(credoConfiguration).to.equal('default')
         expect(strictMode).to.be.false
         expect(ignoreWarningMessages).to.be.false
+        expect(ignoreErrorMessages).to.be.false
         expect(lintEverything).to.be.false
         expect(enableDebug).to.be.false
       })
@@ -121,6 +124,7 @@ describe('Configuration', () => {
           checksWithoutTag: [],
           strictMode: false,
           ignoreWarningMessages: false,
+          ignoreErrorMessages: false,
           lintEverything: false,
           enableDebug: false,
           diffMode: {

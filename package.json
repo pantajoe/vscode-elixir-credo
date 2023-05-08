@@ -98,6 +98,12 @@
             "type": "boolean",
             "default": false
           },
+          "elixir.credo.ignoreErrorMessages": {
+            "title": "Ignore Error Messages",
+            "markdownDescription": "Ignore error messages like `Error on parsing output ...`",
+            "type": "boolean",
+            "default": false
+          },
           "elixir.credo.lintEverything": {
             "title": "Lint Everything",
             "markdownDescription": "Lint every Elixir file, regardless of your `.credo.exs` config",

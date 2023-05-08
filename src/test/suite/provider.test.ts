@@ -199,6 +199,7 @@ describe('CredoProvider', () => {
             checksWithoutTag: [],
             strictMode: false,
             ignoreWarningMessages: false,
+            ignoreErrorMessages: false,
             lintEverything: true,
             enableDebug: false,
             diffMode: {
@@ -273,21 +274,25 @@ describe('CredoProvider', () => {
         })
 
         context('with diff mode enabled', () => {
-          def('config', () => ({
-            command: 'mix',
-            configurationFile: '.credo.exs',
-            credoConfiguration: 'default',
-            checksWithTag: [],
-            checksWithoutTag: [],
-            strictMode: false,
-            ignoreWarningMessages: false,
-            lintEverything: true,
-            enableDebug: false,
-            diffMode: {
-              enabled: true,
-              mergeBase: 'main',
-            },
-          }))
+          def(
+            'config',
+            (): configurationModule.CredoConfiguration => ({
+              command: 'mix',
+              configurationFile: '.credo.exs',
+              credoConfiguration: 'default',
+              checksWithTag: [],
+              checksWithoutTag: [],
+              strictMode: false,
+              ignoreWarningMessages: false,
+              ignoreErrorMessages: false,
+              lintEverything: true,
+              enableDebug: false,
+              diffMode: {
+                enabled: true,
+                mergeBase: 'main',
+              },
+            }),
+          )
           def('credoOutput', () => ({
             diff: {
               old: [],
@@ -415,6 +420,7 @@ describe('CredoProvider', () => {
             checksWithoutTag: [],
             strictMode: false,
             ignoreWarningMessages: false,
+            ignoreErrorMessages: false,
             lintEverything: false,
             enableDebug: false,
             diffMode: {
