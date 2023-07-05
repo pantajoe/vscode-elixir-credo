@@ -16,7 +16,7 @@ for the programming language [Elixir](https://elixir-lang.org).
 * Specify a custom configuration file for Credo
 * Specify a custom configuration for Credo
 * Specify a custom execute path for the `mix` binary
-* Specify wheterh you want to use Credo's [diff mode](https://hexdocs.pm/credo/diff_command.html#from-git-merge-base)
+* Specify whether you want to use Credo's [diff mode](https://hexdocs.pm/credo/diff_command.html#from-git-merge-base)
 
 ![Demo](./images/demo.gif)
 
@@ -70,7 +70,7 @@ If this step fails the output could tell you the exact reason for the failure. T
 
 Sometimes, any problem you might have is caused by VS Code not having the same `PATH` environment variable as your shell.
 To make sure VS Code has the same environment as your shell,
-simply close all VS Code processes and open VS Code from you command line by executing the binary `code` in your shell of choice.
+simply close all VS Code processes and open VS Code from your command line by executing the binary `code` in your shell of choice.
 
 ## Changelog
 
