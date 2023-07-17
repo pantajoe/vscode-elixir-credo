@@ -142,7 +142,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@antfu/eslint-config-ts": "^0.38.4",
+    "@antfu/eslint-config-ts": "^0.39.8",
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
     "@types/chai": "^4.3.5",
