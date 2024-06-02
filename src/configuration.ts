@@ -1,17 +1,19 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
-import * as os from 'node:os'
+import process from 'node:process'
 import * as vscode from 'vscode'
+import { CredoUtils } from './credo-utils'
 
 const MixCommand = {
-  unix: 'mix',
+  posix: 'mix',
   win32: 'mix.bat',
-}
+} as const
 
 export interface CredoConfiguration {
-  command: string
+  mixBinaryPath: string
+  mixCommand: string
   configurationFile: string
-  credoConfiguration: string | 'default'
+  credoConfiguration: LooseAutocomplete<'default'>
   strictMode: boolean
   ignoreWarningMessages: boolean
   lintEverything: boolean
@@ -24,60 +26,68 @@ export interface CredoConfiguration {
   }
 }
 
-export function autodetectExecutePath(): string {
-  const conf = vscode.workspace.getConfiguration('elixir.credo')
-  const key = 'PATH'
-  const paths = process.env[key]
-
+export function detectExecutePath(defaultPath?: string) {
+  const paths = process.env.PATH
   if (!paths) return ''
 
-  let executePath = ''
-  const pathParts = paths.split(path.delimiter)
+  const platform = CredoUtils.getPlatform()
+  const pathParts = paths.split(path[platform].delimiter)
+  if (defaultPath) pathParts.unshift(defaultPath)
 
-  if (conf.get('executePath')) {
-    pathParts.push(conf.get('executePath') as string)
+  for (const pathPart of pathParts) {
+    const execPath = path[platform].join(pathPart, MixCommand[platform])
+    if (fs.existsSync(execPath)) return pathPart + path[platform].sep
   }
 
-  pathParts.forEach((pathPart) => {
-    const binPath =
-      os.platform() === 'win32' ? path.join(pathPart, MixCommand.win32) : path.join(pathPart, MixCommand.unix)
-
-    if (fs.existsSync(binPath)) executePath = pathPart + path.sep
-  })
-
-  return executePath
+  return ''
 }
 
-export function fetchConfig(): CredoConfiguration {
-  const conf = vscode.workspace.getConfiguration('elixir.credo')
-  const mixCommand = os.platform() === 'win32' ? MixCommand.win32 : MixCommand.unix
+export class ExtensionConfig {
+  #config: CredoConfiguration
 
-  return {
-    command: `${autodetectExecutePath()}${mixCommand}`,
-    configurationFile: conf.get('configurationFile', '.credo.exs'),
-    credoConfiguration: conf.get('credoConfiguration', 'default'),
-    strictMode: conf.get('strictMode', false),
-    checksWithTag: conf.get('checksWithTag', []),
-    checksWithoutTag: conf.get('checksWithoutTag', []),
-    ignoreWarningMessages: conf.get('ignoreWarningMessages', false),
-    lintEverything: conf.get('lintEverything', false),
-    enableDebug: conf.get('enableDebug', false),
-    diffMode: {
-      enabled: conf.get('diffMode.enabled', false),
-      mergeBase: conf.get('diffMode.mergeBase', 'main'),
-    },
+  constructor() {
+    this.#config = this.fetch()
+  }
+
+  /**
+   * Returns the current configuration.
+   */
+  get resolved(): CredoConfiguration {
+    return this.#config
+  }
+
+  /**
+   * Fetches the current configuration from the workspace settings.
+   */
+  fetch(): CredoConfiguration {
+    const conf = vscode.workspace.getConfiguration('elixir.credo')
+    const mixCommand = MixCommand[CredoUtils.getPlatform()]
+    const mixBinaryPath = detectExecutePath(conf.get('executePath'))
+
+    return {
+      mixBinaryPath,
+      mixCommand: `${mixBinaryPath}${mixCommand}`,
+      configurationFile: conf.get('configurationFile', '.credo.exs'),
+      credoConfiguration: conf.get('credoConfiguration', 'default'),
+      strictMode: conf.get('strictMode', false),
+      checksWithTag: conf.get('checksWithTag', []),
+      checksWithoutTag: conf.get('checksWithoutTag', []),
+      ignoreWarningMessages: conf.get('ignoreWarningMessages', false),
+      lintEverything: conf.get('lintEverything', false),
+      enableDebug: conf.get('enableDebug', false),
+      diffMode: {
+        enabled: conf.get('diffMode.enabled', false),
+        mergeBase: conf.get('diffMode.mergeBase', 'main'),
+      },
+    }
+  }
+
+  /**
+   * Reloads the current configuration from the workspace settings.
+   */
+  reload() {
+    this.#config = this.fetch()
   }
 }
 
-let configuration: CredoConfiguration
-
-export function getCurrentConfiguration(): CredoConfiguration {
-  if (!configuration) {
-    configuration = { ...fetchConfig() }
-  }
-  return configuration
-}
-
-export function reloadConfiguration(configurationFetcher: () => CredoConfiguration = fetchConfig): void {
-  configuration = { ...configurationFetcher() }
-}
+export const config = new ExtensionConfig()

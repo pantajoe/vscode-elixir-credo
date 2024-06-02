@@ -1,43 +1,37 @@
 import * as vscode from 'vscode'
-import { getCurrentConfiguration } from './configuration'
+import { config } from './configuration'
 
-export enum LogLevel {
-  Debug = 0,
-  Info = 1,
-  Warning = 2,
-  Error = 3,
+const LOG_LEVELS = ['debug', 'info', 'warn', 'error'] as const
+export type LogLevel = (typeof LOG_LEVELS)[number]
+
+type LoggerMethods = {
+  [key in LogLevel]: (message: string) => void
 }
 
-export interface LogArguments {
-  message: string
-  level?: LogLevel
-}
+export const OutputChannel = vscode.window.createOutputChannel('Credo (Elixir Linter)')
 
-export const outputChannel = vscode.window.createOutputChannel('Credo (Elixir Linter)')
+export class Logger implements LoggerMethods {
+  debug(message: string) {
+    const { enableDebug } = config.resolved
+    if (!enableDebug) return
+    this.log('debug', message)
+  }
 
-function logToOutputChannel(message: string): void {
-  outputChannel.appendLine(`> ${message}\n`)
-}
+  info(message: string) {
+    this.log('info', message)
+  }
 
-export function log({ message, level = LogLevel.Error }: LogArguments) {
-  const { ignoreWarningMessages, enableDebug } = getCurrentConfiguration()
+  warn(message: string) {
+    this.log('warn', message)
+  }
 
-  switch (level) {
-    case LogLevel.Debug:
-      enableDebug && logToOutputChannel(message)
-      break
-    case LogLevel.Info:
-      logToOutputChannel(message)
-      break
-    case LogLevel.Warning:
-      logToOutputChannel(message)
-      !ignoreWarningMessages && vscode.window.showWarningMessage(message)
-      break
-    case LogLevel.Error:
-      logToOutputChannel(message)
-      vscode.window.showErrorMessage(message)
-      break
-    default:
-      break
+  error(message: string) {
+    this.log('error', message)
+  }
+
+  log(level: LogLevel, message: string) {
+    OutputChannel.appendLine(`${level.toUpperCase()}: ${message}\n`)
   }
 }
+
+export const logger = new Logger()

@@ -9,7 +9,8 @@ export interface CredoIssue {
   column: number | null
   column_end: number | null
   priority: number
-  trigger: string | null
+  trigger: string | string[] | null
+  scope?: string | null
 }
 
 export interface CredoOutput {
@@ -40,4 +41,8 @@ export type CredoCommandOutput = CredoInformation | CredoOutput | CredoDiffOutpu
 
 export function isDiffOutput(output: CredoOutput | CredoDiffOutput): output is CredoDiffOutput {
   return 'diff' in output
+}
+
+export function isNormalOutput(output: CredoOutput | CredoDiffOutput): output is CredoOutput {
+  return !isDiffOutput(output)
 }
