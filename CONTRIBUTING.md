@@ -2,7 +2,7 @@
 
 ## Development Setup
 
-* Run `yarn install` (Please use `yarn` and not `npm` for this one)
+* Run `pnpm install` (Please use `pnpm` and not `npm` for this one)
 * Open VS Code
 * Run and debug the extension by launching the extension via the menu or by pressing F5
 

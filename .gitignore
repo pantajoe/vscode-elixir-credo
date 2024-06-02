@@ -1,10 +1,10 @@
-out
+dist/
+out/
 node_modules
 .vscode-test/
 *.vsix
 
-yarn-error.log
-
 .envrc
+.DS_Store
 
 TODO
