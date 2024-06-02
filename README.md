@@ -66,6 +66,16 @@ mix archive.install hex jason
 Then try to generate `.credo.exs` for your project by running `mix credo gen.config` in your project's root folder.
 If this step fails the output could tell you the exact reason for the failure. The problem can be something as simple as a minor syntax error in your `config/dev.exs`.
 
+> "`.credo.exs` does not exist. Ignoring..."
+
+You will probably want the extension to look for your custom Credo configuration files. If you are working on an umbrella Mix application, having `.credo.exs` only in the root of your app is not enough; the file needs to be present in each app covered by the umbrella.
+
+If you want your root configuration to apply equally to all child apps, then you can create a symbolic link to it within each app by running the following from the root directory of your umbrella:
+
+```sh
+$ for dir in apps/*; do ln -s ../../.credo.exs "$dir/.credo.exs"; done
+```
+
 **Hint:**
 
 Sometimes, any problem you might have is caused by VS Code not having the same `PATH` environment variable as your shell.
