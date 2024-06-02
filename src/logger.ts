@@ -12,8 +12,6 @@ export const OutputChannel = vscode.window.createOutputChannel('Credo (Elixir Li
 
 export class Logger implements LoggerMethods {
   debug(message: string) {
-    const { enableDebug } = config.resolved
-    if (!enableDebug) return
     this.log('debug', message)
   }
 
@@ -30,6 +28,8 @@ export class Logger implements LoggerMethods {
   }
 
   log(level: LogLevel, message: string) {
+    if (level === 'debug' && !config.resolved.enableDebug) return
+
     OutputChannel.appendLine(`${level.toUpperCase()}: ${message}\n`)
   }
 }
