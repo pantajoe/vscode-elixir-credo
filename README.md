@@ -41,7 +41,7 @@ This extension contributes the following settings:
 * `elixir.credo.diffMode.enabled`: enable Credo's diff mode
 * `elixir.credo.diffMode.mergeBase`: specify the merge base for the diff mode
 
-### Known Issues
+### Troubleshooting
 
 > "The `mix` binary is not executable."
 

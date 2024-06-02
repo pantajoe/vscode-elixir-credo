@@ -1,180 +1,96 @@
-import * as vscode from 'vscode'
-import type { SinonSandbox, SinonSpy } from 'sinon'
-import { createSandbox } from 'sinon'
-import * as configurationModule from '../../configuration'
-import { LogLevel, log, outputChannel } from '../../logger'
-
-declare let $message: string
-declare let $logLevel: LogLevel
-declare let $config: configurationModule.CredoConfiguration
-declare let $ignoreWarningMessages: boolean
-declare let $enableDebug: boolean
+import { expect } from 'chai'
+import * as sinon from 'sinon'
+import type { CredoConfiguration } from '../../configuration'
+import { config } from '../../configuration'
+import type { LogLevel } from '../../logger'
+import { OutputChannel, logger } from '../../logger'
 
 describe('Loggging', () => {
-  let sandbox: SinonSandbox
-  let outputChannelSpy: SinonSpy<string[], void>
-  let vscodeMessageSpy: SinonSpy
-  const logMessage = () => {
-    log({ message: $message, level: $logLevel })
-  }
+  let level: LogLevel
+  const subject = () => logger[level]('Sample message')
 
-  def('message', () => 'Sample message')
-  def('ignoreWarningMessages', () => false)
-  def('enableDebug', () => false)
-  def(
-    'config',
-    (): configurationModule.CredoConfiguration => ({
-      command: 'mix',
+  let configuration: CredoConfiguration
+  beforeEach(() => {
+    configuration = {
+      mixCommand: 'mix',
+      mixBinaryPath: 'mix',
       configurationFile: '.credo.exs',
       credoConfiguration: 'default',
       checksWithTag: [],
       checksWithoutTag: [],
       strictMode: false,
-      ignoreWarningMessages: $ignoreWarningMessages,
+      ignoreWarningMessages: false,
       lintEverything: false,
-      enableDebug: $enableDebug,
+      enableDebug: false,
       diffMode: {
         enabled: false,
         mergeBase: 'main',
       },
-    }),
-  )
-
-  beforeEach(() => {
-    sandbox = createSandbox()
-    outputChannelSpy = sandbox.spy(outputChannel, 'appendLine')
-    sandbox.stub(configurationModule, 'getCurrentConfiguration').returns($config)
+    }
   })
 
-  afterEach(() => {
-    sandbox.restore()
+  beforeEach(() => {
+    sinon.spy(OutputChannel, 'appendLine')
+    sinon.stub(config, 'resolved').get(() => configuration)
   })
 
   context('with a debug message', () => {
-    def('logLevel', () => LogLevel.Debug)
+    beforeEach(() => {
+      level = 'debug'
+    })
 
     it('does not log the message to the output channel', () => {
-      logMessage()
+      subject()
 
-      sandbox.assert.notCalled(outputChannelSpy)
+      expect(OutputChannel.appendLine).not.to.have.been.called
     })
 
     context('when enabling debug mode', () => {
-      def('enableDebug', () => true)
+      beforeEach(() => {
+        configuration.enableDebug = true
+      })
 
       it('logs the message to the output channel', () => {
-        logMessage()
+        subject()
 
-        sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n')
+        expect(OutputChannel.appendLine).to.have.been.calledOnceWithExactly('DEBUG: Sample message\n')
       })
     })
   })
 
   context('with an info message', () => {
-    def('logLevel', () => LogLevel.Info)
-
     beforeEach(() => {
-      vscodeMessageSpy = sandbox.spy(vscode.window, 'showInformationMessage')
+      level = 'info'
     })
 
     it('logs the message to the output channel', () => {
-      logMessage()
+      subject()
 
-      sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n')
-    })
-
-    it('shows no information popup', () => {
-      logMessage()
-
-      sandbox.assert.notCalled(vscodeMessageSpy)
-    })
-
-    context('when ignoring warning messages', () => {
-      def('ignoreWarningMessages', () => true)
-
-      it('logs the message to the output channel', () => {
-        logMessage()
-
-        sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n')
-      })
-
-      it('does not shows an information popup', () => {
-        logMessage()
-
-        sandbox.assert.notCalled(vscodeMessageSpy)
-      })
+      expect(OutputChannel.appendLine).to.have.been.calledOnceWithExactly('INFO: Sample message\n')
     })
   })
 
   context('with a warning message', () => {
-    def('logLevel', () => LogLevel.Warning)
-
     beforeEach(() => {
-      vscodeMessageSpy = sandbox.spy(vscode.window, 'showWarningMessage')
+      level = 'warn'
     })
 
     it('logs the message to the output channel', () => {
-      logMessage()
+      subject()
 
-      sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n')
-    })
-
-    it('shows a warning popup', () => {
-      logMessage()
-
-      sandbox.assert.calledOnceWithExactly(vscodeMessageSpy, 'Sample message')
-    })
-
-    context('when ignoring warning messages', () => {
-      def('ignoreWarningMessages', () => true)
-
-      it('logs the message to the output channel', () => {
-        logMessage()
-
-        sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n')
-      })
-
-      it('does not shows a warning popup', () => {
-        logMessage()
-
-        sandbox.assert.notCalled(vscodeMessageSpy)
-      })
+      expect(OutputChannel.appendLine).to.have.been.calledOnceWithExactly('WARN: Sample message\n')
     })
   })
 
   context('with an error message', () => {
-    def('logLevel', () => LogLevel.Error)
-
     beforeEach(() => {
-      vscodeMessageSpy = sandbox.spy(vscode.window, 'showErrorMessage')
+      level = 'error'
     })
 
     it('logs the message to the output channel', () => {
-      logMessage()
+      subject()
 
-      sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n')
-    })
-
-    it('shows an error popup', () => {
-      logMessage()
-
-      sandbox.assert.calledOnceWithExactly(vscodeMessageSpy, 'Sample message')
-    })
-
-    context('when ignoring warning messages', () => {
-      def('ignoreWarningMessages', () => true)
-
-      it('logs the message to the output channel', () => {
-        logMessage()
-
-        sandbox.assert.calledOnceWithExactly(outputChannelSpy, '> Sample message\n')
-      })
-
-      it('still shows an error popup', () => {
-        logMessage()
-
-        sandbox.assert.calledOnceWithExactly(vscodeMessageSpy, 'Sample message')
-      })
+      expect(OutputChannel.appendLine).to.have.been.calledOnceWithExactly('ERROR: Sample message\n')
     })
   })
 })

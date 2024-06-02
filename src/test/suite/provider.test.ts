@@ -1,561 +1,357 @@
 import * as path from 'node:path'
-import * as cp from 'node:child_process'
+import { fromPartial } from '@total-typescript/shoehorn'
+import * as sinon from 'sinon'
 import * as vscode from 'vscode'
-import type { SinonSandbox, SinonSpy, SinonStub } from 'sinon'
-import { createSandbox, match, assert as sinonAssert } from 'sinon'
-import { expect } from 'chai'
-import { def } from 'bdd-lazy-var/global'
-import * as taskQueueModule from '../../task-queue'
-import * as configurationModule from '../../configuration'
-import * as executionModule from '../../execution'
-import * as loggerModule from '../../logger'
-import * as utilModule from '../../utilities'
-import type { CredoProviderOptions } from '../../provider'
-import { CredoProvider } from '../../provider'
+import type { CredoConfiguration } from '../../configuration'
+import { config } from '../../configuration'
+import { credo } from '../../credo'
+import { CredoUtils } from '../../credo-utils'
+import { logger } from '../../logger'
 import type { CredoDiffOutput, CredoInformation, CredoOutput } from '../../output'
-
-declare let $config: configurationModule.CredoConfiguration
-declare let $diagnosticCollection: vscode.DiagnosticCollection
-declare let $providerOptions: CredoProviderOptions
-declare let $credoProvider: CredoProvider
-declare let $workspaceFilePath: string
-declare let $fileName: string
-declare let $documentUri: vscode.Uri
-declare let $textDocument: vscode.TextDocument
-declare let $otherDocument: vscode.TextDocument
-declare let $credoOutput: CredoOutput | CredoDiffOutput
-declare let $credoInfoOutput: CredoInformation
+import { CredoProvider } from '../../provider'
+import { Task } from '../../task-queue'
+import { DefaultConfig } from './mock-data'
 
 describe('CredoProvider', () => {
-  let sandbox: SinonSandbox
-
-  def('diagnosticCollection', () => vscode.languages.createDiagnosticCollection('elixir'))
-  def('providerOptions', () => ({ diagnosticCollection: $diagnosticCollection }))
-  def('credoProvider', () => new CredoProvider($providerOptions))
+  let diagnosticCollection: vscode.DiagnosticCollection
+  let provider: CredoProvider
 
   beforeEach(() => {
-    sandbox = createSandbox()
-  })
-
-  afterEach(() => {
-    sandbox.restore()
+    diagnosticCollection = vscode.languages.createDiagnosticCollection('elixir')
+    provider = new CredoProvider(diagnosticCollection)
   })
 
   context('#execute', () => {
-    const execute = () => $credoProvider.execute({ document: $textDocument })
+    let textDocument: vscode.TextDocument
+    const subject = async () => {
+      const task = provider.execute(textDocument)
+      if (task) await task.finished()
+    }
 
     context('when linting an invalid file', () => {
-      let taskSpy: SinonSpy
-      let executeCredoSpy: SinonSpy<executionModule.CredoExecutionArguments[], cp.ChildProcess[]>
-
+      let taskSpy: sinon.SinonSpiedInstance<typeof Task>
       beforeEach(() => {
-        taskSpy = sandbox.spy(taskQueueModule, 'Task')
-        executeCredoSpy = sandbox.spy(executionModule, 'executeCredo')
+        taskSpy = sinon.spy(Task)
+        sinon.spy(credo, 'mix')
       })
 
       context('when linting an untitled file', () => {
-        def('textDocument', () => ({
-          languageId: 'elixir',
-          isUntitled: true,
-          getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
-        }))
+        beforeEach(() => {
+          textDocument = fromPartial({
+            languageId: 'elixir',
+            isUntitled: true,
+            getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
+          })
+        })
 
-        it('does not execute credo', () => {
-          execute()
+        it('does not execute credo', async () => {
+          await subject()
 
-          expect(taskSpy.called).to.be.false
-          expect(executeCredoSpy.called).to.be.false
+          expect(taskSpy).not.to.have.been.called
+          expect(credo.mix).not.to.have.been.called
         })
       })
 
       context('when linting an non-elixir file', () => {
-        def('textDocument', () => ({
-          languageId: 'json',
-          isUntitled: false,
-          getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
-        }))
+        beforeEach(() => {
+          textDocument = fromPartial({
+            languageId: 'json',
+            isUntitled: false,
+            getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
+          })
+        })
 
-        it('does not execute credo', () => {
-          execute()
+        it('does not execute credo', async () => {
+          await subject()
 
-          expect(taskSpy.called).to.be.false
-          expect(executeCredoSpy.called).to.be.false
+          expect(taskSpy).not.to.have.been.called
+          expect(credo.mix).not.to.have.been.called
         })
       })
 
       context('when linting a file not stored locally, i.e., its uri does not use the file scheme', () => {
-        def('textDocument', () => ({
-          languageId: 'elixir',
-          isUntitled: false,
-          uri: vscode.Uri.parse('https://example.com/path'),
-          getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
-        }))
+        beforeEach(() => {
+          textDocument = fromPartial({
+            languageId: 'elixir',
+            isUntitled: false,
+            uri: vscode.Uri.parse('https://example.com/path'),
+            getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
+          })
+        })
 
-        it('does not execute credo', () => {
-          execute()
+        it('does not execute credo', async () => {
+          await subject()
 
-          expect(taskSpy.called).to.be.false
-          expect(executeCredoSpy.called).to.be.false
+          expect(taskSpy).not.to.have.been.called
+          expect(credo.mix).not.to.have.been.called
         })
       })
 
       context('when linting a file not in a workspacefolder with a mix.exs file', () => {
-        def('textDocument', () => ({
-          languageId: 'elixir',
-          isUntitled: false,
-          uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/src/sample.ex')),
-          getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
-        }))
-
         beforeEach(() => {
-          sandbox.stub(utilModule, 'inMixProject').returns(false)
+          textDocument = fromPartial({
+            languageId: 'elixir',
+            isUntitled: false,
+            uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/src/sample.ex')),
+            getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
+          })
+
+          sinon.stub(CredoUtils, 'inMixProject').returns(false)
         })
 
-        it('does not execute credo', () => {
-          execute()
+        it('does not execute credo', async () => {
+          await subject()
 
-          expect(taskSpy.called).to.be.false
-          expect(executeCredoSpy.called).to.be.false
+          expect(taskSpy).not.to.have.been.called
+          expect(credo.mix).not.to.have.been.called
         })
       })
     })
 
     context('when linting a valid elixir document', () => {
-      def('workspaceFilePath', () => '/Users/bot/sample')
-      def('fileName', () => `${$workspaceFilePath}/lib/sample_web/telemetry.ex`)
-      def('documentUri', () => vscode.Uri.file($fileName))
-      def('textDocument', () => ({
-        languageId: 'elixir',
-        isUntitled: false,
-        uri: $documentUri,
-        fileName: $fileName,
-        getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
-      }))
-      def('credoOutput', () => ({
-        issues: [
-          {
-            category: 'readability',
-            check: 'Credo.Check.Readability.ModuleDoc',
-            column: 11,
-            column_end: 32,
-            filename: 'lib/sample_web/telemetry.ex',
-            line_no: 1,
-            message: 'Modules should have a @moduledoc tag.',
-            priority: 1,
-            trigger: 'SampleWeb.Telemetry',
-          },
-        ],
-      }))
-      def('credoInfoOutput', () => ({
-        config: {
-          checks: [],
-          files: ['lib/sample_web/telemetry.ex'],
-        },
-        system: {
-          credo: '1.5.4-ref.main.9fe4739+uncommittedchanges',
-          elixir: '1.11.1',
-          erlang: '23',
-        },
-      }))
+      let workspaceFilePath: string
+      let filename: string
 
-      let setDiagnosticCollectionSpy: SinonSpy
-      let logSpy: SinonSpy<loggerModule.LogArguments[], void>
-      let execFileStub: SinonStub
+      let configuration: CredoConfiguration
+      let credoSuggestOutput: CredoOutput
+      let credoInfoOutput: CredoInformation
+      let credoDiffOutput: CredoDiffOutput
+
+      let documentUri: vscode.Uri
+      beforeEach(() => {
+        documentUri = vscode.Uri.file(filename)
+        textDocument = fromPartial({
+          languageId: 'elixir',
+          isUntitled: false,
+          uri: documentUri,
+          fileName: filename,
+          getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
+        })
+
+        configuration = { ...DefaultConfig, enableDebug: true }
+
+        credoSuggestOutput = {
+          issues: [
+            {
+              category: 'readability',
+              check: 'Credo.Check.Readability.ModuleDoc',
+              column: 11,
+              column_end: 32,
+              filename: 'lib/sample_web/telemetry.ex',
+              line_no: 1,
+              message: 'Modules should have a @moduledoc tag.',
+              priority: 1,
+              trigger: 'SampleWeb.Telemetry',
+            },
+          ],
+        }
+
+        credoInfoOutput = {
+          config: {
+            checks: [],
+            files: ['lib/sample_web/telemetry.ex'],
+          },
+          system: {
+            credo: '1.5.4-ref.main.9fe4739+uncommittedchanges',
+            elixir: '1.11.1',
+            erlang: '23',
+          },
+        }
+      })
 
       beforeEach(() => {
-        logSpy = sandbox.spy(loggerModule, 'log')
-        setDiagnosticCollectionSpy = sandbox.spy($diagnosticCollection, 'set')
-        sandbox
+        sinon.spy(logger, 'log')
+        sinon.spy(diagnosticCollection, 'set')
+        sinon
           .stub(vscode.workspace, 'getWorkspaceFolder')
-          .withArgs($documentUri)
+          .withArgs(documentUri)
           .callsFake(() => ({
             name: 'phoenix-project',
             index: 0,
-            uri: vscode.Uri.file($workspaceFilePath),
+            uri: vscode.Uri.file(workspaceFilePath),
           }))
-        sandbox.stub(utilModule, 'inMixProject').returns(true)
-        sandbox.stub(configurationModule, 'getCurrentConfiguration').returns($config)
-        execFileStub = sandbox.stub(cp, 'execFile').callsFake((_command, commandArguments, _options, callback) => {
-          if (callback) {
-            if (commandArguments?.includes('info')) {
-              callback(null, JSON.stringify($credoInfoOutput), '')
-            } else {
-              callback(null, JSON.stringify($credoOutput), '')
-            }
-          }
+        sinon.stub(CredoUtils, 'inMixProject').returns(true)
+        sinon.stub(config, 'resolved').get(() => configuration)
 
-          return { kill: () => {} } as cp.ChildProcess
-        })
+        sinon.stub(credo, 'info').callsFake(() => Promise.resolve(credoInfoOutput))
+        sinon.stub(credo, 'suggest').callsFake(() => Promise.resolve(credoSuggestOutput))
+        sinon.stub(credo, 'diff').callsFake(() => Promise.resolve(credoDiffOutput))
       })
 
       context('when lintEverything is true', () => {
-        def(
-          'config',
-          (): configurationModule.CredoConfiguration => ({
-            command: 'mix',
-            configurationFile: '.credo.exs',
-            credoConfiguration: 'default',
-            checksWithTag: [],
-            checksWithoutTag: [],
-            strictMode: false,
-            ignoreWarningMessages: false,
-            lintEverything: true,
-            enableDebug: false,
-            diffMode: {
-              enabled: false,
-              mergeBase: 'main',
-            },
-          }),
-        )
+        before(() => {
+          workspaceFilePath = '/Users/bot/sample'
+          filename = `${workspaceFilePath}/lib/sample_web/telemetry.ex`
+        })
 
-        it('correctly sets a diagnostic collection for the current document', () => {
-          execute()
+        beforeEach(() => {
+          configuration.lintEverything = true
+        })
 
-          sinonAssert.calledWith(setDiagnosticCollectionSpy, $documentUri, [
+        it('correctly sets a diagnostic collection for the current document', async () => {
+          await subject()
+
+          expect(diagnosticCollection.set).to.have.been.calledOnceWith(documentUri, [
             new vscode.Diagnostic(
               new vscode.Range(0, 10, 0, 31),
               'Modules should have a @moduledoc tag. (readability:Credo.Check.Readability.ModuleDoc)',
               vscode.DiagnosticSeverity.Information,
             ),
           ])
-          expect(setDiagnosticCollectionSpy.calledOnce).to.true
         })
 
-        it('logs an info message when setting diagnostics', () => {
-          execute()
+        it('logs an info message when setting diagnostics', async () => {
+          await subject()
 
-          sinonAssert.calledWith(logSpy, {
-            message: 'Setting 1 linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
-            level: loggerModule.LogLevel.Debug,
-          })
-        })
-
-        it('executes credo', () => {
-          execute()
-
-          sinonAssert.calledWith(
-            execFileStub,
-            'mix',
-            ['credo', '--format', 'json', '--read-from-stdin', '--config-name', 'default'],
-            match.any,
-            match.any,
+          expect(logger.log).to.have.been.calledWith(
+            'debug',
+            'Setting 1 linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
           )
         })
 
-        it('logs that credo is being executed', () => {
-          execute()
+        it('executes credo', async () => {
+          await subject()
 
-          sinonAssert.calledWith(logSpy, {
-            message:
-              'Executing credo command `mix credo --format json --read-from-stdin --config-name default` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
-            level: loggerModule.LogLevel.Debug,
-          })
+          expect(credo.suggest).to.have.been.calledOnceWith(textDocument, sinon.match.any)
         })
 
-        it('does not fetch credo information', () => {
-          execute()
+        it('does not fetch credo information', async () => {
+          await subject()
 
-          expect(
-            execFileStub.calledWith('mix', ['credo', 'info', '--format', 'json', '--verbose'], match.any, match.any),
-          ).to.be.false
-        })
-
-        it('does not log that credo information is fetched', () => {
-          execute()
-
-          expect(
-            logSpy.calledWith({
-              message:
-                'Retreiving credo information: Executing credo command `mix credo info --format json --verbose` /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
-              level: loggerModule.LogLevel.Debug,
-            }),
-          ).to.be.false
+          expect(credo.info).to.not.have.been.called
         })
 
         context('with diff mode enabled', () => {
-          def('config', () => ({
-            command: 'mix',
-            configurationFile: '.credo.exs',
-            credoConfiguration: 'default',
-            checksWithTag: [],
-            checksWithoutTag: [],
-            strictMode: false,
-            ignoreWarningMessages: false,
-            lintEverything: true,
-            enableDebug: false,
-            diffMode: {
-              enabled: true,
-              mergeBase: 'main',
-            },
-          }))
-          def('credoOutput', () => ({
-            diff: {
-              old: [],
-              fixed: [],
-              new: [
-                {
-                  category: 'readability',
-                  check: 'Credo.Check.Readability.ModuleDoc',
-                  column: 11,
-                  column_end: 32,
-                  filename: 'lib/sample_web/telemetry.ex',
-                  line_no: 1,
-                  message: 'Modules should have a @moduledoc tag.',
-                  priority: 1,
-                  trigger: 'SampleWeb.Telemetry',
-                },
-              ],
-            },
-          }))
+          beforeEach(() => {
+            configuration.diffMode.enabled = true
 
-          it('correctly sets a diagnostic collection for the current document', () => {
-            execute()
+            credoDiffOutput = {
+              diff: {
+                old: [],
+                fixed: [],
+                new: [
+                  {
+                    category: 'readability',
+                    check: 'Credo.Check.Readability.ModuleDoc',
+                    column: 11,
+                    column_end: 32,
+                    filename: 'lib/sample_web/telemetry.ex',
+                    line_no: 1,
+                    message: 'Modules should have a @moduledoc tag.',
+                    priority: 1,
+                    trigger: 'SampleWeb.Telemetry',
+                  },
+                ],
+              },
+            }
+          })
 
-            sinonAssert.calledWith(setDiagnosticCollectionSpy, $documentUri, [
+          afterEach(() => {
+            configuration.diffMode.enabled = false
+          })
+
+          it('correctly sets a diagnostic collection for the current document', async () => {
+            await subject()
+
+            expect(diagnosticCollection.set).to.have.been.calledOnceWith(documentUri, [
               new vscode.Diagnostic(
                 new vscode.Range(0, 10, 0, 31),
                 'Modules should have a @moduledoc tag. (readability:Credo.Check.Readability.ModuleDoc)',
                 vscode.DiagnosticSeverity.Information,
               ),
             ])
-            expect(setDiagnosticCollectionSpy.calledOnce).to.true
           })
 
-          it('logs an info message when setting diagnostics', () => {
-            execute()
+          it('logs an info message when setting diagnostics', async () => {
+            await subject()
 
-            sinonAssert.calledWith(logSpy, {
-              message: 'Setting 1 linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
-              level: loggerModule.LogLevel.Debug,
-            })
-          })
-
-          it('executes credo', () => {
-            execute()
-
-            sinonAssert.calledWith(
-              execFileStub,
-              'mix',
-              [
-                'credo',
-                'diff',
-                '--format',
-                'json',
-                '--read-from-stdin',
-                '--config-name',
-                'default',
-                '--from-git-merge-base',
-                'main',
-              ],
-              match.any,
-              match.any,
+            expect(logger.log).to.have.been.calledWith(
+              'debug',
+              'Setting 1 linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
             )
           })
 
-          it('logs that credo is being executed', () => {
-            execute()
+          it('executes credo', async () => {
+            await subject()
 
-            sinonAssert.calledWith(logSpy, {
-              message:
-                'Executing credo command `mix credo diff --format json --read-from-stdin --config-name default --from-git-merge-base main` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
-              level: loggerModule.LogLevel.Debug,
-            })
-          })
-        })
-
-        context('with multiple opened workspaces', () => {
-          let executeCredoSpy: SinonSpy<executionModule.CredoExecutionArguments[], cp.ChildProcess[]>
-
-          def('workspaceFilePath', () => path.resolve(__dirname, '../../../src/test/fixtures'))
-          def('fileName', () => `${$workspaceFilePath}/src/sample.ex`)
-          def('documentUri', () => vscode.Uri.file($fileName))
-          def('textDocument', () => ({
-            languageId: 'elixir',
-            isUntitled: false,
-            uri: $documentUri,
-            fileName: $fileName,
-            getText: () => 'defmodule SampleWeb.Telemtry\n@var 2\nend\n',
-          }))
-
-          beforeEach(() => {
-            sandbox.replaceGetter(vscode.workspace, 'workspaceFolders', () => [
-              {
-                index: 0,
-                name: 'Another workspace',
-                uri: vscode.Uri.file(path.resolve(__dirname)),
-              },
-              {
-                index: 1,
-                name: 'Main Workspace',
-                uri: vscode.Uri.file(path.resolve(__dirname, '../../../src/test/fixtures')),
-              },
-            ])
-            executeCredoSpy = sandbox.spy(executionModule, 'executeCredo')
-          })
-
-          it('executes the credo commands in the correct workspace folder', () => {
-            execute()
-
-            sandbox.assert.calledWith(
-              executeCredoSpy,
-              match.hasNested('options.cwd', path.resolve(__dirname, '../../../src/test/fixtures')),
-            )
+            expect(credo.diff).to.have.been.calledOnceWith(textDocument, sinon.match.any)
           })
         })
       })
 
       context('when the extension only lints the files specified through the credo configuration file', () => {
-        def(
-          'config',
-          (): configurationModule.CredoConfiguration => ({
-            command: 'mix',
-            configurationFile: '.credo.exs',
-            credoConfiguration: 'default',
-            checksWithTag: [],
-            checksWithoutTag: [],
-            strictMode: false,
-            ignoreWarningMessages: false,
-            lintEverything: false,
-            enableDebug: false,
-            diffMode: {
-              enabled: false,
-              mergeBase: 'main',
-            },
-          }),
-        )
+        before(() => {
+          workspaceFilePath = '/Users/bot/sample'
+          filename = `${workspaceFilePath}/lib/sample_web/telemetry.ex`
+        })
+
+        beforeEach(() => {
+          configuration.lintEverything = false
+        })
 
         context('when the current document should be linted', () => {
-          it('adds the diagnostic', () => {
-            execute()
+          it('adds the diagnostic', async () => {
+            await subject()
 
-            sinonAssert.calledWith(setDiagnosticCollectionSpy, $documentUri, [
+            expect(diagnosticCollection.set).to.have.been.calledOnceWith(documentUri, [
               new vscode.Diagnostic(
                 new vscode.Range(0, 10, 0, 31),
                 'Modules should have a @moduledoc tag. (readability:Credo.Check.Readability.ModuleDoc)',
                 vscode.DiagnosticSeverity.Information,
               ),
             ])
-            expect(setDiagnosticCollectionSpy.calledOnce).to.true
           })
 
-          it('logs an info message when setting diagnostics', () => {
-            execute()
+          it('logs an info message when setting diagnostics', async () => {
+            await subject()
 
-            sinonAssert.calledWith(logSpy, {
-              message: 'Setting 1 linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
-              level: loggerModule.LogLevel.Debug,
-            })
-          })
-
-          it('executes credo', () => {
-            execute()
-
-            sinonAssert.calledWith(
-              execFileStub,
-              'mix',
-              ['credo', '--format', 'json', '--read-from-stdin', '--config-name', 'default'],
-              match.any,
-              match.any,
+            expect(logger.log).to.have.been.calledWith(
+              'debug',
+              'Setting 1 linter issues for document /Users/bot/sample/lib/sample_web/telemetry.ex.',
             )
           })
 
-          it('logs that credo is being executed', () => {
-            execute()
+          it('executes credo', async () => {
+            await subject()
 
-            sinonAssert.calledWith(logSpy, {
-              message:
-                'Executing credo command `mix credo --format json --read-from-stdin --config-name default` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
-              level: loggerModule.LogLevel.Debug,
-            })
+            expect(credo.suggest).to.have.been.calledOnceWith(textDocument, sinon.match.any)
           })
 
-          it('fetches credo information', () => {
-            execute()
+          it('fetches credo information', async () => {
+            await subject()
 
-            sinonAssert.calledWith(
-              execFileStub,
-              'mix',
-              ['credo', 'info', '--format', 'json', '--verbose'],
-              match.any,
-              match.any,
-            )
-          })
-
-          it('logs an info message when credo information is fetched', () => {
-            execute()
-
-            sinonAssert.calledWith(logSpy, {
-              message:
-                'Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for /Users/bot/sample/lib/sample_web/telemetry.ex in directory /Users/bot/sample',
-              level: loggerModule.LogLevel.Debug,
-            })
+            expect(credo.info).to.have.been.calledWith(documentUri, sinon.match.any)
           })
         })
 
         context('when the current document should not be linted', () => {
-          def('fileName', () => `${$workspaceFilePath}/lib/sample_web/telemetry_test.ex`)
-
-          it('does not add any diagnostic', () => {
-            execute()
-
-            sinonAssert.calledWith(setDiagnosticCollectionSpy, $documentUri, [])
-            expect(setDiagnosticCollectionSpy.calledOnce).to.true
+          before(() => {
+            workspaceFilePath = '/Users/bot/sample'
+            filename = `${workspaceFilePath}/lib/sample_web/telemetry_test.ex`
           })
 
-          it('logs an info message when (not) setting diagnostics', () => {
-            execute()
+          it('does not add any diagnostic', async () => {
+            await subject()
 
-            sinonAssert.calledWith(logSpy, {
-              message: 'Setting 0 linter issues for document /Users/bot/sample/lib/sample_web/telemetry_test.ex.',
-              level: loggerModule.LogLevel.Debug,
-            })
+            expect(diagnosticCollection.set).not.to.have.been.called
           })
 
-          it('does not execute credo', () => {
-            execute()
+          it('does not log an info message of setting diagnostics', async () => {
+            await subject()
 
-            expect(
-              execFileStub.calledWith(
-                'mix',
-                ['credo', '--format', 'json', '--read-from-stdin', '--config-name', 'default'],
-                match.any,
-                match.any,
-              ),
-            ).to.be.false
+            expect(logger.log).not.to.have.been.called
           })
 
-          it('does not log that credo is being executed', () => {
-            execute()
+          it('does not execute credo', async () => {
+            await subject()
 
-            expect(
-              logSpy.calledWith({
-                message:
-                  'Executing credo command `mix credo --format json --read-from-stdin --config-name default` for /Users/bot/sample/lib/sample_web/telemetry_test.ex in directory /Users/bot/sample',
-                level: loggerModule.LogLevel.Debug,
-              }),
-            ).to.be.false
+            expect(credo.suggest).to.not.have.been.called
           })
 
-          it('fetches credo information', () => {
-            execute()
+          it('fetches credo information', async () => {
+            await subject()
 
-            sinonAssert.calledWith(
-              execFileStub,
-              'mix',
-              ['credo', 'info', '--format', 'json', '--verbose'],
-              match.any,
-              match.any,
-            )
-          })
-
-          it('logs an info message when credo information is fetched', () => {
-            execute()
-
-            sinonAssert.calledWith(logSpy, {
-              message:
-                'Retreiving credo information: Executing credo command `mix credo info --format json --verbose` for /Users/bot/sample/lib/sample_web/telemetry_test.ex in directory /Users/bot/sample',
-              level: loggerModule.LogLevel.Debug,
-            })
+            expect(credo.info).to.have.been.calledWith(documentUri, sinon.match.any)
           })
         })
       })
@@ -563,60 +359,67 @@ describe('CredoProvider', () => {
   })
 
   context('#clear', () => {
-    const clear = () => $credoProvider.clear({ document: $textDocument })
+    let textDocument: vscode.TextDocument
+    const subject = () => provider.clear(textDocument)
 
-    def('textDocument', () => ({ uri: vscode.Uri.file('/Users/bot/sample/lib/sample_web/telemetry_test.ex') }))
+    beforeEach(() => {
+      textDocument = fromPartial({
+        uri: vscode.Uri.file('/Users/bot/sample/lib/sample_web/telemetry_test.ex'),
+      })
+
+      sinon.spy(diagnosticCollection, 'delete')
+      sinon.spy(provider.queue, 'cancel')
+      sinon.spy(logger, 'log')
+    })
 
     it('deletes all diagnostics for the given document', () => {
-      const deleteDiagnosticSpy = sandbox.spy($diagnosticCollection, 'delete')
+      subject()
 
-      clear()
-
-      sandbox.assert.calledOnceWithExactly(deleteDiagnosticSpy, $textDocument.uri)
+      expect(diagnosticCollection.delete).to.have.been.calledOnceWithExactly(textDocument.uri)
     })
 
     it('cancels any ongoing tasks for this document', () => {
-      const taskCancelSpy = sandbox.spy($credoProvider.taskQueue, 'cancel')
+      subject()
 
-      clear()
-
-      sandbox.assert.calledOnceWithExactly(taskCancelSpy, $textDocument.uri)
+      expect(provider.queue.cancel).to.have.been.calledOnceWithExactly(textDocument.uri)
     })
 
     it('logs an info message for clearing the diagnostics', () => {
-      const logSpy = sandbox.spy(loggerModule, 'log')
+      subject()
 
-      clear()
-
-      sandbox.assert.calledOnceWithExactly(logSpy, {
-        message:
-          'Removing linter messages and cancel running linting processes for /Users/bot/sample/lib/sample_web/telemetry_test.ex.',
-        level: loggerModule.LogLevel.Debug,
-      })
+      expect(logger.log).to.have.been.calledOnceWithExactly(
+        'debug',
+        'Removing linter messages and cancel running linting processes for /Users/bot/sample/lib/sample_web/telemetry_test.ex.',
+      )
     })
   })
 
   context('#clearAll', () => {
-    const clearAll = () => $credoProvider.clearAll()
-
-    def('textDocument', () => ({ uri: vscode.Uri.file(path.resolve(__filename)) }))
-    def('otherDocument', () => ({ uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/src/sample.ex')) }))
+    let textDocument: vscode.TextDocument
+    let otherDocument: vscode.TextDocument
+    const subject = () => provider.clearAll()
 
     beforeEach(() => {
-      sandbox.replaceGetter(vscode.window, 'visibleTextEditors', () => [
-        { document: $textDocument } as any,
-        { document: $otherDocument } as any,
+      textDocument = fromPartial({
+        uri: vscode.Uri.file(path.resolve(__filename)),
+      })
+      otherDocument = fromPartial({
+        uri: vscode.Uri.file(path.resolve(__dirname, '../fixtures/src/sample.ex')),
+      })
+
+      sinon.spy(provider, 'clear')
+      sinon.replaceGetter(vscode.window, 'visibleTextEditors', () => [
+        fromPartial<vscode.TextEditor>({ document: textDocument }),
+        fromPartial<vscode.TextEditor>({ document: otherDocument }),
       ])
     })
 
     it('calls #clear for each document', () => {
-      const clearSpy = sandbox.spy($credoProvider, 'clear')
+      subject()
 
-      clearAll()
-
-      expect(clearSpy.calledTwice).to.be.true
-      sandbox.assert.calledWith(clearSpy, { document: $textDocument })
-      sandbox.assert.calledWith(clearSpy, { document: $otherDocument })
+      expect(provider.clear).to.have.been.calledTwice
+      expect(provider.clear).to.have.been.calledWith(textDocument)
+      expect(provider.clear).to.have.been.calledWith(otherDocument)
     })
   })
 })

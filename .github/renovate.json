@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>pantajoe/.github",
+    "regexManagers:biomeVersions"
+  ],
+  "ignorePaths": [
+    "**/node_modules/**"
+  ]
+}

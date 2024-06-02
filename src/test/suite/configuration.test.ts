@@ -1,26 +1,19 @@
-import * as fs from 'node:fs'
-import * as os from 'node:os'
-import * as path from 'node:path'
-import { createSandbox } from 'sinon'
-import type { SinonSandbox, SinonStub } from 'sinon'
-import { expect } from 'chai'
+import fs from 'node:fs'
+import process from 'node:process'
+import * as sinon from 'sinon'
+import type { SinonStub } from 'sinon'
 import * as configurationModule from '../../configuration'
+import { CredoUtils } from '../../credo-utils'
 
 describe('Configuration', () => {
-  let sandbox: SinonSandbox
   const OLD_ENV = { ...process.env }
 
-  beforeEach(() => {
-    sandbox = createSandbox()
-  })
-
   afterEach(() => {
-    process.env = OLD_ENV
-    sandbox.restore()
+    process.env = { ...OLD_ENV }
   })
 
-  context('#autodetectExecutePath', () => {
-    const { autodetectExecutePath } = configurationModule
+  context('#detectExecutePath', () => {
+    const { detectExecutePath: subject } = configurationModule
 
     context('with a valid execute path', () => {
       context('on a UNIX based OS', () => {
@@ -28,11 +21,11 @@ describe('Configuration', () => {
 
         beforeEach(() => {
           process.env.PATH = `${validPath}:/useless/path`
-          sandbox.stub(fs, 'existsSync').withArgs(`${validPath}/mix`).returns(true)
+          sinon.stub(fs, 'existsSync').withArgs(`${validPath}/mix`).returns(true)
         })
 
         it('selects the first valid execute path for the mix command', () => {
-          expect(autodetectExecutePath()).to.equal(`${validPath}/`)
+          expect(subject()).to.equal(`${validPath}/`)
         })
       })
 
@@ -41,15 +34,12 @@ describe('Configuration', () => {
 
         beforeEach(() => {
           process.env.PATH = `${validPath};C:\\Windows\\Useless\\Path`
-          sandbox.stub(os, 'platform').returns('win32')
-          sandbox.replace(path, 'join', path.win32.join)
-          sandbox.replace(path, 'delimiter', path.win32.delimiter)
-          sandbox.replace(path, 'sep', path.win32.sep)
-          sandbox.stub(fs, 'existsSync').withArgs(`${validPath}\\mix.bat`).returns(true)
+          sinon.stub(CredoUtils, 'getPlatform').returns('win32')
+          sinon.stub(fs, 'existsSync').withArgs(`${validPath}\\mix.bat`).returns(true)
         })
 
         it('selects the first valid execute path for the mix command', () => {
-          expect(autodetectExecutePath()).to.equal(`${validPath}\\`)
+          expect(subject()).to.equal(`${validPath}\\`)
         })
       })
     })
@@ -60,21 +50,20 @@ describe('Configuration', () => {
       })
 
       it('returns an empty execute path to try executing mix on a global scope', () => {
-        expect(autodetectExecutePath()).to.equal('')
+        expect(subject()).to.equal('')
       })
     })
   })
 
   context('#configuration', () => {
-    let fetchConfigStub: SinonStub<void[], configurationModule.CredoConfiguration>
-    const reloadConfig = () => {
-      configurationModule.reloadConfiguration(fetchConfigStub)
-    }
+    let fetchConfigStub: SinonStub<never[], configurationModule.CredoConfiguration>
+    const { config } = configurationModule
 
     context('when fetching the extension config', () => {
       beforeEach(() => {
-        fetchConfigStub = sandbox.stub(configurationModule, 'fetchConfig').returns({
-          command: 'mix',
+        fetchConfigStub = sinon.stub(config, 'fetch').returns({
+          mixBinaryPath: '',
+          mixCommand: 'mix',
           configurationFile: '.credo.exs',
           credoConfiguration: 'default',
           checksWithTag: [],
@@ -91,30 +80,32 @@ describe('Configuration', () => {
       })
 
       it('returns a valid config', () => {
-        reloadConfig()
-        const {
-          command,
-          configurationFile,
-          credoConfiguration,
-          strictMode,
-          ignoreWarningMessages,
-          lintEverything,
-          enableDebug,
-        } = configurationModule.getCurrentConfiguration()
-        expect(command).to.equal('mix')
-        expect(configurationFile).to.equal('.credo.exs')
-        expect(credoConfiguration).to.equal('default')
-        expect(strictMode).to.be.false
-        expect(ignoreWarningMessages).to.be.false
-        expect(lintEverything).to.be.false
-        expect(enableDebug).to.be.false
+        config.reload()
+
+        expect(config.resolved).to.deep.equal({
+          mixBinaryPath: '',
+          mixCommand: 'mix',
+          configurationFile: '.credo.exs',
+          credoConfiguration: 'default',
+          checksWithTag: [],
+          checksWithoutTag: [],
+          strictMode: false,
+          ignoreWarningMessages: false,
+          lintEverything: false,
+          enableDebug: false,
+          diffMode: {
+            enabled: false,
+            mergeBase: 'main',
+          },
+        })
       })
     })
 
     context('when the config changes', () => {
       beforeEach(() => {
         const initialConfig: configurationModule.CredoConfiguration = {
-          command: 'mix',
+          mixBinaryPath: '',
+          mixCommand: 'mix',
           configurationFile: '.credo.exs',
           credoConfiguration: 'default',
           checksWithTag: [],
@@ -128,20 +119,22 @@ describe('Configuration', () => {
             mergeBase: 'main',
           },
         }
-        fetchConfigStub = sandbox.stub(configurationModule, 'fetchConfig').returns(initialConfig)
-        reloadConfig()
+        fetchConfigStub = sinon.stub(config, 'fetch').returns(initialConfig)
+        config.reload()
         fetchConfigStub.restore()
-        fetchConfigStub = sandbox.stub(configurationModule, 'fetchConfig').returns({
+        fetchConfigStub = sinon.stub(config, 'fetch').returns({
           ...initialConfig,
           ignoreWarningMessages: true,
         })
       })
 
       it('reloads the config', () => {
-        expect(configurationModule.getCurrentConfiguration().ignoreWarningMessages).to.be.false
-        reloadConfig()
-        expect(fetchConfigStub.called).to.be.true
-        expect(configurationModule.getCurrentConfiguration().ignoreWarningMessages).to.be.true
+        config.reload()
+        expect(fetchConfigStub).to.have.been.called
+      })
+
+      it('changes the config `ignoreWarningMessages`', () => {
+        expect(() => config.reload()).to.alter(() => config.resolved.ignoreWarningMessages, { from: false, to: true })
       })
     })
   })
