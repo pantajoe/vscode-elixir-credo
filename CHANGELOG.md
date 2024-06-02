@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None.
+
+## [1.0.0]
+
+This release aims at notifying that this extension is now actively maintained again.
+
 ### Changed
 
 - Complete rewrite of the extension

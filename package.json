@@ -2,7 +2,7 @@
   "publisher": "pantajoe",
   "name": "vscode-elixir-credo",
   "displayName": "Credo (Elixir Linter)",
-  "version": "0.8.3",
+  "version": "1.0.0",
   "packageManager": "pnpm@9.1.4",
   "description": "VSC Support for Elixir linter 'Credo'.",
   "author": {
