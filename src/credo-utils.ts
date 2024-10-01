@@ -61,18 +61,37 @@ export class CredoUtils {
     return mixProjectPath || workspace?.uri.fsPath || path.dirname(documentPath)
   }
 
+  /**
+   * Checks whether the folder path is an app inside an Umbrella project
+   * and returns the root of the Umbrella project.
+   */
+  static getUmbrellaRoot(folderPath: string): string | null {
+    const umbrellaRoot = path.join(folderPath, '..', '..')
+    const appsDir = path.join(umbrellaRoot, 'apps')
+    if (!fs.existsSync(appsDir)) return null
+    if (!fs.existsSync(path.join(umbrellaRoot, 'mix.exs'))) return null
+
+    return umbrellaRoot
+  }
+
   static getCredoConfigFilePath(documentUri?: vscode.Uri): string | null {
     const configFilePath = config.resolved.configurationFile || DEFAULT_CONFIG_FILENAME
+    //                                    ^?
 
     // add unchanged value of `configurationFile` in case it is an absolute path
     if (path.isAbsolute(configFilePath) && fs.existsSync(configFilePath)) return configFilePath
 
     const projectFolder = documentUri ? CredoUtils.getProjectFolder(documentUri) : undefined
-    const found = projectFolder
-      ? [path.join(projectFolder, configFilePath), path.join(projectFolder, 'config', configFilePath)].filter(
-          (fullPath: string) => fs.existsSync(fullPath),
-        )
+    const umbrellaRoot = projectFolder ? CredoUtils.getUmbrellaRoot(projectFolder) : undefined
+    const candidates = projectFolder
+      ? [
+          path.join(projectFolder, configFilePath),
+          path.join(projectFolder, 'config', configFilePath),
+          ...(umbrellaRoot ? [path.join(umbrellaRoot, configFilePath), path.join(umbrellaRoot, configFilePath)] : []),
+        ]
       : []
+
+    const found = candidates.filter((fullPath) => fs.existsSync(fullPath))
 
     if (found.length === 0) {
       logger.warn(`${configFilePath} file does not exist. Ignoring...`)
