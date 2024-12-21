@@ -33,16 +33,16 @@ defmodule Fixtures.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7.14"},
+      {:phoenix, "~> 1.7.18"},
       {:phoenix_ecto, "~> 4.6"},
-      {:ecto_sql, "~> 3.11"},
-      {:postgrex, ">= 0.18.0"},
+      {:ecto_sql, "~> 3.12"},
+      {:postgrex, ">= 0.19.3"},
       {:phoenix_html, "~> 2.14"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_dashboard, "~> and 0.8.0 and ~> 0.8.4"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 0.5"},
-      {:gettext, "~> 0.24"},
+      {:gettext, "~> 0.26"},
       {:jason, "~> 1.4"},
       {:plug_cowboy, "~> 2.7"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
