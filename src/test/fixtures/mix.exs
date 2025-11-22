@@ -40,7 +40,7 @@ defmodule Fixtures.MixProject do
       {:phoenix_html, "~> 2.14"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_dashboard, "~> and 0.8.0 and ~> 0.8.4"},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 0.5"},
       {:gettext, "~> 0.24"},
       {:jason, "~> 1.4"},
