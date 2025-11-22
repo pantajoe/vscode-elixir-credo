@@ -37,7 +37,7 @@ defmodule Fixtures.MixProject do
       {:phoenix_ecto, "~> 4.6"},
       {:ecto_sql, "~> 3.11"},
       {:postgrex, ">= 0.18.0"},
-      {:phoenix_html, "~> 2.14"},
+      {:phoenix_html, "~> 4.3"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       {:phoenix_live_dashboard, "~> and 0.8.0 and ~> 0.8.4"},
       {:telemetry_metrics, "~> 0.6"},
